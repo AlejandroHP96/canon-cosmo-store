@@ -5,7 +5,7 @@ const TCG_CARDS = [
         name: 'Pokémon TCG',
         subtitle: 'Scarlet & Violet — Prismatic Evolutions',
         path: '/tcgs/pokemon',
-        icon: 'catching_pokemon',
+        icon: 'sports_esports',
         accent: 'from-[#FFCB05]/20 to-transparent',
         borderHover: 'hover:border-[#FFCB05]/80',
         tag: 'HOT',
