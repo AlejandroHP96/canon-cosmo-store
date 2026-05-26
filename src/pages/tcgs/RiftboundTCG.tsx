@@ -1,3 +1,5 @@
+import ProductImage from '../../components/ProductImage';
+
 type Category = { label: string; icon: string };
 type Product = {
     name: string;
@@ -8,6 +10,7 @@ type Product = {
     badgeColor?: string;
     stock: number;
     maxStock: number;
+    image?: string;
     featured?: boolean;
 };
 
@@ -21,19 +24,20 @@ const CATEGORIES: Category[] = [
 
 const PRODUCTS: Product[] = [
     {
-        name: 'Dawn of the Rift Booster Box',
-        set: 'Dawn of the Rift',
+        name: 'Origins Booster Display',
+        set: 'Origins',
         price: '89,99 €',
         category: 'Bundles',
         badge: 'HOT',
         badgeColor: 'bg-[#93000a] border-[#ffb4ab]',
         stock: 2,
         maxStock: 5,
+        image: 'https://cdn.sanity.io/images/dsfx7636/consumer_products_live/e026ee1a44bc86095f9afc5949c5fdb519b29c66-2560x2560.png?accountingTag=consumer_products',
         featured: true,
     },
     {
-        name: 'Dawn of the Rift Booster Pack',
-        set: 'Dawn of the Rift',
+        name: 'Origins Booster Pack',
+        set: 'Origins',
         price: '4,99 €',
         category: 'Booster Packs',
         badge: 'NUEVO',
@@ -43,7 +47,7 @@ const PRODUCTS: Product[] = [
     },
     {
         name: 'Starter Deck — Vanguard',
-        set: 'Dawn of the Rift',
+        set: 'Origins',
         price: '14,99 €',
         category: 'Starter Decks',
         stock: 3,
@@ -51,23 +55,24 @@ const PRODUCTS: Product[] = [
     },
     {
         name: 'Starter Deck — Shadow',
-        set: 'Dawn of the Rift',
+        set: 'Origins',
         price: '14,99 €',
         category: 'Starter Decks',
         stock: 4,
         maxStock: 5,
     },
     {
-        name: 'Rift Collector Bundle',
-        set: 'Dawn of the Rift',
-        price: '39,99 €',
+        name: 'Unleashed Booster Display',
+        set: 'Unleashed',
+        price: '94,99 €',
         category: 'Bundles',
         stock: 2,
         maxStock: 5,
+        image: 'https://cdn.sanity.io/images/dsfx7636/consumer_products_live/46c776a96cc14227a260d24489f10b4090cd2cd9-2560x2560.png?accountingTag=consumer_products',
     },
     {
         name: 'Aetherion — Full Art Legendary',
-        set: 'Dawn of the Rift',
+        set: 'Origins',
         price: '44,99 €',
         category: 'Singles',
         badge: 'LEG',
@@ -77,7 +82,7 @@ const PRODUCTS: Product[] = [
     },
     {
         name: 'Void Harbinger — Secret Rare',
-        set: 'Dawn of the Rift',
+        set: 'Origins',
         price: '29,99 €',
         category: 'Singles',
         badge: 'SR',
@@ -101,20 +106,9 @@ const StockBar = ({ stock, maxStock }: { stock: number; maxStock: number }) => (
     </div>
 );
 
-const ImagePlaceholder = ({ featured = false }: { featured?: boolean }) => (
-    <div
-        className={`w-full bg-surface-container-lowest border border-outline-variant/50 flex flex-col items-center justify-center gap-2 ${featured ? 'h-48' : 'h-36'}`}>
-        <span className="material-symbols-outlined text-4xl text-outline">image</span>
-        <p className="text-[9px] font-headline text-outline tracking-widest uppercase">
-            Imagen pendiente
-        </p>
-    </div>
-);
-
 const RiftboundTCG = () => {
     return (
         <>
-            {/* Header */}
             <div className="flex items-center gap-4 mb-6">
                 <div className="tactical-frame px-4 py-2 flex items-center gap-3">
                     <span className="material-symbols-outlined text-primary text-2xl">
@@ -125,7 +119,7 @@ const RiftboundTCG = () => {
                             Riftbound TCG
                         </h2>
                         <p className="text-[10px] text-primary font-headline tracking-[0.2em]">
-                            DAWN OF THE RIFT
+                            LEAGUE OF LEGENDS — ORIGINS
                         </p>
                     </div>
                 </div>
@@ -135,7 +129,6 @@ const RiftboundTCG = () => {
                 </div>
             </div>
 
-            {/* Category filter */}
             <div className="flex gap-2 mb-6 flex-wrap">
                 {CATEGORIES.map(({ label, icon }, i) => (
                     <button
@@ -151,13 +144,12 @@ const RiftboundTCG = () => {
                 ))}
             </div>
 
-            {/* Featured product */}
             {PRODUCTS.filter((p) => p.featured).map((product) => (
                 <div
                     key={product.name}
                     className="tactical-frame p-6 mb-6 flex flex-col md:flex-row gap-6 group cursor-pointer hover:bg-surface-bright transition-colors">
                     <div className="w-full md:w-64 md:shrink-0">
-                        <ImagePlaceholder featured />
+                        <ProductImage src={product.image} featured />
                     </div>
                     <div className="flex flex-col justify-between flex-1">
                         <div>
@@ -171,15 +163,14 @@ const RiftboundTCG = () => {
                                     </h3>
                                 </div>
                                 {product.badge && (
-                                    <span
-                                        className={`px-2 py-1 text-[10px] font-headline border ${product.badgeColor} text-[#e0e0ff]`}>
+                                    <span className={`px-2 py-1 text-[10px] font-headline border ${product.badgeColor} text-[#e0e0ff]`}>
                                         {product.badge}
                                     </span>
                                 )}
                             </div>
                             <p className="text-xs text-on-surface-variant font-body mt-2">
-                                Caja completa de 24 sobres de la colección Dawn of the Rift.
-                                Incluye carta promocional exclusiva de edición limitada.
+                                Caja completa de 24 sobres de la colección Origins. Incluye
+                                carta promocional exclusiva de edición limitada.
                             </p>
                         </div>
                         <div className="flex items-center justify-between mt-4 pt-4 border-t border-outline-variant/30">
@@ -197,7 +188,6 @@ const RiftboundTCG = () => {
                 </div>
             ))}
 
-            {/* Products grid */}
             <h3 className="font-headline text-primary text-xs tracking-[0.3em] mb-4 uppercase">
                 Catálogo completo
             </h3>
@@ -206,7 +196,7 @@ const RiftboundTCG = () => {
                     <div
                         key={product.name}
                         className="tactical-frame p-4 hover:bg-surface-bright transition-colors cursor-pointer flex flex-col gap-3 group">
-                        <ImagePlaceholder />
+                        <ProductImage src={product.image} />
                         <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
                                 <p className="text-[9px] font-headline text-primary/60 tracking-widest uppercase truncate">
@@ -217,8 +207,7 @@ const RiftboundTCG = () => {
                                 </p>
                             </div>
                             {product.badge && (
-                                <span
-                                    className={`shrink-0 px-1.5 py-0.5 text-[8px] font-headline border ${product.badgeColor} text-[#e0e0ff]`}>
+                                <span className={`shrink-0 px-1.5 py-0.5 text-[8px] font-headline border ${product.badgeColor} text-[#e0e0ff]`}>
                                     {product.badge}
                                 </span>
                             )}
