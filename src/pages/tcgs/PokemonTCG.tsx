@@ -1,3 +1,5 @@
+import ProductImage from '../../components/ProductImage';
+
 type Category = { label: string; icon: string };
 type Product = {
     name: string;
@@ -8,6 +10,7 @@ type Product = {
     badgeColor?: string;
     stock: number;
     maxStock: number;
+    image?: string;
     featured?: boolean;
 };
 
@@ -38,6 +41,7 @@ const PRODUCTS: Product[] = [
         badgeColor: 'bg-[#93000a] border-[#ffb4ab]',
         stock: 1,
         maxStock: 5,
+        image: 'https://static-assets.pokemon.com/content-assets/cms2/img/trading-card-game/series/incrementals/2025/sv8pt5-elite-trainer-box/sv8pt5-elite-trainer-box-169-en.png',
         featured: true,
     },
     {
@@ -63,6 +67,7 @@ const PRODUCTS: Product[] = [
         category: 'ETBs',
         stock: 3,
         maxStock: 5,
+        image: 'https://static-assets.pokemon.com/content-assets/cms2/img/trading-card-game/series/incrementals/2024/sv08-elite-trainer-box/sv08-elite-trainer-box-169-en.png',
     },
 ];
 
@@ -80,20 +85,9 @@ const StockBar = ({ stock, maxStock }: { stock: number; maxStock: number }) => (
     </div>
 );
 
-const ImagePlaceholder = ({ featured = false }: { featured?: boolean }) => (
-    <div
-        className={`w-full bg-surface-container-lowest border border-outline-variant/50 flex flex-col items-center justify-center gap-2 ${featured ? 'h-48' : 'h-36'}`}>
-        <span className="material-symbols-outlined text-4xl text-outline">image</span>
-        <p className="text-[9px] font-headline text-outline tracking-widest uppercase">
-            Imagen pendiente
-        </p>
-    </div>
-);
-
 const PokemonTCG = () => {
     return (
         <>
-            {/* Header */}
             <div className="flex items-center gap-4 mb-6">
                 <div className="tactical-frame px-4 py-2 flex items-center gap-3">
                     <span className="material-symbols-outlined text-primary text-2xl">
@@ -114,7 +108,6 @@ const PokemonTCG = () => {
                 </div>
             </div>
 
-            {/* Category filter */}
             <div className="flex gap-2 mb-6 flex-wrap">
                 {CATEGORIES.map(({ label, icon }, i) => (
                     <button
@@ -130,11 +123,12 @@ const PokemonTCG = () => {
                 ))}
             </div>
 
-            {/* Featured product */}
             {PRODUCTS.filter((p) => p.featured).map((product) => (
-                <div key={product.name} className="tactical-frame p-6 mb-6 flex flex-col md:flex-row gap-6 group cursor-pointer hover:bg-surface-bright transition-colors">
+                <div
+                    key={product.name}
+                    className="tactical-frame p-6 mb-6 flex flex-col md:flex-row gap-6 group cursor-pointer hover:bg-surface-bright transition-colors">
                     <div className="w-full md:w-64 md:shrink-0">
-                        <ImagePlaceholder featured />
+                        <ProductImage src={product.image} featured />
                     </div>
                     <div className="flex flex-col justify-between flex-1">
                         <div>
@@ -154,13 +148,18 @@ const PokemonTCG = () => {
                                 )}
                             </div>
                             <p className="text-xs text-on-surface-variant font-body mt-2">
-                                Incluye 8 sobres de la colección Scarlet &amp; Violet, cartas promocionales exclusivas y accesorios.
+                                Incluye 8 sobres de la colección Scarlet &amp; Violet, cartas
+                                promocionales exclusivas y accesorios.
                             </p>
                         </div>
                         <div className="flex items-center justify-between mt-4 pt-4 border-t border-outline-variant/30">
                             <div>
-                                <p className="text-[10px] text-primary font-headline tracking-widest mb-1">PRECIO</p>
-                                <p className="text-3xl font-headline font-bold text-on-surface">{product.price}</p>
+                                <p className="text-[10px] text-primary font-headline tracking-widest mb-1">
+                                    PRECIO
+                                </p>
+                                <p className="text-3xl font-headline font-bold text-on-surface">
+                                    {product.price}
+                                </p>
                             </div>
                             <StockBar stock={product.stock} maxStock={product.maxStock} />
                         </div>
@@ -168,7 +167,6 @@ const PokemonTCG = () => {
                 </div>
             ))}
 
-            {/* Products grid */}
             <h3 className="font-headline text-primary text-xs tracking-[0.3em] mb-4 uppercase">
                 Catálogo completo
             </h3>
@@ -177,7 +175,7 @@ const PokemonTCG = () => {
                     <div
                         key={product.name}
                         className="tactical-frame p-4 hover:bg-surface-bright transition-colors cursor-pointer flex flex-col gap-3 group">
-                        <ImagePlaceholder />
+                        <ProductImage src={product.image} />
                         <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
                                 <p className="text-[9px] font-headline text-primary/60 tracking-widest uppercase truncate">

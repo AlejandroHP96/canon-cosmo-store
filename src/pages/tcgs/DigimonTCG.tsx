@@ -1,3 +1,5 @@
+import ProductImage from '../../components/ProductImage';
+
 type Category = { label: string; icon: string };
 type Product = {
     name: string;
@@ -8,6 +10,7 @@ type Product = {
     badgeColor?: string;
     stock: number;
     maxStock: number;
+    image?: string;
     featured?: boolean;
 };
 
@@ -29,6 +32,7 @@ const PRODUCTS: Product[] = [
         badgeColor: 'bg-[#93000a] border-[#ffb4ab]',
         stock: 3,
         maxStock: 5,
+        image: 'https://en.digimoncard.com/images/products/pack/ver15/bnr.jpg',
         featured: true,
     },
     {
@@ -40,6 +44,7 @@ const PRODUCTS: Product[] = [
         badgeColor: 'bg-[#343dff] border-[#bec2ff]',
         stock: 5,
         maxStock: 5,
+        image: 'https://en.digimoncard.com/images/products/pack/ver15/img_pkg.png',
     },
     {
         name: 'Starter Deck — Agumon & Gabumon',
@@ -101,16 +106,6 @@ const StockBar = ({ stock, maxStock }: { stock: number; maxStock: number }) => (
     </div>
 );
 
-const ImagePlaceholder = ({ featured = false }: { featured?: boolean }) => (
-    <div
-        className={`w-full bg-surface-container-lowest border border-outline-variant/50 flex flex-col items-center justify-center gap-2 ${featured ? 'h-48' : 'h-36'}`}>
-        <span className="material-symbols-outlined text-4xl text-outline">image</span>
-        <p className="text-[9px] font-headline text-outline tracking-widest uppercase">
-            Imagen pendiente
-        </p>
-    </div>
-);
-
 const DigimonTCG = () => {
     return (
         <>
@@ -154,7 +149,7 @@ const DigimonTCG = () => {
                     key={product.name}
                     className="tactical-frame p-6 mb-6 flex flex-col md:flex-row gap-6 group cursor-pointer hover:bg-surface-bright transition-colors">
                     <div className="w-full md:w-64 md:shrink-0">
-                        <ImagePlaceholder featured />
+                        <ProductImage src={product.image} featured />
                     </div>
                     <div className="flex flex-col justify-between flex-1">
                         <div>
@@ -175,13 +170,17 @@ const DigimonTCG = () => {
                             </div>
                             <p className="text-xs text-on-surface-variant font-body mt-2">
                                 Caja completa de 24 sobres de BT-15. La expansión más ambiciosa
-                                del juego, con nuevos niveles de digivolucion y cartas Alternate Art.
+                                del juego, con nuevos niveles de digivolución y cartas Alternate Art.
                             </p>
                         </div>
                         <div className="flex items-center justify-between mt-4 pt-4 border-t border-outline-variant/30">
                             <div>
-                                <p className="text-[10px] text-primary font-headline tracking-widest mb-1">PRECIO</p>
-                                <p className="text-3xl font-headline font-bold text-on-surface">{product.price}</p>
+                                <p className="text-[10px] text-primary font-headline tracking-widest mb-1">
+                                    PRECIO
+                                </p>
+                                <p className="text-3xl font-headline font-bold text-on-surface">
+                                    {product.price}
+                                </p>
                             </div>
                             <StockBar stock={product.stock} maxStock={product.maxStock} />
                         </div>
@@ -197,7 +196,7 @@ const DigimonTCG = () => {
                     <div
                         key={product.name}
                         className="tactical-frame p-4 hover:bg-surface-bright transition-colors cursor-pointer flex flex-col gap-3 group">
-                        <ImagePlaceholder />
+                        <ProductImage src={product.image} />
                         <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
                                 <p className="text-[9px] font-headline text-primary/60 tracking-widest uppercase truncate">
