@@ -13,9 +13,11 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
                     className="md:hidden text-[#e0e0ff] hover:text-primary transition-colors">
                     <span className="material-symbols-outlined">menu</span>
                 </button>
-                <h1 className="text-xl md:text-2xl font-bold text-[#e0e0ff] font-headline uppercase tracking-widest">
+                <Link
+                    to="/"
+                    className="text-xl md:text-2xl font-bold text-[#e0e0ff] font-headline uppercase tracking-widest hover:text-primary transition-colors">
                     CAÑÓN COSMO
-                </h1>
+                </Link>
             </div>
             <Link
                 to="/aboutus"
