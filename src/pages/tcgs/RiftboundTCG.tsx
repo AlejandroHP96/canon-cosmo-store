@@ -155,8 +155,8 @@ const RiftboundTCG = () => {
             {PRODUCTS.filter((p) => p.featured).map((product) => (
                 <div
                     key={product.name}
-                    className="tactical-frame p-6 mb-6 flex gap-6 group cursor-pointer hover:bg-surface-bright transition-colors">
-                    <div className="w-64 shrink-0">
+                    className="tactical-frame p-6 mb-6 flex flex-col md:flex-row gap-6 group cursor-pointer hover:bg-surface-bright transition-colors">
+                    <div className="w-full md:w-64 md:shrink-0">
                         <ImagePlaceholder featured />
                     </div>
                     <div className="flex flex-col justify-between flex-1">

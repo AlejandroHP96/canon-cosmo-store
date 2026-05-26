@@ -17,12 +17,17 @@ type NavEntry = {
 
 const NAV_ENTRIES: NavEntry[] = [{ icon: 'diamond', label: 'Accesorios' }];
 
-const SideNav = () => {
+type SideNavProps = {
+    isOpen: boolean;
+    onClose: () => void;
+};
+
+const SideNav = ({ isOpen, onClose }: SideNavProps) => {
     const [tcgOpen, setTcgOpen] = useState(true);
     const [tcgHovered, setTcgHovered] = useState(false);
 
     return (
-        <aside className="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 p-4 bg-[#141851] border-r-2 border-[#e0e0ff] shadow-[inset_0_0_10px_rgba(0,1,172,0.5)] flex flex-col z-40">
+        <aside className={`fixed left-0 top-16 h-[calc(100vh-64px)] w-64 p-4 bg-[#141851] border-r-2 border-[#e0e0ff] shadow-[inset_0_0_10px_rgba(0,1,172,0.5)] flex flex-col z-40 transition-transform duration-300 md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
             <div className="mb-8 px-2">
                 <h2 className="text-[#e0e0ff] font-black font-headline text-xl">COMMAND</h2>
                 <p className="text-[#bec2ff] text-[10px] tracking-[0.2em] font-headline">
@@ -59,6 +64,7 @@ const SideNav = () => {
                                 <Link
                                     key={label}
                                     to={path}
+                                    onClick={onClose}
                                     className="py-2 pl-4 text-sm text-[#e0e0ff] opacity-60 hover:opacity-100 hover:bg-[#2f336c] hover:text-[#bec2ff] transition-all">
                                     {label}
                                 </Link>
