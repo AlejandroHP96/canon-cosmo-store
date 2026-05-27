@@ -1,10 +1,10 @@
-export type TcgId =
-    | 'pokemon'
-    | 'digimon'
-    | 'onepiece'
-    | 'naruto'
-    | 'finalfantasy'
-    | 'riftbound';
+/**
+ * Identificador de un TCG en Firestore.
+ * Los TCGs legacy usan IDs sin guiones ('finalfantasy', 'onepiece').
+ * Los TCGs nuevos usan el slug de la URL ('dragon-ball', 'union-arena').
+ * Ver src/lib/tcgUtils.ts para el mapeo slug ↔ ID.
+ */
+export type TcgId = string;
 
 export type Product = {
     id: string; // Firestore document ID
