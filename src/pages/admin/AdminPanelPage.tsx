@@ -94,7 +94,7 @@ const ProductFormModal = ({
             if (isEdit) {
                 // Para campos opcionales vacíos usamos deleteField() para que
                 // Firestore elimine el campo en lugar de dejarlo como string vacío
-                const updatePayload: Record<string, unknown> = {
+                const updatePayload: Record<string, string | number | boolean | ReturnType<typeof deleteField> | undefined> = {
                     ...Object.fromEntries(
                         Object.entries(raw).filter(
                             ([, v]) => v !== undefined && v !== '',
