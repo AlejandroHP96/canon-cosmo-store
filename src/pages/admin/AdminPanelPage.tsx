@@ -66,7 +66,7 @@ const ProductFormModal = ({
     const set = <K extends keyof FormData>(key: K, value: FormData[K]) =>
         setForm((prev) => ({ ...prev, [key]: value }));
 
-    // Carga categorías cada vez que cambia el TCG seleccionado
+    // Carga categorías cada vez que cambia la sección seleccionada
     useEffect(() => {
         getCategoriesByTcg(form.tcg).then((cats) => {
             setCategories(cats);
@@ -133,9 +133,9 @@ const ProductFormModal = ({
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    {/* TCG */}
+                    {/* Sección */}
                     <div>
-                        <label className={labelClass}>TCG</label>
+                        <label className={labelClass}>Sección</label>
                         <select
                             value={form.tcg}
                             onChange={(e) => set('tcg', e.target.value)}
