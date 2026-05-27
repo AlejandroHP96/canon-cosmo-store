@@ -15,7 +15,10 @@ type NavEntry = {
     label: string;
 };
 
-const NAV_ENTRIES: NavEntry[] = [{ icon: 'diamond', label: 'Accesorios' }];
+const NAV_ENTRIES: NavEntry[] = [
+    { icon: 'diamond', label: 'Accesorios TCGs' },
+    { icon: 'toys', label: 'Funko Pop' },
+];
 
 type SideNavProps = {
     isOpen: boolean;
