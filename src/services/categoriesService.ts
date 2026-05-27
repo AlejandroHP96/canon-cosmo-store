@@ -33,7 +33,7 @@ export async function getCategoriesByTcg(tcg: TcgId): Promise<string[]> {
     if (snap.exists()) {
         return (snap.data().categories as string[]) ?? [];
     }
-    // Primera vez: auto-seed
+    // Primera vez: auto-seed con categorías por defecto
     await setDoc(ref, { categories: DEFAULTS[tcg] });
     return DEFAULTS[tcg];
 }

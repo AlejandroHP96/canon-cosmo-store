@@ -450,7 +450,11 @@ const CategoriesManager = () => {
 
     const handleAdd = async () => {
         const trimmed = newCat.trim();
-        if (!trimmed || categories.includes(trimmed)) return;
+        if (!trimmed) return;
+        if (categories.includes(trimmed)) {
+            setError(`"${trimmed}" ya existe en la lista.`);
+            return;
+        }
         await save([...categories, trimmed]);
         setNewCat('');
     };
@@ -512,10 +516,19 @@ const CategoriesManager = () => {
 
             {/* Error */}
             {error && (
-                <p className="text-xs font-body text-error flex items-center gap-1 mb-2">
-                    <span className="material-symbols-outlined text-sm">error</span>
-                    {error}
-                </p>
+                <div className="flex items-center gap-2 border border-error bg-error-container/20 px-3 py-2.5 mb-3">
+                    <span className="material-symbols-outlined text-error text-base shrink-0">
+                        error
+                    </span>
+                    <p className="text-sm font-body text-error flex-1">{error}</p>
+                    <button
+                        onClick={() => setError(null)}
+                        className="text-error/60 hover:text-error shrink-0">
+                        <span className="material-symbols-outlined text-sm">
+                            close
+                        </span>
+                    </button>
+                </div>
             )}
 
             {/* Add new */}
