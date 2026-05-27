@@ -18,7 +18,7 @@ import {
     type SidebarConfig,
 } from '../../services/navService';
 import { useTcgOptions } from '../../hooks/useTcgOptions';
-import { pathToSectionId } from '../../lib/tcgUtils';
+import { pathToSectionId, toSlug } from '../../lib/tcgUtils';
 import type { Product, TcgId } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
 import ProductImage from '../../components/ProductImage';
@@ -44,15 +44,6 @@ const inputClass =
 const labelClass =
     'block font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1';
 
-/** "Funko Pop" → "funko-pop" */
-const toSlug = (text: string) =>
-    text
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[̀-ͯ]/g, '')
-        .replace(/[^a-z0-9\s-]/g, '')
-        .trim()
-        .replace(/\s+/g, '-');
 
 type FormData = Omit<Product, 'id'>;
 
