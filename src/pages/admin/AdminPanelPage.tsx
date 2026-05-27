@@ -139,11 +139,7 @@ const ProductFormModal = ({
         setError(null);
         setSaving(true);
         try {
-            const raw: FormData = {
-                ...form,
-                stock: Number(form.stock),
-                maxStock: Number(form.maxStock),
-            };
+            const raw: FormData = { ...form };
             if (isEdit) {
                 const updatePayload: Record<string, string | number | boolean | ReturnType<typeof deleteField> | undefined> = {
                     ...Object.fromEntries(
@@ -1544,8 +1540,7 @@ const AdminPanelPage = () => {
                                         {product.price}
                                     </p>
                                     <p className="text-[10px] text-on-surface-variant font-body">
-                                        Stock: {product.stock}/
-                                        {product.maxStock}
+                                        {product.inStock === false ? 'Agotado' : 'Disponible'}
                                     </p>
                                 </div>
 
