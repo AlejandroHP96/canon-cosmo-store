@@ -23,7 +23,10 @@ const App = () => {
                     <Route path="/aboutus" element={<AboutUs />} />
                     <Route path="/tcgs/pokemon" element={<PokemonTCG />} />
                     <Route path="/tcgs/riftbound" element={<RiftboundTCG />} />
-                    <Route path="/tcgs/final-fantasy" element={<FinalFantasyTCG />} />
+                    <Route
+                        path="/tcgs/final-fantasy"
+                        element={<FinalFantasyTCG />}
+                    />
                     <Route path="/tcgs/digimon" element={<DigimonTCG />} />
                     <Route path="/tcgs/naruto" element={<NarutoTCG />} />
                     <Route path="/tcgs/one-piece" element={<OnePieceTCG />} />
@@ -32,7 +35,10 @@ const App = () => {
                 {/* Admin — ruta oculta, sin Layout público */}
                 <Route path="/cosmos-admin" element={<AdminLoginPage />} />
                 <Route element={<ProtectedRoute />}>
-                    <Route path="/cosmos-admin/panel" element={<AdminPanelPage />} />
+                    <Route
+                        path="/cosmos-admin/panel"
+                        element={<AdminPanelPage />}
+                    />
                 </Route>
             </Routes>
         </AuthProvider>

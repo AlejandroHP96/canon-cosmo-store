@@ -56,7 +56,7 @@ const ProductFormModal = ({
 }) => {
     const isEdit = initial !== null;
     const [form, setForm] = useState<FormData>(
-        initial ? { ...initial } : { ...EMPTY_FORM }
+        initial ? { ...initial } : { ...EMPTY_FORM },
     );
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -77,7 +77,7 @@ const ProductFormModal = ({
                 badgeColor: form.badgeColor || undefined,
                 image: form.image || undefined,
             };
-            console.log(clean)
+            console.log(clean);
             if (isEdit) {
                 await updateProduct(initial!.id, clean);
             } else {
@@ -98,7 +98,9 @@ const ProductFormModal = ({
                     <h2 className="font-headline font-bold text-lg text-on-surface uppercase tracking-widest">
                         {isEdit ? 'Editar Producto' : 'Nuevo Producto'}
                     </h2>
-                    <button onClick={onClose} className="text-on-surface-variant hover:text-primary">
+                    <button
+                        onClick={onClose}
+                        className="text-on-surface-variant hover:text-primary">
                         <span className="material-symbols-outlined">close</span>
                     </button>
                 </div>
@@ -109,13 +111,17 @@ const ProductFormModal = ({
                         <label className={labelClass}>TCG</label>
                         <select
                             value={form.tcg}
-                            onChange={(e) => set('tcg', e.target.value as TcgId)}
+                            onChange={(e) =>
+                                set('tcg', e.target.value as TcgId)
+                            }
                             className={inputClass}>
-                            {TCG_OPTIONS.filter((t) => t.id !== 'all').map((t) => (
-                                <option key={t.id} value={t.id}>
-                                    {t.label}
-                                </option>
-                            ))}
+                            {TCG_OPTIONS.filter((t) => t.id !== 'all').map(
+                                (t) => (
+                                    <option key={t.id} value={t.id}>
+                                        {t.label}
+                                    </option>
+                                ),
+                            )}
                         </select>
                     </div>
 
@@ -133,7 +139,9 @@ const ProductFormModal = ({
                     {/* Set + Category */}
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className={labelClass}>Set / Expansión</label>
+                            <label className={labelClass}>
+                                Set / Expansión
+                            </label>
                             <input
                                 required
                                 value={form.set}
@@ -146,7 +154,9 @@ const ProductFormModal = ({
                             <input
                                 required
                                 value={form.category}
-                                onChange={(e) => set('category', e.target.value)}
+                                onChange={(e) =>
+                                    set('category', e.target.value)
+                                }
                                 className={inputClass}
                             />
                         </div>
@@ -172,7 +182,9 @@ const ProductFormModal = ({
                                 type="number"
                                 min={0}
                                 value={form.stock}
-                                onChange={(e) => set('stock', Number(e.target.value))}
+                                onChange={(e) =>
+                                    set('stock', Number(e.target.value))
+                                }
                                 className={inputClass}
                             />
                         </div>
@@ -182,7 +194,9 @@ const ProductFormModal = ({
                                 type="number"
                                 min={1}
                                 value={form.maxStock}
-                                onChange={(e) => set('maxStock', Number(e.target.value))}
+                                onChange={(e) =>
+                                    set('maxStock', Number(e.target.value))
+                                }
                                 className={inputClass}
                             />
                         </div>
@@ -203,7 +217,9 @@ const ProductFormModal = ({
                     {/* Badge + BadgeColor */}
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className={labelClass}>Badge (ej. HOT)</label>
+                            <label className={labelClass}>
+                                Badge (ej. HOT)
+                            </label>
                             <input
                                 value={form.badge ?? ''}
                                 onChange={(e) => set('badge', e.target.value)}
@@ -215,7 +231,9 @@ const ProductFormModal = ({
                             <input
                                 placeholder="bg-[#93000a] border-[#ffb4ab]"
                                 value={form.badgeColor ?? ''}
-                                onChange={(e) => set('badgeColor', e.target.value)}
+                                onChange={(e) =>
+                                    set('badgeColor', e.target.value)
+                                }
                                 className={inputClass}
                             />
                         </div>
@@ -236,7 +254,9 @@ const ProductFormModal = ({
 
                     {error && (
                         <p className="text-xs font-body text-error flex items-center gap-1">
-                            <span className="material-symbols-outlined text-sm">error</span>
+                            <span className="material-symbols-outlined text-sm">
+                                error
+                            </span>
                             {error}
                         </p>
                     )}
@@ -252,7 +272,11 @@ const ProductFormModal = ({
                             type="submit"
                             disabled={saving}
                             className="flex-1 border border-primary bg-surface-container text-primary font-headline text-xs uppercase tracking-widest py-2.5 hover:bg-primary hover:text-surface transition-colors disabled:opacity-50">
-                            {saving ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Crear producto'}
+                            {saving
+                                ? 'Guardando...'
+                                : isEdit
+                                  ? 'Guardar cambios'
+                                  : 'Crear producto'}
                         </button>
                     </div>
                 </form>
@@ -290,8 +314,10 @@ const DeleteConfirmModal = ({
                 </h2>
                 <p className="text-sm font-body text-on-surface-variant mb-6">
                     ¿Seguro que quieres eliminar{' '}
-                    <span className="text-on-surface font-bold">{product.name}</span>?
-                    Esta acción no se puede deshacer.
+                    <span className="text-on-surface font-bold">
+                        {product.name}
+                    </span>
+                    ? Esta acción no se puede deshacer.
                 </p>
                 <div className="flex gap-3">
                     <button
@@ -325,8 +351,14 @@ const AdminPanelPage = () => {
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
 
-    const openAdd = () => { setEditingProduct(null); setShowForm(true); };
-    const openEdit = (p: Product) => { setEditingProduct(p); setShowForm(true); };
+    const openAdd = () => {
+        setEditingProduct(null);
+        setShowForm(true);
+    };
+    const openEdit = (p: Product) => {
+        setEditingProduct(p);
+        setShowForm(true);
+    };
     const closeForm = () => setShowForm(false);
 
     const refresh = async () => {
@@ -346,7 +378,9 @@ const AdminPanelPage = () => {
     };
 
     const visible =
-        filterTcg === 'all' ? products : products.filter((p) => p.tcg === filterTcg);
+        filterTcg === 'all'
+            ? products
+            : products.filter((p) => p.tcg === filterTcg);
 
     return (
         <div className="min-h-screen bg-surface text-on-surface">
@@ -367,7 +401,9 @@ const AdminPanelPage = () => {
                     <button
                         onClick={handleSignOut}
                         className="flex items-center gap-1.5 border border-outline-variant text-on-surface-variant font-headline text-[10px] uppercase tracking-widest px-3 py-1.5 hover:border-primary hover:text-primary transition-colors">
-                        <span className="material-symbols-outlined text-sm">logout</span>
+                        <span className="material-symbols-outlined text-sm">
+                            logout
+                        </span>
                         Salir
                     </button>
                 </div>
@@ -381,7 +417,9 @@ const AdminPanelPage = () => {
                         {TCG_OPTIONS.map(({ id, label }) => (
                             <button
                                 key={id}
-                                onClick={() => setFilterTcg(id as TcgId | 'all')}
+                                onClick={() =>
+                                    setFilterTcg(id as TcgId | 'all')
+                                }
                                 className={`px-3 py-1.5 font-headline text-xs uppercase tracking-wider border transition-all ${
                                     filterTcg === id
                                         ? 'border-primary text-primary bg-surface-container'
@@ -396,7 +434,9 @@ const AdminPanelPage = () => {
                     <button
                         onClick={openAdd}
                         className="flex items-center gap-2 border border-primary text-primary font-headline text-xs uppercase tracking-widest px-4 py-2 hover:bg-primary hover:text-surface transition-colors">
-                        <span className="material-symbols-outlined text-sm">add</span>
+                        <span className="material-symbols-outlined text-sm">
+                            add
+                        </span>
                         Nuevo producto
                     </button>
                 </div>
@@ -426,8 +466,8 @@ const AdminPanelPage = () => {
                                 className="tactical-frame p-4 flex items-center gap-4">
                                 {/* Thumbnail */}
                                 <div className="w-14 h-14 shrink-0 overflow-hidden">
-    <ProductImage src={product.image} />
-</div>
+                                    <ProductImage src={product.image} />
+                                </div>
 
                                 {/* Info */}
                                 <div className="flex-1 min-w-0">
@@ -436,7 +476,8 @@ const AdminPanelPage = () => {
                                             {product.tcg}
                                         </span>
                                         {product.badge && (
-                                            <span className={`px-1.5 py-0.5 text-[8px] font-headline border ${product.badgeColor} text-[#e0e0ff]`}>
+                                            <span
+                                                className={`px-1.5 py-0.5 text-[8px] font-headline border ${product.badgeColor} text-[#e0e0ff]`}>
                                                 {product.badge}
                                             </span>
                                         )}
@@ -460,7 +501,8 @@ const AdminPanelPage = () => {
                                         {product.price}
                                     </p>
                                     <p className="text-[10px] text-on-surface-variant font-body">
-                                        Stock: {product.stock}/{product.maxStock}
+                                        Stock: {product.stock}/
+                                        {product.maxStock}
                                     </p>
                                 </div>
 
@@ -470,13 +512,17 @@ const AdminPanelPage = () => {
                                         onClick={() => openEdit(product)}
                                         className="border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary p-1.5 transition-colors"
                                         title="Editar">
-                                        <span className="material-symbols-outlined text-sm">edit</span>
+                                        <span className="material-symbols-outlined text-sm">
+                                            edit
+                                        </span>
                                     </button>
                                     <button
                                         onClick={() => setDeleteTarget(product)}
                                         className="border border-outline-variant text-on-surface-variant hover:border-error hover:text-error p-1.5 transition-colors"
                                         title="Eliminar">
-                                        <span className="material-symbols-outlined text-sm">delete</span>
+                                        <span className="material-symbols-outlined text-sm">
+                                            delete
+                                        </span>
                                     </button>
                                 </div>
                             </div>
@@ -490,7 +536,10 @@ const AdminPanelPage = () => {
                 <ProductFormModal
                     initial={editingProduct}
                     onClose={closeForm}
-                    onSaved={() => { closeForm(); refresh(); }}
+                    onSaved={() => {
+                        closeForm();
+                        refresh();
+                    }}
                 />
             )}
 

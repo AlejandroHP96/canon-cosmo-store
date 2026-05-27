@@ -23,7 +23,9 @@ const ProductImage = ({ src, featured = false }: Props) => {
     return (
         <div
             className={`w-full bg-surface-container-lowest border border-outline-variant/50 flex flex-col items-center justify-center gap-2 ${h}`}>
-            <span className="material-symbols-outlined text-4xl text-outline">image</span>
+            <span className="material-symbols-outlined text-4xl text-outline">
+                image
+            </span>
             <p className="text-[9px] font-headline text-outline tracking-widest uppercase">
                 Imagen pendiente
             </p>
