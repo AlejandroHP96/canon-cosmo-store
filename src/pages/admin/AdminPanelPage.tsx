@@ -14,8 +14,7 @@ import {
 import {
     getSidebarConfig,
     updateSidebarConfig,
-    type TcgNavItem,
-    type NavEntry,
+    type NavItem,
     type SidebarConfig,
 } from '../../services/navService';
 import type { Product, TcgId } from '../../types';
@@ -566,21 +565,37 @@ const NavManager = () => {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // TCG items edit state
-    const [editingTcgIdx, setEditingTcgIdx] = useState<number | null>(null);
-    const [tcgEditForm, setTcgEditForm] = useState({ label: '', path: '' });
-    const [newTcg, setNewTcg] = useState({ label: '', path: '' });
+    // Índices con el panel de subitems abierto en el admin
+    const [expandedIdx, setExpandedIdx] = useState<Set<number>>(new Set([0]));
 
-    // Nav entries edit state
-    const [editingNavIdx, setEditingNavIdx] = useState<number | null>(null);
-    const [navEditForm, setNavEditForm] = useState({ icon: '', label: '' });
-    const [newNav, setNewNav] = useState({ icon: '', label: '' });
+    // Edición inline de entrada de primer nivel
+    const [editItemIdx, setEditItemIdx] = useState<number | null>(null);
+    const [editItemForm, setEditItemForm] = useState({
+        icon: '',
+        label: '',
+        path: '',
+    });
+
+    // Formulario de nueva entrada de primer nivel
+    const [newItem, setNewItem] = useState({ icon: '', label: '', path: '' });
+
+    // Edición inline de subitem — clave: `${itemIdx}-${subIdx}`
+    const [editSubKey, setEditSubKey] = useState<string | null>(null);
+    const [editSubForm, setEditSubForm] = useState({ label: '', path: '' });
+
+    // Formularios de nuevo subitem, uno por entrada (keyed por itemIdx)
+    const [newSubForms, setNewSubForms] = useState<
+        Record<number, { label: string; path: string }>
+    >({});
 
     useEffect(() => {
-        setLoading(true);
-        setError(null);
         getSidebarConfig()
-            .then(setConfig)
+            .then((cfg) => {
+                setConfig(cfg);
+                if (cfg.items[0]?.submenu?.length) {
+                    setExpandedIdx(new Set([0]));
+                }
+            })
             .catch(() => setError('Error al cargar la configuración.'))
             .finally(() => setLoading(false));
     }, []);
@@ -598,6 +613,14 @@ const NavManager = () => {
         }
     };
 
+    const toggleExpand = (idx: number) =>
+        setExpandedIdx((prev) => {
+            const next = new Set(prev);
+            if (next.has(idx)) next.delete(idx);
+            else next.add(idx);
+            return next;
+        });
+
     if (loading) {
         return (
             <div className="flex justify-center py-10">
@@ -610,82 +633,124 @@ const NavManager = () => {
 
     if (!config) return null;
 
-    // ── TCG handlers ──────────────────────────────────────────────────────────
+    // ── Handlers de entradas de primer nivel ──────────────────────────────────
 
-    const handleTcgAdd = async () => {
-        const label = newTcg.label.trim();
-        const path = newTcg.path.trim();
-        if (!label || !path) return;
-        if (config.tcgItems.some((t) => t.label === label)) {
-            setError(`"${label}" ya existe en la lista.`);
-            return;
-        }
-        await saveConfig({
-            ...config,
-            tcgItems: [...config.tcgItems, { label, path }],
-        });
-        setNewTcg({ label: '', path: '' });
-    };
-
-    const handleTcgDelete = (idx: number) =>
-        saveConfig({
-            ...config,
-            tcgItems: config.tcgItems.filter((_, i) => i !== idx),
-        });
-
-    const handleTcgEditStart = (idx: number) => {
-        setEditingTcgIdx(idx);
-        setTcgEditForm({ ...config.tcgItems[idx] });
-    };
-
-    const handleTcgEditSave = async () => {
-        if (editingTcgIdx === null) return;
-        const label = tcgEditForm.label.trim();
-        const path = tcgEditForm.path.trim();
-        if (!label || !path) return;
-        const updated = config.tcgItems.map(
-            (item, i): TcgNavItem => (i === editingTcgIdx ? { label, path } : item),
-        );
-        await saveConfig({ ...config, tcgItems: updated });
-        setEditingTcgIdx(null);
-    };
-
-    // ── Nav entries handlers ──────────────────────────────────────────────────
-
-    const handleNavAdd = async () => {
-        const icon = newNav.icon.trim();
-        const label = newNav.label.trim();
+    const handleAddItem = async () => {
+        const icon = newItem.icon.trim();
+        const label = newItem.label.trim();
         if (!icon || !label) return;
+        const item: NavItem = { icon, label };
+        if (newItem.path.trim()) item.path = newItem.path.trim();
+        await saveConfig({ items: [...config.items, item] });
+        setNewItem({ icon: '', label: '', path: '' });
+    };
+
+    const handleDeleteItem = async (idx: number) => {
         await saveConfig({
-            ...config,
-            navEntries: [...config.navEntries, { icon, label }],
+            items: config.items.filter((_, i) => i !== idx),
         });
-        setNewNav({ icon: '', label: '' });
+        setExpandedIdx((prev) => {
+            const next = new Set(prev);
+            next.delete(idx);
+            return next;
+        });
+        if (editItemIdx === idx) setEditItemIdx(null);
     };
 
-    const handleNavDelete = (idx: number) =>
-        saveConfig({
-            ...config,
-            navEntries: config.navEntries.filter((_, i) => i !== idx),
+    const handleEditItemStart = (idx: number) => {
+        const item = config.items[idx];
+        setEditItemIdx(idx);
+        setEditItemForm({
+            icon: item.icon,
+            label: item.label,
+            path: item.path ?? '',
         });
-
-    const handleNavEditStart = (idx: number) => {
-        setEditingNavIdx(idx);
-        setNavEditForm({ ...config.navEntries[idx] });
     };
 
-    const handleNavEditSave = async () => {
-        if (editingNavIdx === null) return;
-        const icon = navEditForm.icon.trim();
-        const label = navEditForm.label.trim();
+    const handleEditItemSave = async () => {
+        if (editItemIdx === null) return;
+        const icon = editItemForm.icon.trim();
+        const label = editItemForm.label.trim();
         if (!icon || !label) return;
-        const updated = config.navEntries.map(
-            (entry, i): NavEntry =>
-                i === editingNavIdx ? { icon, label } : entry,
-        );
-        await saveConfig({ ...config, navEntries: updated });
-        setEditingNavIdx(null);
+        const items = config.items.map((item, i): NavItem => {
+            if (i !== editItemIdx) return item;
+            const next: NavItem = { icon, label, submenu: item.submenu };
+            if (editItemForm.path.trim()) next.path = editItemForm.path.trim();
+            return next;
+        });
+        await saveConfig({ items });
+        setEditItemIdx(null);
     };
+
+    // ── Helpers de subitems ───────────────────────────────────────────────────
+
+    const subKey = (iIdx: number, sIdx: number) => `${iIdx}-${sIdx}`;
+
+    const getSubForm = (idx: number) =>
+        newSubForms[idx] ?? { label: '', path: '' };
+
+    const patchSubForm = (
+        idx: number,
+        patch: Partial<{ label: string; path: string }>,
+    ) =>
+        setNewSubForms((prev) => ({
+            ...prev,
+            [idx]: { ...getSubForm(idx), ...patch },
+        }));
+
+    // ── Handlers de subitems ──────────────────────────────────────────────────
+
+    const handleAddSub = async (itemIdx: number) => {
+        const form = getSubForm(itemIdx);
+        const label = form.label.trim();
+        const path = form.path.trim();
+        if (!label || !path) return;
+        const items = config.items.map((item, i): NavItem => {
+            if (i !== itemIdx) return item;
+            return {
+                ...item,
+                submenu: [...(item.submenu ?? []), { label, path }],
+            };
+        });
+        await saveConfig({ items });
+        patchSubForm(itemIdx, { label: '', path: '' });
+    };
+
+    const handleDeleteSub = async (itemIdx: number, subIdx: number) => {
+        const items = config.items.map((item, i): NavItem => {
+            if (i !== itemIdx) return item;
+            return {
+                ...item,
+                submenu: item.submenu?.filter((_, j) => j !== subIdx),
+            };
+        });
+        await saveConfig({ items });
+        if (editSubKey === subKey(itemIdx, subIdx)) setEditSubKey(null);
+    };
+
+    const handleEditSubStart = (itemIdx: number, subIdx: number) => {
+        setEditSubKey(subKey(itemIdx, subIdx));
+        setEditSubForm({ ...config.items[itemIdx].submenu![subIdx] });
+    };
+
+    const handleEditSubSave = async (itemIdx: number, subIdx: number) => {
+        const label = editSubForm.label.trim();
+        const path = editSubForm.path.trim();
+        if (!label || !path) return;
+        const items = config.items.map((item, i): NavItem => {
+            if (i !== itemIdx) return item;
+            return {
+                ...item,
+                submenu: item.submenu?.map((sub, j) =>
+                    j === subIdx ? { label, path } : sub,
+                ),
+            };
+        });
+        await saveConfig({ items });
+        setEditSubKey(null);
+    };
+
+    // ── Render ────────────────────────────────────────────────────────────────
 
     return (
         <div className="max-w-2xl">
@@ -706,200 +771,61 @@ const NavManager = () => {
                 </div>
             )}
 
-            {/* ── Sección: TCGs ──────────────────────────────────────────────── */}
-            <section className="mb-10">
-                <div className="flex items-center gap-3 mb-4">
-                    <span className="material-symbols-outlined text-primary text-base">
-                        playing_cards
-                    </span>
-                    <h3 className="font-headline font-bold text-xs uppercase tracking-widest text-on-surface">
-                        TCGs — Submenu
-                    </h3>
-                    <span className="text-[10px] font-headline text-on-surface-variant">
-                        {config.tcgItems.length} entrada
-                        {config.tcgItems.length !== 1 ? 's' : ''}
-                    </span>
-                </div>
+            {/* Lista de entradas */}
+            <div className="flex flex-col gap-3 mb-6">
+                {config.items.length === 0 && (
+                    <p className="text-sm font-body text-on-surface-variant text-center py-6">
+                        Sin entradas. Añade una abajo.
+                    </p>
+                )}
 
-                <div className="flex flex-col gap-2 mb-4">
-                    {config.tcgItems.map((item, idx) =>
-                        editingTcgIdx === idx ? (
-                            /* Fila en modo edición */
-                            <div
-                                key={idx}
-                                className="tactical-frame px-4 py-2.5 flex items-center gap-2">
-                                <input
-                                    value={tcgEditForm.label}
-                                    onChange={(e) =>
-                                        setTcgEditForm((f) => ({
-                                            ...f,
-                                            label: e.target.value,
-                                        }))
-                                    }
-                                    placeholder="Label"
-                                    className={inputClass + ' flex-1'}
-                                    onKeyDown={(e) =>
-                                        e.key === 'Enter' && handleTcgEditSave()
-                                    }
-                                />
-                                <input
-                                    value={tcgEditForm.path}
-                                    onChange={(e) =>
-                                        setTcgEditForm((f) => ({
-                                            ...f,
-                                            path: e.target.value,
-                                        }))
-                                    }
-                                    placeholder="/tcgs/ruta"
-                                    className={inputClass + ' flex-1 font-mono'}
-                                    onKeyDown={(e) =>
-                                        e.key === 'Enter' && handleTcgEditSave()
-                                    }
-                                />
-                                <button
-                                    onClick={handleTcgEditSave}
-                                    disabled={saving}
-                                    className="text-primary hover:text-on-surface transition-colors disabled:opacity-40"
-                                    title="Guardar">
-                                    <span className="material-symbols-outlined text-sm">
-                                        check
-                                    </span>
-                                </button>
-                                <button
-                                    onClick={() => setEditingTcgIdx(null)}
-                                    className="text-on-surface-variant hover:text-on-surface transition-colors"
-                                    title="Cancelar">
-                                    <span className="material-symbols-outlined text-sm">
-                                        close
-                                    </span>
-                                </button>
-                            </div>
-                        ) : (
-                            /* Fila en modo display */
-                            <div
-                                key={idx}
-                                className="tactical-frame px-4 py-2.5 flex items-center gap-3">
-                                <span className="material-symbols-outlined text-primary/50 text-sm shrink-0">
-                                    playing_cards
-                                </span>
-                                <span className="font-body text-sm text-on-surface flex-1">
-                                    {item.label}
-                                </span>
-                                <span className="font-mono text-xs text-on-surface-variant flex-1 truncate">
-                                    {item.path}
-                                </span>
-                                <div className="flex items-center gap-1 shrink-0">
-                                    <button
-                                        onClick={() => handleTcgEditStart(idx)}
-                                        disabled={saving}
-                                        className="text-on-surface-variant hover:text-primary transition-colors disabled:opacity-40"
-                                        title="Editar">
-                                        <span className="material-symbols-outlined text-sm">
-                                            edit
-                                        </span>
-                                    </button>
-                                    <button
-                                        onClick={() => handleTcgDelete(idx)}
-                                        disabled={saving}
-                                        className="text-on-surface-variant hover:text-error transition-colors disabled:opacity-40"
-                                        title="Eliminar">
-                                        <span className="material-symbols-outlined text-sm">
-                                            delete
-                                        </span>
-                                    </button>
-                                </div>
-                            </div>
-                        ),
-                    )}
-                </div>
-
-                {/* Añadir TCG */}
-                <div className="flex gap-2">
-                    <input
-                        value={newTcg.label}
-                        onChange={(e) =>
-                            setNewTcg((f) => ({ ...f, label: e.target.value }))
-                        }
-                        placeholder="Label (ej. Dragon Ball)"
-                        className={inputClass + ' flex-1'}
-                    />
-                    <input
-                        value={newTcg.path}
-                        onChange={(e) =>
-                            setNewTcg((f) => ({ ...f, path: e.target.value }))
-                        }
-                        placeholder="/tcgs/dragon-ball"
-                        className={inputClass + ' flex-1 font-mono'}
-                        onKeyDown={(e) => e.key === 'Enter' && handleTcgAdd()}
-                    />
-                    <button
-                        onClick={handleTcgAdd}
-                        disabled={
-                            saving ||
-                            !newTcg.label.trim() ||
-                            !newTcg.path.trim()
-                        }
-                        className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-4 hover:bg-primary hover:text-surface transition-colors disabled:opacity-40">
-                        {saving ? '...' : 'Añadir'}
-                    </button>
-                </div>
-            </section>
-
-            {/* ── Sección: Otras entradas ────────────────────────────────────── */}
-            <section>
-                <div className="flex items-center gap-3 mb-4">
-                    <span className="material-symbols-outlined text-primary text-base">
-                        menu
-                    </span>
-                    <h3 className="font-headline font-bold text-xs uppercase tracking-widest text-on-surface">
-                        Otras entradas
-                    </h3>
-                    <span className="text-[10px] font-headline text-on-surface-variant">
-                        {config.navEntries.length} entrada
-                        {config.navEntries.length !== 1 ? 's' : ''}
-                    </span>
-                </div>
-
-                <div className="flex flex-col gap-2 mb-4">
-                    {config.navEntries.map((entry, idx) =>
-                        editingNavIdx === idx ? (
-                            /* Fila en modo edición */
-                            <div
-                                key={idx}
-                                className="tactical-frame px-4 py-2.5 flex items-center gap-2">
-                                <span className="material-symbols-outlined text-primary text-base shrink-0 w-6">
-                                    {navEditForm.icon || 'category'}
+                {config.items.map((item, idx) => (
+                    <div key={idx} className="tactical-frame">
+                        {/* ── Fila de primer nivel ── */}
+                        {editItemIdx === idx ? (
+                            /* Modo edición */
+                            <div className="px-4 py-3 flex items-center gap-2 flex-wrap">
+                                <span className="material-symbols-outlined text-primary text-base shrink-0">
+                                    {editItemForm.icon || 'category'}
                                 </span>
                                 <input
-                                    value={navEditForm.icon}
+                                    value={editItemForm.icon}
                                     onChange={(e) =>
-                                        setNavEditForm((f) => ({
+                                        setEditItemForm((f) => ({
                                             ...f,
                                             icon: e.target.value,
                                         }))
                                     }
-                                    placeholder="Icono (ej. diamond)"
-                                    className={inputClass + ' w-40 font-mono'}
-                                    onKeyDown={(e) =>
-                                        e.key === 'Enter' && handleNavEditSave()
-                                    }
+                                    placeholder="Icono"
+                                    className={inputClass + ' w-32 font-mono'}
                                 />
                                 <input
-                                    value={navEditForm.label}
+                                    value={editItemForm.label}
                                     onChange={(e) =>
-                                        setNavEditForm((f) => ({
+                                        setEditItemForm((f) => ({
                                             ...f,
                                             label: e.target.value,
                                         }))
                                     }
                                     placeholder="Label"
-                                    className={inputClass + ' flex-1'}
+                                    className={inputClass + ' flex-1 min-w-28'}
+                                />
+                                <input
+                                    value={editItemForm.path}
+                                    onChange={(e) =>
+                                        setEditItemForm((f) => ({
+                                            ...f,
+                                            path: e.target.value,
+                                        }))
+                                    }
+                                    placeholder="/ruta (opcional)"
+                                    className={inputClass + ' flex-1 min-w-28 font-mono'}
                                     onKeyDown={(e) =>
-                                        e.key === 'Enter' && handleNavEditSave()
+                                        e.key === 'Enter' && handleEditItemSave()
                                     }
                                 />
                                 <button
-                                    onClick={handleNavEditSave}
+                                    onClick={handleEditItemSave}
                                     disabled={saving}
                                     className="text-primary hover:text-on-surface transition-colors disabled:opacity-40"
                                     title="Guardar">
@@ -908,7 +834,7 @@ const NavManager = () => {
                                     </span>
                                 </button>
                                 <button
-                                    onClick={() => setEditingNavIdx(null)}
+                                    onClick={() => setEditItemIdx(null)}
                                     className="text-on-surface-variant hover:text-on-surface transition-colors"
                                     title="Cancelar">
                                     <span className="material-symbols-outlined text-sm">
@@ -917,22 +843,39 @@ const NavManager = () => {
                                 </button>
                             </div>
                         ) : (
-                            /* Fila en modo display */
-                            <div
-                                key={idx}
-                                className="tactical-frame px-4 py-2.5 flex items-center gap-3">
-                                <span className="material-symbols-outlined text-primary/70 text-base shrink-0">
-                                    {entry.icon}
+                            /* Modo display */
+                            <div className="px-4 py-3 flex items-center gap-3">
+                                <span className="material-symbols-outlined text-primary text-base shrink-0">
+                                    {item.icon}
                                 </span>
                                 <span className="font-body text-sm text-on-surface flex-1">
-                                    {entry.label}
+                                    {item.label}
                                 </span>
-                                <span className="font-mono text-xs text-on-surface-variant">
-                                    {entry.icon}
-                                </span>
+                                {item.path && (
+                                    <span className="font-mono text-xs text-on-surface-variant hidden sm:block truncate max-w-32">
+                                        {item.path}
+                                    </span>
+                                )}
+                                {(item.submenu?.length ?? 0) > 0 && (
+                                    <span className="text-[10px] font-headline text-primary/50 shrink-0 hidden sm:block">
+                                        {item.submenu!.length} sub
+                                        {item.submenu!.length !== 1 ? 's' : ''}
+                                    </span>
+                                )}
                                 <div className="flex items-center gap-1 shrink-0">
+                                    {/* Toggle submenú */}
                                     <button
-                                        onClick={() => handleNavEditStart(idx)}
+                                        onClick={() => toggleExpand(idx)}
+                                        disabled={saving}
+                                        className={`transition-colors disabled:opacity-40 ${expandedIdx.has(idx) ? 'text-primary' : 'text-on-surface-variant hover:text-primary'}`}
+                                        title="Gestionar submenú">
+                                        <span
+                                            className={`material-symbols-outlined text-sm transition-transform duration-200 ${expandedIdx.has(idx) ? 'rotate-180' : ''}`}>
+                                            expand_more
+                                        </span>
+                                    </button>
+                                    <button
+                                        onClick={() => handleEditItemStart(idx)}
                                         disabled={saving}
                                         className="text-on-surface-variant hover:text-primary transition-colors disabled:opacity-40"
                                         title="Editar">
@@ -941,7 +884,7 @@ const NavManager = () => {
                                         </span>
                                     </button>
                                     <button
-                                        onClick={() => handleNavDelete(idx)}
+                                        onClick={() => handleDeleteItem(idx)}
                                         disabled={saving}
                                         className="text-on-surface-variant hover:text-error transition-colors disabled:opacity-40"
                                         title="Eliminar">
@@ -951,55 +894,216 @@ const NavManager = () => {
                                     </button>
                                 </div>
                             </div>
-                        ),
-                    )}
-                </div>
+                        )}
 
-                {/* Añadir entrada */}
-                <div className="flex gap-2 items-center">
+                        {/* ── Panel de subitems ── */}
+                        {expandedIdx.has(idx) && (
+                            <div className="border-t border-outline-variant/30 px-4 pb-3 pt-2 flex flex-col gap-2">
+                                {(item.submenu?.length ?? 0) === 0 && (
+                                    <p className="text-xs font-body text-on-surface-variant pl-3 py-1 italic">
+                                        Sin subitems aún.
+                                    </p>
+                                )}
+
+                                {(item.submenu ?? []).map((sub, sIdx) =>
+                                    editSubKey === subKey(idx, sIdx) ? (
+                                        /* Sub edición */
+                                        <div
+                                            key={sIdx}
+                                            className="flex items-center gap-2 pl-3 border-l-2 border-primary/40">
+                                            <input
+                                                value={editSubForm.label}
+                                                onChange={(e) =>
+                                                    setEditSubForm((f) => ({
+                                                        ...f,
+                                                        label: e.target.value,
+                                                    }))
+                                                }
+                                                placeholder="Label"
+                                                className={inputClass + ' flex-1'}
+                                                onKeyDown={(e) =>
+                                                    e.key === 'Enter' &&
+                                                    handleEditSubSave(idx, sIdx)
+                                                }
+                                            />
+                                            <input
+                                                value={editSubForm.path}
+                                                onChange={(e) =>
+                                                    setEditSubForm((f) => ({
+                                                        ...f,
+                                                        path: e.target.value,
+                                                    }))
+                                                }
+                                                placeholder="/ruta"
+                                                className={inputClass + ' flex-1 font-mono'}
+                                                onKeyDown={(e) =>
+                                                    e.key === 'Enter' &&
+                                                    handleEditSubSave(idx, sIdx)
+                                                }
+                                            />
+                                            <button
+                                                onClick={() =>
+                                                    handleEditSubSave(idx, sIdx)
+                                                }
+                                                disabled={saving}
+                                                className="text-primary hover:text-on-surface transition-colors disabled:opacity-40"
+                                                title="Guardar">
+                                                <span className="material-symbols-outlined text-sm">
+                                                    check
+                                                </span>
+                                            </button>
+                                            <button
+                                                onClick={() => setEditSubKey(null)}
+                                                className="text-on-surface-variant hover:text-on-surface transition-colors"
+                                                title="Cancelar">
+                                                <span className="material-symbols-outlined text-sm">
+                                                    close
+                                                </span>
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        /* Sub display */
+                                        <div
+                                            key={sIdx}
+                                            className="flex items-center gap-3 pl-3 border-l-2 border-outline-variant/40">
+                                            <span className="text-xs text-on-surface-variant shrink-0">
+                                                ▸
+                                            </span>
+                                            <span className="font-body text-sm text-on-surface flex-1">
+                                                {sub.label}
+                                            </span>
+                                            <span className="font-mono text-xs text-on-surface-variant hidden sm:block">
+                                                {sub.path}
+                                            </span>
+                                            <button
+                                                onClick={() =>
+                                                    handleEditSubStart(idx, sIdx)
+                                                }
+                                                disabled={saving}
+                                                className="text-on-surface-variant hover:text-primary transition-colors disabled:opacity-40"
+                                                title="Editar">
+                                                <span className="material-symbols-outlined text-sm">
+                                                    edit
+                                                </span>
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    handleDeleteSub(idx, sIdx)
+                                                }
+                                                disabled={saving}
+                                                className="text-on-surface-variant hover:text-error transition-colors disabled:opacity-40"
+                                                title="Eliminar">
+                                                <span className="material-symbols-outlined text-sm">
+                                                    delete
+                                                </span>
+                                            </button>
+                                        </div>
+                                    ),
+                                )}
+
+                                {/* Añadir subitem */}
+                                <div className="flex gap-2 mt-1 pl-3 border-l-2 border-outline-variant/20">
+                                    <input
+                                        value={getSubForm(idx).label}
+                                        onChange={(e) =>
+                                            patchSubForm(idx, {
+                                                label: e.target.value,
+                                            })
+                                        }
+                                        placeholder="Label subitem"
+                                        className={inputClass + ' flex-1'}
+                                    />
+                                    <input
+                                        value={getSubForm(idx).path}
+                                        onChange={(e) =>
+                                            patchSubForm(idx, {
+                                                path: e.target.value,
+                                            })
+                                        }
+                                        placeholder="/ruta"
+                                        className={inputClass + ' flex-1 font-mono'}
+                                        onKeyDown={(e) =>
+                                            e.key === 'Enter' && handleAddSub(idx)
+                                        }
+                                    />
+                                    <button
+                                        onClick={() => handleAddSub(idx)}
+                                        disabled={
+                                            saving ||
+                                            !getSubForm(idx).label.trim() ||
+                                            !getSubForm(idx).path.trim()
+                                        }
+                                        className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-3 hover:bg-primary hover:text-surface transition-colors disabled:opacity-40">
+                                        {saving ? '...' : 'Añadir'}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                ))}
+            </div>
+
+            {/* Nueva entrada de primer nivel */}
+            <div className="border border-dashed border-outline-variant/60 p-4">
+                <p className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-3">
+                    Nueva entrada
+                </p>
+                <div className="flex gap-2 items-center flex-wrap">
                     <span className="material-symbols-outlined text-primary/70 text-base shrink-0">
-                        {newNav.icon || 'category'}
+                        {newItem.icon || 'category'}
                     </span>
                     <input
-                        value={newNav.icon}
+                        value={newItem.icon}
                         onChange={(e) =>
-                            setNewNav((f) => ({ ...f, icon: e.target.value }))
+                            setNewItem((f) => ({ ...f, icon: e.target.value }))
                         }
-                        placeholder="Icono (ej. smart_toy)"
-                        className={inputClass + ' w-44 font-mono'}
+                        placeholder="Icono (ej. diamond)"
+                        className={inputClass + ' w-36 font-mono'}
                     />
                     <input
-                        value={newNav.label}
+                        value={newItem.label}
                         onChange={(e) =>
-                            setNewNav((f) => ({ ...f, label: e.target.value }))
+                            setNewItem((f) => ({ ...f, label: e.target.value }))
                         }
-                        placeholder="Label (ej. Funko Pop)"
-                        className={inputClass + ' flex-1'}
-                        onKeyDown={(e) => e.key === 'Enter' && handleNavAdd()}
+                        placeholder="Label"
+                        className={inputClass + ' flex-1 min-w-28'}
+                    />
+                    <input
+                        value={newItem.path}
+                        onChange={(e) =>
+                            setNewItem((f) => ({ ...f, path: e.target.value }))
+                        }
+                        placeholder="/ruta (opcional si tendrá submenú)"
+                        className={inputClass + ' flex-1 min-w-36 font-mono'}
+                        onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
                     />
                     <button
-                        onClick={handleNavAdd}
+                        onClick={handleAddItem}
                         disabled={
-                            saving || !newNav.icon.trim() || !newNav.label.trim()
+                            saving ||
+                            !newItem.icon.trim() ||
+                            !newItem.label.trim()
                         }
-                        className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-4 hover:bg-primary hover:text-surface transition-colors disabled:opacity-40">
+                        className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-4 py-2 hover:bg-primary hover:text-surface transition-colors disabled:opacity-40">
                         {saving ? '...' : 'Añadir'}
                     </button>
                 </div>
                 <p className="text-[10px] font-body text-on-surface-variant mt-2">
-                    Usa nombres de{' '}
+                    Icono:{' '}
                     <a
                         href="https://fonts.google.com/icons"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-primary hover:underline">
                         Material Symbols
-                    </a>{' '}
-                    para el icono (ej.{' '}
-                    <code className="text-primary">diamond</code>,{' '}
-                    <code className="text-primary">smart_toy</code>).
+                    </a>
+                    . Usa{' '}
+                    <span className="material-symbols-outlined text-[11px] align-middle">
+                        expand_more
+                    </span>{' '}
+                    para añadir subitems a cualquier entrada.
                 </p>
-            </section>
+            </div>
         </div>
     );
 };
