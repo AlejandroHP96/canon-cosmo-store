@@ -82,12 +82,20 @@ const ProductFormModal = ({
             let mIdx = 0;
             let sIdx = 0;
             outer: for (let i = 0; i < items.length; i++) {
-                if (items[i].path && pathToSectionId(items[i].path!) === form.tcg) {
+                const item = items[i];
+                // Item con path directo
+                if (item.path && pathToSectionId(item.path) === form.tcg) {
                     mIdx = i;
-                    break;
+                    break outer;
                 }
-                for (let j = 0; j < (items[i].submenu?.length ?? 0); j++) {
-                    if (pathToSectionId(items[i].submenu![j].path) === form.tcg) {
+                // Item sin path ni submenú: el ID se deriva del label
+                if (!item.path && !(item.submenu?.length) && toSlug(item.label) === form.tcg) {
+                    mIdx = i;
+                    break outer;
+                }
+                // Subitems
+                for (let j = 0; j < (item.submenu?.length ?? 0); j++) {
+                    if (pathToSectionId(item.submenu![j].path) === form.tcg) {
                         mIdx = i;
                         sIdx = j;
                         break outer;
