@@ -17,21 +17,10 @@ import {
     type NavItem,
     type SidebarConfig,
 } from '../../services/navService';
+import { useTcgOptions } from '../../hooks/useTcgOptions';
 import type { Product, TcgId } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
 import ProductImage from '../../components/ProductImage';
-
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const TCG_OPTIONS: { id: TcgId | 'all'; label: string }[] = [
-    { id: 'all', label: 'Todos' },
-    { id: 'pokemon', label: 'Pokémon' },
-    { id: 'digimon', label: 'Digimon' },
-    { id: 'onepiece', label: 'One Piece' },
-    { id: 'naruto', label: 'Naruto' },
-    { id: 'finalfantasy', label: 'Final Fantasy' },
-    { id: 'riftbound', label: 'Riftbound' },
-];
 
 const EMPTY_FORM: Omit<Product, 'id'> = {
     tcg: 'pokemon',
@@ -66,6 +55,7 @@ const ProductFormModal = ({
     onSaved: () => void;
 }) => {
     const isEdit = initial !== null;
+    const tcgOptions = useTcgOptions();
     const [form, setForm] = useState<FormData>(
         initial ? { ...initial } : { ...EMPTY_FORM },
     );
@@ -148,17 +138,13 @@ const ProductFormModal = ({
                         <label className={labelClass}>TCG</label>
                         <select
                             value={form.tcg}
-                            onChange={(e) =>
-                                set('tcg', e.target.value as TcgId)
-                            }
+                            onChange={(e) => set('tcg', e.target.value)}
                             className={inputClass}>
-                            {TCG_OPTIONS.filter((t) => t.id !== 'all').map(
-                                (t) => (
-                                    <option key={t.id} value={t.id}>
-                                        {t.label}
-                                    </option>
-                                ),
-                            )}
+                            {tcgOptions.map((t) => (
+                                <option key={t.id} value={t.id}>
+                                    {t.label}
+                                </option>
+                            ))}
                         </select>
                     </div>
 
@@ -415,7 +401,8 @@ const DeleteConfirmModal = ({
 // ─── Categories Manager ───────────────────────────────────────────────────────
 
 const CategoriesManager = () => {
-    const [tcg, setTcg] = useState<TcgId>('pokemon');
+    const tcgOptions = useTcgOptions();
+    const [tcg, setTcg] = useState<string>('pokemon');
     const [categories, setCategories] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -472,10 +459,10 @@ const CategoriesManager = () => {
         <div className="max-w-lg">
             {/* TCG tabs */}
             <div className="flex flex-wrap gap-2 mb-6">
-                {TCG_OPTIONS.filter((t) => t.id !== 'all').map(({ id, label }) => (
+                {tcgOptions.map(({ id, label }) => (
                     <button
                         key={id}
-                        onClick={() => setTcg(id as TcgId)}
+                        onClick={() => setTcg(id)}
                         className={`px-3 py-1.5 font-headline text-xs uppercase tracking-wider border transition-all ${
                             tcg === id
                                 ? 'border-primary text-primary bg-surface-container'
@@ -1139,6 +1126,7 @@ const NavManager = () => {
 const AdminPanelPage = () => {
     const { user, signOut } = useAuth();
     const navigate = useNavigate();
+    const tcgOptions = useTcgOptions();
 
     const [adminView, setAdminView] = useState<'products' | 'categories' | 'nav'>(
         'products',
@@ -1146,7 +1134,7 @@ const AdminPanelPage = () => {
 
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
-    const [filterTcg, setFilterTcg] = useState<TcgId | 'all'>('all');
+    const [filterTcg, setFilterTcg] = useState<string>('all');
 
     const [showForm, setShowForm] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -1256,20 +1244,20 @@ const AdminPanelPage = () => {
                 <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                     {/* TCG filter tabs */}
                     <div className="flex flex-wrap gap-2">
-                        {TCG_OPTIONS.map(({ id, label }) => (
-                            <button
-                                key={id}
-                                onClick={() =>
-                                    setFilterTcg(id as TcgId | 'all')
-                                }
-                                className={`px-3 py-1.5 font-headline text-xs uppercase tracking-wider border transition-all ${
-                                    filterTcg === id
-                                        ? 'border-primary text-primary bg-surface-container'
-                                        : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
-                                }`}>
-                                {label}
-                            </button>
-                        ))}
+                        {[{ id: 'all', label: 'Todos' }, ...tcgOptions].map(
+                            ({ id, label }) => (
+                                <button
+                                    key={id}
+                                    onClick={() => setFilterTcg(id)}
+                                    className={`px-3 py-1.5 font-headline text-xs uppercase tracking-wider border transition-all ${
+                                        filterTcg === id
+                                            ? 'border-primary text-primary bg-surface-container'
+                                            : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
+                                    }`}>
+                                    {label}
+                                </button>
+                            ),
+                        )}
                     </div>
 
                     {/* Add button */}

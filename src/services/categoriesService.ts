@@ -4,8 +4,8 @@ import type { TcgId } from '../types';
 
 const COLLECTION = 'tcg_categories';
 
-/** Categorías por defecto al crear por primera vez el documento */
-const DEFAULTS: Record<TcgId, string[]> = {
+/** Categorías por defecto para TCGs conocidos */
+const DEFAULTS: Record<string, string[]> = {
     pokemon: ['Booster Packs', 'ETBs', 'Bundles'],
     digimon: ['Booster Packs', 'Starter Decks', 'Bundles'],
     onepiece: ['Booster Packs', 'Starter Decks', 'Bundles'],
@@ -13,6 +13,9 @@ const DEFAULTS: Record<TcgId, string[]> = {
     finalfantasy: ['Booster Packs', 'Starter Decks', 'Bundles'],
     riftbound: ['Booster Packs', 'Starter Decks', 'Bundles'],
 };
+
+/** Categorías por defecto para cualquier TCG nuevo */
+const GENERIC_DEFAULTS = ['Booster Packs', 'Starter Decks', 'Bundles'];
 
 /** Icono Material Symbols por nombre de categoría */
 export const CATEGORY_ICON: Record<string, string> = {
@@ -26,16 +29,21 @@ export const CATEGORY_ICON: Record<string, string> = {
 };
 export const DEFAULT_CAT_ICON = 'category';
 
-/** Devuelve las categorías de un TCG. Si no existen en Firestore las crea con los defaults. */
+/**
+ * Devuelve las categorías de un TCG.
+ * Si no existen en Firestore las crea con los defaults del TCG o con
+ * los genéricos si es un TCG nuevo.
+ */
 export async function getCategoriesByTcg(tcg: TcgId): Promise<string[]> {
     const ref = doc(db, COLLECTION, tcg);
     const snap = await getDoc(ref);
     if (snap.exists()) {
         return (snap.data().categories as string[]) ?? [];
     }
-    // Primera vez: auto-seed con categorías por defecto
-    await setDoc(ref, { categories: DEFAULTS[tcg] });
-    return DEFAULTS[tcg];
+    // Primera vez: seed con defaults del TCG conocido o genéricos
+    const seed = DEFAULTS[tcg] ?? GENERIC_DEFAULTS;
+    await setDoc(ref, { categories: seed });
+    return seed;
 }
 
 /** Sobreescribe las categorías de un TCG */
