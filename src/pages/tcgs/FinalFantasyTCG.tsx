@@ -30,6 +30,7 @@ const StockBar = ({ stock, maxStock }: { stock: number; maxStock: number }) => (
 const FinalFantasyTCG = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedCategory, setSelectedCategory] = useState('Todo');
 
     useEffect(() => {
         getProductsByTcg('finalfantasy').then((data) => {
@@ -46,6 +47,11 @@ const FinalFantasyTCG = () => {
                 </span>
             </div>
         );
+
+    const visible =
+        selectedCategory === 'Todo'
+            ? products
+            : products.filter((p) => p.category === selectedCategory);
 
     return (
         <>
@@ -70,11 +76,12 @@ const FinalFantasyTCG = () => {
             </div>
 
             <div className="flex gap-2 mb-6 flex-wrap">
-                {CATEGORIES.map(({ label, icon }, i) => (
+                {CATEGORIES.map(({ label, icon }) => (
                     <button
                         key={label}
+                        onClick={() => setSelectedCategory(label)}
                         className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-headline uppercase tracking-wider border transition-all ${
-                            i === 0
+                            label === selectedCategory
                                 ? 'border-primary text-primary bg-surface-container'
                                 : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
                         }`}>
@@ -86,9 +93,7 @@ const FinalFantasyTCG = () => {
                 ))}
             </div>
 
-            {products
-                .filter((p) => p.featured)
-                .map((product) => (
+            {visible.filter((p) => p.featured).map((product) => (
                     <div
                         key={product.id}
                         className="tactical-frame p-6 mb-6 flex flex-col md:flex-row gap-6 group cursor-pointer hover:bg-surface-bright transition-colors">
@@ -137,45 +142,61 @@ const FinalFantasyTCG = () => {
                     </div>
                 ))}
 
-            <h3 className="font-headline text-primary text-xs tracking-[0.3em] mb-4 uppercase">
-                Catálogo completo
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {products
-                    .filter((p) => !p.featured)
-                    .map((product) => (
-                        <div
-                            key={product.id}
-                            className="tactical-frame p-4 hover:bg-surface-bright transition-colors cursor-pointer flex flex-col gap-3 group">
-                            <ProductImage src={product.image} />
-                            <div className="flex items-start justify-between gap-2">
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-[9px] font-headline text-primary/60 tracking-widest uppercase truncate">
-                                        {product.set}
-                                    </p>
-                                    <p className="text-sm font-headline font-bold text-on-surface uppercase leading-tight mt-0.5">
-                                        {product.name}
-                                    </p>
+            {visible.length === 0 ? (
+                <div className="tactical-frame p-10 flex flex-col items-center gap-3 text-center">
+                    <span className="material-symbols-outlined text-4xl text-outline">
+                        search_off
+                    </span>
+                    <p className="text-sm font-body text-on-surface-variant">
+                        Sin productos en{' '}
+                        <span className="font-headline text-primary uppercase">
+                            {selectedCategory}
+                        </span>
+                    </p>
+                </div>
+            ) : (
+                <>
+                    <h3 className="font-headline text-primary text-xs tracking-[0.3em] mb-4 uppercase">
+                        Catálogo completo
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {visible
+                            .filter((p) => !p.featured)
+                            .map((product) => (
+                                <div
+                                    key={product.id}
+                                    className="tactical-frame p-4 hover:bg-surface-bright transition-colors cursor-pointer flex flex-col gap-3 group">
+                                    <ProductImage src={product.image} />
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-[9px] font-headline text-primary/60 tracking-widest uppercase truncate">
+                                                {product.set}
+                                            </p>
+                                            <p className="text-sm font-headline font-bold text-on-surface uppercase leading-tight mt-0.5">
+                                                {product.name}
+                                            </p>
+                                        </div>
+                                        {product.badge && (
+                                            <span
+                                                className={`shrink-0 px-1.5 py-0.5 text-[8px] font-headline border ${product.badgeColor} text-[#e0e0ff]`}>
+                                                {product.badge}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="flex items-center justify-between mt-auto pt-2 border-t border-outline-variant/30">
+                                        <span className="font-headline font-bold text-sm text-primary">
+                                            {product.price}
+                                        </span>
+                                        <StockBar
+                                            stock={product.stock}
+                                            maxStock={product.maxStock}
+                                        />
+                                    </div>
                                 </div>
-                                {product.badge && (
-                                    <span
-                                        className={`shrink-0 px-1.5 py-0.5 text-[8px] font-headline border ${product.badgeColor} text-[#e0e0ff]`}>
-                                        {product.badge}
-                                    </span>
-                                )}
-                            </div>
-                            <div className="flex items-center justify-between mt-auto pt-2 border-t border-outline-variant/30">
-                                <span className="font-headline font-bold text-sm text-primary">
-                                    {product.price}
-                                </span>
-                                <StockBar
-                                    stock={product.stock}
-                                    maxStock={product.maxStock}
-                                />
-                            </div>
-                        </div>
-                    ))}
-            </div>
+                            ))}
+                    </div>
+                </>
+            )}
         </>
     );
 };
