@@ -79,13 +79,26 @@ body {
 }
 
 .material-symbols-outlined {
-    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24;
 }
 
 @keyframes pulse-arrow {
-    0% { opacity: 0.4; transform: translateX(0); }
-    50% { opacity: 1; transform: translateX(4px); }
-    100% { opacity: 0.4; transform: translateX(0); }
+    0% {
+        opacity: 0.4;
+        transform: translateX(0);
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(4px);
+    }
+    100% {
+        opacity: 0.4;
+        transform: translateX(0);
+    }
 }
 
 .finger-pointer::before {

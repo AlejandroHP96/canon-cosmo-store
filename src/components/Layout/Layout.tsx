@@ -10,7 +10,10 @@ const Layout = () => {
     return (
         <div className="bg-background text-on-surface font-body overflow-hidden h-screen select-none">
             <Header onMenuToggle={() => setSideNavOpen((o) => !o)} />
-            <SideNav isOpen={sideNavOpen} onClose={() => setSideNavOpen(false)} />
+            <SideNav
+                isOpen={sideNavOpen}
+                onClose={() => setSideNavOpen(false)}
+            />
             {sideNavOpen && (
                 <div
                     className="fixed inset-0 z-30 bg-black/60 md:hidden"

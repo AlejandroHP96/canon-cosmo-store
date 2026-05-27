@@ -3,18 +3,20 @@ import { useState } from 'react';
 type Props = {
     src?: string;
     featured?: boolean;
+    className?: string;
 };
 
-const ProductImage = ({ src, featured = false }: Props) => {
+const ProductImage = ({ src, featured = false, className }: Props) => {
     const [failed, setFailed] = useState(false);
-    const h = featured ? 'h-48' : 'h-36';
+    const defaultH = featured ? 'h-48' : 'h-36';
+    const sizeClass = className ?? `w-full ${defaultH}`;
 
     if (src && !failed) {
         return (
             <img
                 src={src}
                 alt="Product"
-                className={`w-full object-contain bg-surface-container-lowest border border-outline-variant/50 ${h}`}
+                className={`object-contain ${sizeClass}`}
                 onError={() => setFailed(true)}
             />
         );
@@ -22,11 +24,10 @@ const ProductImage = ({ src, featured = false }: Props) => {
 
     return (
         <div
-            className={`w-full bg-surface-container-lowest border border-outline-variant/50 flex flex-col items-center justify-center gap-2 ${h}`}>
-            <span className="material-symbols-outlined text-4xl text-outline">image</span>
-            <p className="text-[9px] font-headline text-outline tracking-widest uppercase">
-                Imagen pendiente
-            </p>
+            className={`bg-surface-container-lowest border border-outline-variant/50 flex flex-col items-center justify-center gap-2 ${sizeClass}`}>
+            <span className="material-symbols-outlined text-outline" style={{ fontSize: '1.25rem' }}>
+                image
+            </span>
         </div>
     );
 };

@@ -1,9 +1,10 @@
-export interface NavItem {
-    label: string;
-    path: string;
-}
-
-export type TcgId = 'pokemon' | 'digimon' | 'onepiece' | 'naruto' | 'finalfantasy' | 'riftbound';
+export type TcgId =
+    | 'pokemon'
+    | 'digimon'
+    | 'onepiece'
+    | 'naruto'
+    | 'finalfantasy'
+    | 'riftbound';
 
 export type Product = {
     id: string; // Firestore document ID

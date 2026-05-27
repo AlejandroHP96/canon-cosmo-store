@@ -80,7 +80,9 @@ const AdminLoginPage = () => {
 
                     {error && (
                         <p className="text-xs font-body text-[#ffb4ab] flex items-center gap-1">
-                            <span className="material-symbols-outlined text-sm">error</span>
+                            <span className="material-symbols-outlined text-sm">
+                                error
+                            </span>
                             {error}
                         </p>
                     )}
