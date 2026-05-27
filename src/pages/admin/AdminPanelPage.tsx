@@ -583,9 +583,11 @@ const NavManager = () => {
     const [editSubKey, setEditSubKey] = useState<string | null>(null);
     const [editSubForm, setEditSubForm] = useState({ label: '', path: '' });
 
-    // Formularios de nuevo subitem, uno por entrada (keyed por itemIdx)
+    // Formularios de nuevo subitem, uno por entrada (keyed por itemIdx).
+    // pathAutoSync=true: el path se deriva del label automáticamente
+    // hasta que el usuario lo edite a mano.
     const [newSubForms, setNewSubForms] = useState<
-        Record<number, { label: string; path: string }>
+        Record<number, { label: string; path: string; pathAutoSync: boolean }>
     >({});
 
     useEffect(() => {
@@ -686,13 +688,26 @@ const NavManager = () => {
 
     const subKey = (iIdx: number, sIdx: number) => `${iIdx}-${sIdx}`;
 
-    const getSubForm = (idx: number) =>
-        newSubForms[idx] ?? { label: '', path: '' };
+    /** Convierte un texto en slug: "One Piece" → "one-piece" */
+    const toSlug = (text: string) =>
+        text
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[̀-ͯ]/g, '') // elimina tildes
+            .replace(/[^a-z0-9\s-]/g, '')    // elimina caracteres especiales
+            .trim()
+            .replace(/\s+/g, '-');           // espacios → guiones
 
-    const patchSubForm = (
-        idx: number,
-        patch: Partial<{ label: string; path: string }>,
-    ) =>
+    /** Construye el path sugerido: padre "TCGs" + sub "Dragon Ball" → /tcgs/dragon-ball */
+    const deriveSubPath = (parentLabel: string, subLabel: string) =>
+        `/${toSlug(parentLabel)}/${toSlug(subLabel)}`;
+
+    type SubForm = { label: string; path: string; pathAutoSync: boolean };
+
+    const getSubForm = (idx: number): SubForm =>
+        newSubForms[idx] ?? { label: '', path: '', pathAutoSync: true };
+
+    const patchSubForm = (idx: number, patch: Partial<SubForm>) =>
         setNewSubForms((prev) => ({
             ...prev,
             [idx]: { ...getSubForm(idx), ...patch },
@@ -713,7 +728,7 @@ const NavManager = () => {
             };
         });
         await saveConfig({ items });
-        patchSubForm(itemIdx, { label: '', path: '' });
+        patchSubForm(itemIdx, { label: '', path: '', pathAutoSync: true });
     };
 
     const handleDeleteSub = async (itemIdx: number, subIdx: number) => {
@@ -1005,19 +1020,30 @@ const NavManager = () => {
                                 <div className="flex gap-2 mt-1 pl-3 border-l-2 border-outline-variant/20">
                                     <input
                                         value={getSubForm(idx).label}
-                                        onChange={(e) =>
+                                        onChange={(e) => {
+                                            const newLabel = e.target.value;
+                                            const form = getSubForm(idx);
                                             patchSubForm(idx, {
-                                                label: e.target.value,
-                                            })
-                                        }
+                                                label: newLabel,
+                                                // Auto-deriva el path mientras el usuario no lo haya tocado
+                                                ...(form.pathAutoSync && {
+                                                    path: deriveSubPath(
+                                                        item.label,
+                                                        newLabel,
+                                                    ),
+                                                }),
+                                            });
+                                        }}
                                         placeholder="Label subitem"
                                         className={inputClass + ' flex-1'}
                                     />
                                     <input
                                         value={getSubForm(idx).path}
                                         onChange={(e) =>
+                                            // El usuario edita el path → desconectar auto-sync
                                             patchSubForm(idx, {
                                                 path: e.target.value,
+                                                pathAutoSync: false,
                                             })
                                         }
                                         placeholder="/ruta"
