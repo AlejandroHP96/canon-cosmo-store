@@ -16,7 +16,7 @@ const ProductImage = ({ src, featured = false, className }: Props) => {
             <img
                 src={src}
                 alt="Product"
-                className={`object-contain bg-surface-container-lowest border border-outline-variant/50 ${sizeClass}`}
+                className={`object-contain ${sizeClass}`}
                 onError={() => setFailed(true)}
             />
         );
