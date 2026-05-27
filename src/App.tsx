@@ -16,8 +16,8 @@ const App = () => {
                 <Route element={<Layout />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/aboutus" element={<AboutUs />} />
-                    {/* Ruta dinámica: cualquier /tcgs/:slug carga TcgPage */}
-                    <Route path="/tcgs/:slug" element={<TcgPage />} />
+                    {/* Catch-all: cualquier ruta no explícita renderiza TcgPage dinámicamente */}
+                    <Route path="*" element={<TcgPage />} />
                 </Route>
 
                 {/* Admin — ruta oculta, sin Layout público */}

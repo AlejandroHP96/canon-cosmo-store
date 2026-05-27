@@ -1,40 +1,41 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import ProductImage from '../../components/ProductImage';
 import StockBar from '../../components/StockBar';
 import { getProductsByTcg } from '../../services/productsService';
 import { useTcgCategories } from '../../hooks/useTcgCategories';
 import { useTcgOptions } from '../../hooks/useTcgOptions';
-import { slugToTcgId } from '../../lib/tcgUtils';
+import { pathToSectionId } from '../../lib/tcgUtils';
 import type { Product } from '../../types';
 
 const TcgPage = () => {
-    const { slug = '' } = useParams<{ slug: string }>();
+    const { pathname } = useLocation();
 
-    // Convierte el slug de la URL al ID de Firestore
-    // (ej. 'final-fantasy' → 'finalfantasy', 'dragon-ball' → 'dragon-ball')
-    const tcgId = slugToTcgId(slug);
+    // Convierte el pathname al ID de sección en Firestore
+    // (ej. '/tcgs/final-fantasy' → 'finalfantasy', '/accesorios-tcgs' → 'accesorios-tcgs')
+    const sectionId = pathToSectionId(pathname);
 
-    const categories = useTcgCategories(tcgId);
+    const categories = useTcgCategories(sectionId);
     const tcgOptions = useTcgOptions();
 
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState('Todo');
 
-    // Nombre legible del TCG desde el nav config (o slug formateado como fallback)
-    const tcgLabel =
-        tcgOptions.find((o) => o.id === tcgId)?.label ??
-        slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    // Nombre legible desde el nav config, o se formatea el último segmento del path
+    const lastSegment = pathname.split('/').filter(Boolean).at(-1) ?? '';
+    const sectionLabel =
+        tcgOptions.find((o) => o.id === sectionId)?.label ??
+        lastSegment.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
     useEffect(() => {
         setLoading(true);
         setSelectedCategory('Todo');
-        getProductsByTcg(tcgId).then((data) => {
+        getProductsByTcg(sectionId).then((data) => {
             setProducts(data);
             setLoading(false);
         });
-    }, [tcgId]);
+    }, [sectionId]);
 
     if (loading) {
         return (
@@ -61,7 +62,7 @@ const TcgPage = () => {
                     </span>
                     <div>
                         <h2 className="font-headline font-bold text-xl text-on-surface uppercase tracking-widest">
-                            {tcgLabel}
+                            {sectionLabel}
                         </h2>
                         <p className="text-[10px] text-primary font-headline tracking-[0.2em]">
                             TCG
@@ -151,7 +152,7 @@ const TcgPage = () => {
                             <>
                                 Aún no hay productos para{' '}
                                 <span className="font-headline text-primary uppercase">
-                                    {tcgLabel}
+                                    {sectionLabel}
                                 </span>
                                 .<br />
                                 <span className="text-xs">
