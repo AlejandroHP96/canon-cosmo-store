@@ -625,6 +625,7 @@ const AdminPanelPage = () => {
                     <CategoriesManager />
                 )}
                 {adminView === 'products' && (
+                <>
                 <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                     {/* TCG filter tabs */}
                     <div className="flex flex-wrap gap-2">
@@ -744,6 +745,7 @@ const AdminPanelPage = () => {
                         ))}
                     </div>
                 )}
+                </>
                 )}
             </div>
 
