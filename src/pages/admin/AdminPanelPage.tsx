@@ -411,15 +411,23 @@ const DeleteConfirmModal = ({
 const CategoriesManager = () => {
     const [tcg, setTcg] = useState<TcgId>('pokemon');
     const [categories, setCategories] = useState<string[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const [newCat, setNewCat] = useState('');
 
     const load = async (t: TcgId) => {
         setLoading(true);
-        const cats = await getCategoriesByTcg(t);
-        setCategories(cats);
-        setLoading(false);
+        setError(null);
+        try {
+            const cats = await getCategoriesByTcg(t);
+            setCategories(cats);
+        } catch (e) {
+            console.error(e);
+            setError('Error al cargar categorías.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
@@ -428,9 +436,16 @@ const CategoriesManager = () => {
 
     const save = async (updated: string[]) => {
         setSaving(true);
-        await updateCategoriesByTcg(tcg, updated);
-        setCategories(updated);
-        setSaving(false);
+        setError(null);
+        try {
+            await updateCategoriesByTcg(tcg, updated);
+            setCategories(updated);
+        } catch (e) {
+            console.error(e);
+            setError('Error al guardar. Inténtalo de nuevo.');
+        } finally {
+            setSaving(false);
+        }
     };
 
     const handleAdd = async () => {
@@ -493,6 +508,14 @@ const CategoriesManager = () => {
                         </div>
                     ))}
                 </div>
+            )}
+
+            {/* Error */}
+            {error && (
+                <p className="text-xs font-body text-error flex items-center gap-1 mb-2">
+                    <span className="material-symbols-outlined text-sm">error</span>
+                    {error}
+                </p>
             )}
 
             {/* Add new */}
