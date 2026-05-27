@@ -475,31 +475,49 @@ const DeleteConfirmModal = ({
 // ─── Categories Manager ───────────────────────────────────────────────────────
 
 const CategoriesManager = () => {
-    const tcgOptions = useTcgOptions();
-    const [tcg, setTcg] = useState<string>('pokemon');
+    const [navItems, setNavItems] = useState<NavItem[]>([]);
+    const [navReady, setNavReady] = useState(false);
+    const [menuIdx, setMenuIdx] = useState(0);
+    const [subIdx, setSubIdx] = useState(0);
+
     const [categories, setCategories] = useState<string[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [newCat, setNewCat] = useState('');
 
-    const load = async (t: TcgId) => {
+    // Carga el árbol de nav
+    useEffect(() => {
+        getSidebarConfig()
+            .then((cfg) => {
+                setNavItems(cfg.items);
+                setNavReady(true);
+            })
+            .catch(() => setError('Error al cargar la configuración.'));
+    }, []);
+
+    // Deriva el tcg activo a partir de la selección de menú/subitem
+    const menu = navItems[menuIdx];
+    const subOptions = menu?.submenu ?? [];
+    const tcg: string = (() => {
+        if (!menu) return '';
+        if (subOptions.length > 0) {
+            const sub = subOptions[Math.min(subIdx, subOptions.length - 1)];
+            return pathToSectionId(sub.path);
+        }
+        return menu.path ? pathToSectionId(menu.path) : toSlug(menu.label);
+    })();
+
+    // Carga categorías cuando cambia la sección activa
+    useEffect(() => {
+        if (!tcg) return;
         setLoading(true);
         setError(null);
-        try {
-            const cats = await getCategoriesByTcg(t);
-            setCategories(cats);
-        } catch (e) {
-            console.error(e);
-            setError('Error al cargar categorías.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        load(tcg);
-    }, [tcg]);
+        getCategoriesByTcg(tcg)
+            .then((cats) => setCategories(cats))
+            .catch(() => setError('Error al cargar categorías.'))
+            .finally(() => setLoading(false));
+    }, [tcg]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const save = async (updated: string[]) => {
         setSaving(true);
@@ -529,23 +547,61 @@ const CategoriesManager = () => {
     const handleRemove = (cat: string) =>
         save(categories.filter((c) => c !== cat));
 
+    if (!navReady) {
+        return (
+            <div className="flex justify-center py-10">
+                <span className="material-symbols-outlined text-primary text-3xl animate-spin">
+                    progress_activity
+                </span>
+            </div>
+        );
+    }
+
     return (
         <div className="max-w-lg">
-            {/* TCG tabs */}
-            <div className="flex flex-wrap gap-2 mb-6">
-                {tcgOptions.map(({ id, label }) => (
+            {/* Nivel 1: menús */}
+            <div className="flex flex-wrap gap-2 mb-2">
+                {navItems.map((item, idx) => (
                     <button
-                        key={id}
-                        onClick={() => setTcg(id)}
-                        className={`px-3 py-1.5 font-headline text-xs uppercase tracking-wider border transition-all ${
-                            tcg === id
+                        key={idx}
+                        onClick={() => {
+                            setMenuIdx(idx);
+                            setSubIdx(0);
+                        }}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 font-headline text-xs uppercase tracking-wider border transition-all ${
+                            menuIdx === idx
                                 ? 'border-primary text-primary bg-surface-container'
                                 : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
                         }`}>
-                        {label}
+                        <span className="material-symbols-outlined text-sm">
+                            {item.icon}
+                        </span>
+                        {item.label}
                     </button>
                 ))}
             </div>
+
+            {/* Nivel 2: subitems (solo si el menú seleccionado tiene submenú) */}
+            {subOptions.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-6 pl-2 border-l-2 border-primary/30">
+                    {subOptions.map((sub, idx) => {
+                        const id = pathToSectionId(sub.path);
+                        return (
+                            <button
+                                key={id}
+                                onClick={() => setSubIdx(idx)}
+                                className={`px-3 py-1 font-headline text-[11px] uppercase tracking-wider border transition-all ${
+                                    subIdx === idx
+                                        ? 'border-primary text-primary bg-surface-container'
+                                        : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
+                                }`}>
+                                {sub.label}
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
+            {subOptions.length === 0 && <div className="mb-6" />}
 
             {/* List */}
             {loading ? (
