@@ -17,9 +17,8 @@ import {
     type NavItem,
     type SidebarConfig,
 } from '../../services/navService';
-import { useTcgOptions } from '../../hooks/useTcgOptions';
 import { pathToSectionId, toSlug } from '../../lib/tcgUtils';
-import type { Product, TcgId } from '../../types';
+import type { Product } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
 import ProductImage from '../../components/ProductImage';
 
