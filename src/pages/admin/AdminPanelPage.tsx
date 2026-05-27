@@ -7,6 +7,10 @@ import {
     updateProduct,
     deleteProduct,
 } from '../../services/productsService';
+import {
+    getCategoriesByTcg,
+    updateCategoriesByTcg,
+} from '../../services/categoriesService';
 import type { Product, TcgId } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
 import ProductImage from '../../components/ProductImage';
@@ -61,9 +65,21 @@ const ProductFormModal = ({
     );
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [categories, setCategories] = useState<string[]>([]);
 
     const set = <K extends keyof FormData>(key: K, value: FormData[K]) =>
         setForm((prev) => ({ ...prev, [key]: value }));
+
+    // Carga categorías cada vez que cambia el TCG seleccionado
+    useEffect(() => {
+        getCategoriesByTcg(form.tcg).then((cats) => {
+            setCategories(cats);
+            // Si la categoría actual no está en la lista del nuevo TCG, resetea
+            if (cats.length > 0 && !cats.includes(form.category)) {
+                set('category', cats[0]);
+            }
+        });
+    }, [form.tcg]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -166,14 +182,23 @@ const ProductFormModal = ({
                         </div>
                         <div>
                             <label className={labelClass}>Categoría</label>
-                            <input
+                            <select
                                 required
                                 value={form.category}
                                 onChange={(e) =>
                                     set('category', e.target.value)
                                 }
                                 className={inputClass}
-                            />
+                                disabled={categories.length === 0}>
+                                {categories.length === 0 && (
+                                    <option value="">Cargando...</option>
+                                )}
+                                {categories.map((cat) => (
+                                    <option key={cat} value={cat}>
+                                        {cat}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     </div>
 
@@ -381,11 +406,124 @@ const DeleteConfirmModal = ({
     );
 };
 
+// ─── Categories Manager ───────────────────────────────────────────────────────
+
+const CategoriesManager = () => {
+    const [tcg, setTcg] = useState<TcgId>('pokemon');
+    const [categories, setCategories] = useState<string[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [newCat, setNewCat] = useState('');
+
+    const load = async (t: TcgId) => {
+        setLoading(true);
+        const cats = await getCategoriesByTcg(t);
+        setCategories(cats);
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        load(tcg);
+    }, [tcg]);
+
+    const save = async (updated: string[]) => {
+        setSaving(true);
+        await updateCategoriesByTcg(tcg, updated);
+        setCategories(updated);
+        setSaving(false);
+    };
+
+    const handleAdd = async () => {
+        const trimmed = newCat.trim();
+        if (!trimmed || categories.includes(trimmed)) return;
+        await save([...categories, trimmed]);
+        setNewCat('');
+    };
+
+    const handleRemove = (cat: string) =>
+        save(categories.filter((c) => c !== cat));
+
+    return (
+        <div className="max-w-lg">
+            {/* TCG tabs */}
+            <div className="flex flex-wrap gap-2 mb-6">
+                {TCG_OPTIONS.filter((t) => t.id !== 'all').map(({ id, label }) => (
+                    <button
+                        key={id}
+                        onClick={() => setTcg(id as TcgId)}
+                        className={`px-3 py-1.5 font-headline text-xs uppercase tracking-wider border transition-all ${
+                            tcg === id
+                                ? 'border-primary text-primary bg-surface-container'
+                                : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
+                        }`}>
+                        {label}
+                    </button>
+                ))}
+            </div>
+
+            {/* List */}
+            {loading ? (
+                <div className="flex justify-center py-10">
+                    <span className="material-symbols-outlined text-primary text-3xl animate-spin">
+                        progress_activity
+                    </span>
+                </div>
+            ) : categories.length === 0 ? (
+                <p className="text-sm font-body text-on-surface-variant text-center py-6">
+                    Sin categorías. Añade una abajo.
+                </p>
+            ) : (
+                <div className="flex flex-col gap-2 mb-4">
+                    {categories.map((cat) => (
+                        <div
+                            key={cat}
+                            className="tactical-frame px-4 py-2.5 flex items-center justify-between">
+                            <span className="font-body text-sm text-on-surface">
+                                {cat}
+                            </span>
+                            <button
+                                onClick={() => handleRemove(cat)}
+                                disabled={saving}
+                                className="text-on-surface-variant hover:text-error transition-colors disabled:opacity-40"
+                                title="Eliminar">
+                                <span className="material-symbols-outlined text-sm">
+                                    delete
+                                </span>
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Add new */}
+            <div className="flex gap-2 mt-2">
+                <input
+                    value={newCat}
+                    onChange={(e) => setNewCat(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+                    placeholder="Nueva categoría..."
+                    className={inputClass + ' flex-1'}
+                />
+                <button
+                    onClick={handleAdd}
+                    disabled={saving || !newCat.trim()}
+                    className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-4 hover:bg-primary hover:text-surface transition-colors disabled:opacity-40">
+                    {saving ? '...' : 'Añadir'}
+                </button>
+            </div>
+        </div>
+    );
+};
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 const AdminPanelPage = () => {
     const { user, signOut } = useAuth();
     const navigate = useNavigate();
+
+    const [adminView, setAdminView] = useState<'products' | 'categories'>(
+        'products',
+    );
 
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
@@ -453,8 +591,40 @@ const AdminPanelPage = () => {
                 </div>
             </header>
 
+            {/* View tabs */}
+            <div className="border-b border-outline-variant/30 px-6 flex gap-0">
+                {(
+                    [
+                        { id: 'products', label: 'Productos', icon: 'inventory' },
+                        {
+                            id: 'categories',
+                            label: 'Categorías',
+                            icon: 'folder',
+                        },
+                    ] as const
+                ).map(({ id, label, icon }) => (
+                    <button
+                        key={id}
+                        onClick={() => setAdminView(id)}
+                        className={`flex items-center gap-2 px-4 py-3 font-headline text-xs uppercase tracking-widest border-b-2 transition-all ${
+                            adminView === id
+                                ? 'border-primary text-primary'
+                                : 'border-transparent text-on-surface-variant hover:text-on-surface'
+                        }`}>
+                        <span className="material-symbols-outlined text-sm">
+                            {icon}
+                        </span>
+                        {label}
+                    </button>
+                ))}
+            </div>
+
             <div className="p-6">
-                {/* Toolbar */}
+                {/* Toolbar — solo en vista productos */}
+                {adminView === 'categories' && (
+                    <CategoriesManager />
+                )}
+                {adminView === 'products' && (
                 <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                     {/* TCG filter tabs */}
                     <div className="flex flex-wrap gap-2">
@@ -573,6 +743,7 @@ const AdminPanelPage = () => {
                             </div>
                         ))}
                     </div>
+                )}
                 )}
             </div>
 

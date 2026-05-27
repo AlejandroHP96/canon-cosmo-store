@@ -2,16 +2,11 @@ import { useState, useEffect } from 'react';
 import ProductImage from '../../components/ProductImage';
 import StockBar from '../../components/StockBar';
 import { getProductsByTcg } from '../../services/productsService';
-import type { Product, Category } from '../../types';
-
-const CATEGORIES: Category[] = [
-    { label: 'Todo', icon: 'grid_view' },
-    { label: 'Booster Packs', icon: 'style' },
-    { label: 'Starter Decks', icon: 'inventory_2' },
-    { label: 'Bundles', icon: 'package_2' },
-];
+import { useTcgCategories } from '../../hooks/useTcgCategories';
+import type { Product } from '../../types';
 
 const FinalFantasyTCG = () => {
+    const categories = useTcgCategories('finalfantasy');
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState('Todo');
@@ -60,7 +55,7 @@ const FinalFantasyTCG = () => {
             </div>
 
             <div className="flex gap-2 mb-6 flex-wrap">
-                {CATEGORIES.map(({ label, icon }) => (
+                {categories.map(({ label, icon }) => (
                     <button
                         key={label}
                         onClick={() => setSelectedCategory(label)}
