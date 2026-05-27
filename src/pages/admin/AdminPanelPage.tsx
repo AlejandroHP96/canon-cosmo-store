@@ -133,9 +133,9 @@ const ProductFormModal = ({
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    {/* TCG */}
+                    {/* Sección */}
                     <div>
-                        <label className={labelClass}>TCG</label>
+                        <label className={labelClass}>Sección</label>
                         <select
                             value={form.tcg}
                             onChange={(e) => set('tcg', e.target.value)}
