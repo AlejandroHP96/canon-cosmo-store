@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import ProductImage from '../../components/ProductImage';
+import StockBar from '../../components/StockBar';
 import { getProductsByTcg } from '../../services/productsService';
 import type { Product, Category } from '../../types';
 
@@ -10,22 +11,6 @@ const CATEGORIES: Category[] = [
     { label: 'Bundles', icon: 'package_2' },
     { label: 'Singles', icon: 'playing_cards' },
 ];
-
-const StockBar = ({ stock, maxStock }: { stock: number; maxStock: number }) => (
-    <div className="flex items-center gap-1">
-        <p className="text-[9px] font-headline uppercase text-primary/60">
-            Stock
-        </p>
-        <div className="flex gap-0.5">
-            {Array.from({ length: maxStock }).map((_, i) => (
-                <div
-                    key={i}
-                    className={`w-2 h-1 ${i < stock ? 'bg-primary' : 'bg-surface-container-highest'}`}
-                />
-            ))}
-        </div>
-    </div>
-);
 
 const RiftboundTCG = () => {
     const [products, setProducts] = useState<Product[]>([]);
