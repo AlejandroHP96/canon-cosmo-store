@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { deleteField } from 'firebase/firestore';
 import {
     getAllProducts,
     addProduct,
@@ -75,11 +76,18 @@ const ProductFormModal = ({
                 maxStock: Number(form.maxStock),
             };
             if (isEdit) {
-                // En edición incluimos cadenas vacías para que Firestore
-                // sobreescriba campos opcionales (ej. quitar badge existente)
-                const updatePayload = Object.fromEntries(
-                    Object.entries(raw).filter(([, v]) => v !== undefined),
-                ) as FormData;
+                // Para campos opcionales vacíos usamos deleteField() para que
+                // Firestore elimine el campo en lugar de dejarlo como string vacío
+                const updatePayload: Record<string, unknown> = {
+                    ...Object.fromEntries(
+                        Object.entries(raw).filter(
+                            ([, v]) => v !== undefined && v !== '',
+                        ),
+                    ),
+                    badge: raw.badge || deleteField(),
+                    badgeColor: raw.badgeColor || deleteField(),
+                    image: raw.image || deleteField(),
+                };
                 await updateProduct(initial!.id, updatePayload);
             } else {
                 // En creación omitimos cadenas vacías para no guardar campos vacíos

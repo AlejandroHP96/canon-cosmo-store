@@ -7,6 +7,7 @@ import {
     updateDoc,
     deleteDoc,
     doc,
+    type FieldValue,
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import type { Product, TcgId } from '../types';
@@ -41,10 +42,11 @@ export async function addProduct(
     return ref.id;
 }
 
-/** Actualiza campos de un producto existente */
+/** Actualiza campos de un producto existente.
+ *  Acepta FieldValue (ej. deleteField()) para eliminar campos opcionales. */
 export async function updateProduct(
     id: string,
-    fields: Partial<Omit<Product, 'id'>>,
+    fields: Record<string, string | number | boolean | FieldValue | undefined>,
 ): Promise<void> {
     await updateDoc(doc(db, COLLECTION, id), fields);
 }
