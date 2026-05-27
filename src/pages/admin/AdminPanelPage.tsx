@@ -175,6 +175,11 @@ const ProductFormModal = ({
 
     const subOptions = navItems[menuIdx]?.submenu ?? [];
 
+    const selectedPath = subOptions.length > 0
+        ? subOptions[Math.min(subIdx, subOptions.length - 1)]?.path ?? ''
+        : navItems[menuIdx]?.path ?? '';
+    const isTcgSection = selectedPath.startsWith('/tcgs/');
+
     return (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
             <div className="tactical-frame p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
@@ -245,18 +250,20 @@ const ProductFormModal = ({
                     </div>
 
                     {/* Set + Category */}
-                    <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className={labelClass}>
-                                Set / Expansión
-                            </label>
-                            <input
-                                required
-                                value={form.set}
-                                onChange={(e) => set('set', e.target.value)}
-                                className={inputClass}
-                            />
-                        </div>
+                    <div className={`grid gap-3 ${isTcgSection ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                        {isTcgSection && (
+                            <div>
+                                <label className={labelClass}>
+                                    Set / Expansión
+                                </label>
+                                <input
+                                    required
+                                    value={form.set}
+                                    onChange={(e) => set('set', e.target.value)}
+                                    className={inputClass}
+                                />
+                            </div>
+                        )}
                         <div>
                             <label className={labelClass}>Categoría</label>
                             <select

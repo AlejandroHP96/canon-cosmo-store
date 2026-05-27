@@ -43,15 +43,19 @@ export function toSlug(text: string): string {
 /**
  * Convierte cualquier pathname de la app al ID de sección en Firestore.
  *
- *   /tcgs/final-fantasy  →  'finalfantasy'   (legacy mapping)
- *   /tcgs/dragon-ball    →  'dragon-ball'
- *   /accesorios-tcgs     →  'accesorios-tcgs'
- *   /funko-pop           →  'funko-pop'
+ *   /tcgs/final-fantasy        →  'finalfantasy'         (legacy mapping)
+ *   /tcgs/dragon-ball          →  'dragon-ball'
+ *   /accesorios-tcgs           →  'accesorios-tcgs'
+ *   /accesorios-tcgs/fundas    →  'accesorios-tcgs__fundas'
+ *   /funko-pop                 →  'funko-pop'
+ *
+ * Las barras internas se sustituyen por '__' para producir un ID
+ * válido en Firestore (que no permite '/' en IDs de documento).
  */
 export function pathToSectionId(pathname: string): string {
     const stripped = pathname.replace(/^\//, ''); // quita la / inicial
     if (stripped.startsWith('tcgs/')) {
         return slugToTcgId(stripped.slice('tcgs/'.length));
     }
-    return stripped;
+    return stripped.replace(/\//g, '__');
 }
