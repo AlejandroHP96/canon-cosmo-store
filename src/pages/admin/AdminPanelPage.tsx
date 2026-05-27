@@ -222,57 +222,58 @@ const ProductFormModal = ({
                     </div>
 
                     {/* Badge */}
-                    <div>
-                        <label className={labelClass}>Badge</label>
-                        <div className="flex gap-2 mt-1">
-                            {[
-                                { label: 'Ninguno', badge: '', badgeColor: '' },
-                                {
-                                    label: 'NOVEDAD',
-                                    badge: 'NOVEDAD',
-                                    badgeColor: 'bg-[#343dff] border-[#bec2ff]',
-                                },
-                                {
-                                    label: 'HOT',
-                                    badge: 'HOT',
-                                    badgeColor: 'bg-[#93000a] border-[#ffb4ab]',
-                                },
-                                {
-                                    label: 'OFERTA',
-                                    badge: 'OFERTA',
-                                    badgeColor: 'bg-[#7a3500] border-[#ffb074]',
-                                },
-                            ].map((opt) => {
-                                const isSelected = form.badge === opt.badge;
-                                return (
-                                    <button
-                                        key={opt.label}
-                                        type="button"
-                                        onClick={() => {
+                    {(() => {
+                        const BADGE_OPTIONS = [
+                            { label: '— Ninguno', badge: '', badgeColor: '' },
+                            {
+                                label: 'NOVEDAD',
+                                badge: 'NOVEDAD',
+                                badgeColor: 'bg-[#343dff] border-[#bec2ff]',
+                            },
+                            {
+                                label: 'HOT',
+                                badge: 'HOT',
+                                badgeColor: 'bg-[#93000a] border-[#ffb4ab]',
+                            },
+                            {
+                                label: 'OFERTA',
+                                badge: 'OFERTA',
+                                badgeColor: 'bg-[#7a3500] border-[#ffb074]',
+                            },
+                        ];
+                        const selected = BADGE_OPTIONS.find(
+                            (o) => o.badge === (form.badge ?? ''),
+                        );
+                        return (
+                            <div className="flex items-end gap-3">
+                                <div className="flex-1">
+                                    <label className={labelClass}>Badge</label>
+                                    <select
+                                        value={form.badge ?? ''}
+                                        onChange={(e) => {
+                                            const opt = BADGE_OPTIONS.find(
+                                                (o) => o.badge === e.target.value,
+                                            )!;
                                             set('badge', opt.badge);
                                             set('badgeColor', opt.badgeColor);
                                         }}
-                                        className={`flex items-center gap-2 px-3 py-2 border text-xs font-headline tracking-widest uppercase transition-all cursor-pointer ${
-                                            isSelected
-                                                ? 'border-primary text-primary bg-primary/10'
-                                                : 'border-outline/30 text-on-surface-variant hover:border-outline'
-                                        }`}>
-                                        {opt.badge ? (
-                                            <span
-                                                className={`px-1.5 py-0.5 text-[8px] font-headline border ${opt.badgeColor} text-[#e0e0ff]`}>
-                                                {opt.badge}
-                                            </span>
-                                        ) : (
-                                            <span className="text-[10px] text-on-surface-variant">
-                                                —
-                                            </span>
-                                        )}
-                                        {opt.label}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
+                                        className={inputClass}>
+                                        {BADGE_OPTIONS.map((o) => (
+                                            <option key={o.label} value={o.badge}>
+                                                {o.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                {selected?.badge && (
+                                    <span
+                                        className={`mb-0.5 px-2 py-1 text-[9px] font-headline border ${selected.badgeColor} text-[#e0e0ff] shrink-0`}>
+                                        {selected.badge}
+                                    </span>
+                                )}
+                            </div>
+                        );
+                    })()}
 
                     {/* Featured */}
                     <label className="flex items-center gap-3 cursor-pointer">
