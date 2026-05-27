@@ -9,7 +9,6 @@ const CATEGORIES: Category[] = [
     { label: 'Booster Packs', icon: 'style' },
     { label: 'Starter Decks', icon: 'inventory_2' },
     { label: 'Bundles', icon: 'package_2' },
-    { label: 'Singles', icon: 'playing_cards' },
 ];
 
 const DigimonTCG = () => {
