@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { deleteField } from 'firebase/firestore';
 import {
     getAllProducts,
@@ -190,29 +190,33 @@ const ProductFormModal = ({
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    {/* Menú + Sección (selectores en cascada) */}
-                    <div className={`grid gap-3 ${subOptions.length > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                        <div>
-                            <label className={labelClass}>Menú</label>
-                            <select
-                                value={menuIdx}
-                                onChange={(e) => {
-                                    setMenuIdx(Number(e.target.value));
-                                    setSubIdx(0);
-                                }}
-                                className={inputClass}
-                                disabled={!navReady}>
-                                {navItems.map((item, i) => (
-                                    <option key={i} value={i}>
-                                        {item.label}
-                                    </option>
-                                ))}
-                                {!navReady && <option>Cargando...</option>}
-                            </select>
-                        </div>
-                        {subOptions.length > 0 && (
-                            <div>
-                                <label className={labelClass}>Sección</label>
+                    {/* Sección del catálogo (selectores en cascada) */}
+                    <div className="border border-outline-variant/50 p-3 flex flex-col gap-2">
+                        <p className={labelClass}>Sección del catálogo</p>
+                        <div className={`grid gap-2 items-center ${subOptions.length > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                            <div className="flex items-center gap-2">
+                                {navItems[menuIdx] && (
+                                    <span className="material-symbols-outlined text-primary text-base shrink-0">
+                                        {navItems[menuIdx].icon}
+                                    </span>
+                                )}
+                                <select
+                                    value={menuIdx}
+                                    onChange={(e) => {
+                                        setMenuIdx(Number(e.target.value));
+                                        setSubIdx(0);
+                                    }}
+                                    className={inputClass}
+                                    disabled={!navReady}>
+                                    {navItems.map((item, i) => (
+                                        <option key={i} value={i}>
+                                            {item.label}
+                                        </option>
+                                    ))}
+                                    {!navReady && <option>Cargando...</option>}
+                                </select>
+                            </div>
+                            {subOptions.length > 0 && (
                                 <select
                                     value={subIdx}
                                     onChange={(e) =>
@@ -225,8 +229,8 @@ const ProductFormModal = ({
                                         </option>
                                     ))}
                                 </select>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
 
                     {/* Name */}
@@ -1318,14 +1322,14 @@ const AdminPanelPage = () => {
         <div className="min-h-screen bg-surface text-on-surface">
             {/* Header */}
             <header className="sticky top-0 z-40 border-b-2 border-[#e0e0ff] bg-primary-container px-6 py-3 flex items-center justify-between shadow-[inset_0_0_8px_rgba(0,1,172,1)]">
-                <div>
-                    <p className="text-[10px] font-headline text-primary/60 tracking-[0.3em] uppercase">
+                <Link to="/" className="group">
+                    <p className="text-[10px] font-headline text-primary/60 tracking-[0.3em] uppercase group-hover:text-primary transition-colors">
                         COSMOS-ADMIN
                     </p>
-                    <p className="font-headline font-bold text-on-surface uppercase tracking-widest text-sm">
+                    <p className="font-headline font-bold text-on-surface uppercase tracking-widest text-sm group-hover:text-primary transition-colors">
                         Panel de Control
                     </p>
-                </div>
+                </Link>
                 <div className="flex items-center gap-4">
                     <span className="text-[10px] font-headline text-on-surface-variant hidden sm:block">
                         {user?.email}
