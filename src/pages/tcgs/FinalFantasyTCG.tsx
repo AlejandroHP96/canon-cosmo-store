@@ -1,18 +1,7 @@
+import { useState, useEffect } from 'react';
 import ProductImage from '../../components/ProductImage';
-
-type Category = { label: string; icon: string };
-type Product = {
-    name: string;
-    set: string;
-    price: string;
-    category: string;
-    badge?: string;
-    badgeColor?: string;
-    stock: number;
-    maxStock: number;
-    image?: string;
-    featured?: boolean;
-};
+import { getProductsByTcg } from '../../services/productsService';
+import type { Product, Category } from '../../types';
 
 const CATEGORIES: Category[] = [
     { label: 'Todo', icon: 'grid_view' },
@@ -20,74 +9,6 @@ const CATEGORIES: Category[] = [
     { label: 'Starter Decks', icon: 'inventory_2' },
     { label: 'Bundles', icon: 'package_2' },
     { label: 'Singles', icon: 'playing_cards' },
-];
-
-const PRODUCTS: Product[] = [
-    {
-        name: 'Resurgence of Power Booster Box',
-        set: 'Opus XVIII',
-        price: '94,99 €',
-        category: 'Bundles',
-        badge: 'HOT',
-        badgeColor: 'bg-[#93000a] border-[#ffb4ab]',
-        stock: 2,
-        maxStock: 5,
-        featured: true,
-    },
-    {
-        name: 'Resurgence of Power Booster Pack',
-        set: 'Opus XVIII',
-        price: '4,49 €',
-        category: 'Booster Packs',
-        badge: 'NUEVO',
-        badgeColor: 'bg-[#343dff] border-[#bec2ff]',
-        stock: 5,
-        maxStock: 5,
-    },
-    {
-        name: 'Starter Deck — Cloud & Tifa',
-        set: 'Opus XVIII',
-        price: '12,99 €',
-        category: 'Starter Decks',
-        stock: 4,
-        maxStock: 5,
-    },
-    {
-        name: 'Starter Deck — Terra & Kefka',
-        set: 'Opus XVIII',
-        price: '12,99 €',
-        category: 'Starter Decks',
-        stock: 3,
-        maxStock: 5,
-    },
-    {
-        name: 'Crystal Dominion Booster Pack',
-        set: 'Opus XXII',
-        price: '3,99 €',
-        category: 'Booster Packs',
-        stock: 3,
-        maxStock: 5,
-    },
-    {
-        name: 'Sephiroth — Legend Full Art',
-        set: 'Opus XVIII',
-        price: '59,99 €',
-        category: 'Singles',
-        badge: 'LEG',
-        badgeColor: 'bg-[#454747] border-[#c6c6c6]',
-        stock: 1,
-        maxStock: 2,
-    },
-    {
-        name: 'Lightning — Secret Rare',
-        set: 'Opus XXII',
-        price: '24,99 €',
-        category: 'Singles',
-        badge: 'SR',
-        badgeColor: 'bg-[#454747] border-[#c6c6c6]',
-        stock: 2,
-        maxStock: 3,
-    },
 ];
 
 const StockBar = ({ stock, maxStock }: { stock: number; maxStock: number }) => (
@@ -105,6 +26,25 @@ const StockBar = ({ stock, maxStock }: { stock: number; maxStock: number }) => (
 );
 
 const FinalFantasyTCG = () => {
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getProductsByTcg('finalfantasy').then((data) => {
+            setProducts(data);
+            setLoading(false);
+        });
+    }, []);
+
+    if (loading)
+        return (
+            <div className="flex items-center justify-center h-64">
+                <span className="material-symbols-outlined text-primary text-4xl animate-spin">
+                    progress_activity
+                </span>
+            </div>
+        );
+
     return (
         <>
             <div className="flex items-center gap-4 mb-6">
@@ -123,7 +63,7 @@ const FinalFantasyTCG = () => {
                 </div>
                 <div className="ml-auto flex items-center gap-2 text-[10px] font-headline text-on-surface-variant uppercase tracking-widest">
                     <span className="w-1.5 h-1.5 bg-primary animate-ping" />
-                    {PRODUCTS.length} productos
+                    {products.length} productos
                 </div>
             </div>
 
@@ -142,9 +82,9 @@ const FinalFantasyTCG = () => {
                 ))}
             </div>
 
-            {PRODUCTS.filter((p) => p.featured).map((product) => (
+            {products.filter((p) => p.featured).map((product) => (
                 <div
-                    key={product.name}
+                    key={product.id}
                     className="tactical-frame p-6 mb-6 flex flex-col md:flex-row gap-6 group cursor-pointer hover:bg-surface-bright transition-colors">
                     <div className="w-full md:w-64 md:shrink-0">
                         <ProductImage src={product.image} featured />
@@ -190,9 +130,9 @@ const FinalFantasyTCG = () => {
                 Catálogo completo
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {PRODUCTS.filter((p) => !p.featured).map((product) => (
+                {products.filter((p) => !p.featured).map((product) => (
                     <div
-                        key={product.name}
+                        key={product.id}
                         className="tactical-frame p-4 hover:bg-surface-bright transition-colors cursor-pointer flex flex-col gap-3 group">
                         <ProductImage src={product.image} />
                         <div className="flex items-start justify-between gap-2">
