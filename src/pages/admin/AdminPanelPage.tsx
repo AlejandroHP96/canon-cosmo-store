@@ -18,6 +18,7 @@ import {
     type SidebarConfig,
 } from '../../services/navService';
 import { useTcgOptions } from '../../hooks/useTcgOptions';
+import { pathToSectionId } from '../../lib/tcgUtils';
 import type { Product, TcgId } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
 import ProductImage from '../../components/ProductImage';
@@ -55,7 +56,6 @@ const ProductFormModal = ({
     onSaved: () => void;
 }) => {
     const isEdit = initial !== null;
-    const tcgOptions = useTcgOptions();
     const [form, setForm] = useState<FormData>(
         initial ? { ...initial } : { ...EMPTY_FORM },
     );
@@ -63,14 +63,63 @@ const ProductFormModal = ({
     const [error, setError] = useState<string | null>(null);
     const [categories, setCategories] = useState<string[]>([]);
 
+    // Árbol de navegación para los dos selectores en cascada
+    const [navItems, setNavItems] = useState<NavItem[]>([]);
+    const [menuIdx, setMenuIdx] = useState(0);
+    const [subIdx, setSubIdx] = useState(0);
+    const [navReady, setNavReady] = useState(false);
+
     const set = <K extends keyof FormData>(key: K, value: FormData[K]) =>
         setForm((prev) => ({ ...prev, [key]: value }));
 
-    // Carga categorías cada vez que cambia el TCG seleccionado
+    // Carga el árbol de nav e inicializa los selectores según form.tcg
     useEffect(() => {
+        getSidebarConfig().then((cfg) => {
+            const items = cfg.items.filter(
+                (item) => item.path || (item.submenu?.length ?? 0) > 0,
+            );
+            setNavItems(items);
+            // Busca qué menú/submenú coincide con el tcg actual
+            let mIdx = 0;
+            let sIdx = 0;
+            outer: for (let i = 0; i < items.length; i++) {
+                if (items[i].path && pathToSectionId(items[i].path!) === form.tcg) {
+                    mIdx = i;
+                    break;
+                }
+                for (let j = 0; j < (items[i].submenu?.length ?? 0); j++) {
+                    if (pathToSectionId(items[i].submenu![j].path) === form.tcg) {
+                        mIdx = i;
+                        sIdx = j;
+                        break outer;
+                    }
+                }
+            }
+            setMenuIdx(mIdx);
+            setSubIdx(sIdx);
+            setNavReady(true);
+        });
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Cuando cambia la selección, actualiza form.tcg
+    useEffect(() => {
+        if (!navReady || navItems.length === 0) return;
+        const menu = navItems[menuIdx];
+        if (!menu) return;
+        const subs = menu.submenu ?? [];
+        if (subs.length > 0) {
+            const sub = subs[Math.min(subIdx, subs.length - 1)];
+            set('tcg', pathToSectionId(sub.path));
+        } else if (menu.path) {
+            set('tcg', pathToSectionId(menu.path));
+        }
+    }, [menuIdx, subIdx, navReady]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Carga categorías cada vez que cambia la sección
+    useEffect(() => {
+        if (!form.tcg) return;
         getCategoriesByTcg(form.tcg).then((cats) => {
             setCategories(cats);
-            // Si la categoría actual no está en la lista del nuevo TCG, resetea
             if (cats.length > 0 && !cats.includes(form.category)) {
                 set('category', cats[0]);
             }
@@ -88,8 +137,6 @@ const ProductFormModal = ({
                 maxStock: Number(form.maxStock),
             };
             if (isEdit) {
-                // Para campos opcionales vacíos usamos deleteField() para que
-                // Firestore elimine el campo en lugar de dejarlo como string vacío
                 const updatePayload: Record<string, string | number | boolean | ReturnType<typeof deleteField> | undefined> = {
                     ...Object.fromEntries(
                         Object.entries(raw).filter(
@@ -102,7 +149,6 @@ const ProductFormModal = ({
                 };
                 await updateProduct(initial!.id, updatePayload);
             } else {
-                // En creación omitimos cadenas vacías para no guardar campos vacíos
                 const addPayload = Object.fromEntries(
                     Object.entries(raw).filter(
                         ([, v]) => v !== undefined && v !== '',
@@ -117,6 +163,8 @@ const ProductFormModal = ({
             setSaving(false);
         }
     };
+
+    const subOptions = navItems[menuIdx]?.submenu ?? [];
 
     return (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
@@ -133,19 +181,43 @@ const ProductFormModal = ({
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    {/* Sección */}
-                    <div>
-                        <label className={labelClass}>Sección</label>
-                        <select
-                            value={form.tcg}
-                            onChange={(e) => set('tcg', e.target.value)}
-                            className={inputClass}>
-                            {tcgOptions.map((t) => (
-                                <option key={t.id} value={t.id}>
-                                    {t.label}
-                                </option>
-                            ))}
-                        </select>
+                    {/* Menú + Sección (selectores en cascada) */}
+                    <div className={`grid gap-3 ${subOptions.length > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                        <div>
+                            <label className={labelClass}>Menú</label>
+                            <select
+                                value={menuIdx}
+                                onChange={(e) => {
+                                    setMenuIdx(Number(e.target.value));
+                                    setSubIdx(0);
+                                }}
+                                className={inputClass}
+                                disabled={!navReady}>
+                                {navItems.map((item, i) => (
+                                    <option key={i} value={i}>
+                                        {item.label}
+                                    </option>
+                                ))}
+                                {!navReady && <option>Cargando...</option>}
+                            </select>
+                        </div>
+                        {subOptions.length > 0 && (
+                            <div>
+                                <label className={labelClass}>Sección</label>
+                                <select
+                                    value={subIdx}
+                                    onChange={(e) =>
+                                        setSubIdx(Number(e.target.value))
+                                    }
+                                    className={inputClass}>
+                                    {subOptions.map((sub, i) => (
+                                        <option key={i} value={i}>
+                                            {sub.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
                     </div>
 
                     {/* Name */}
