@@ -69,15 +69,17 @@ const ProductFormModal = ({
         setError(null);
         setSaving(true);
         try {
-            const clean: FormData = {
+            const raw: FormData = {
                 ...form,
                 stock: Number(form.stock),
                 maxStock: Number(form.maxStock),
-                badge: form.badge || undefined,
-                badgeColor: form.badgeColor || undefined,
-                image: form.image || undefined,
             };
-            console.log(clean);
+            // Firestore no acepta undefined — eliminamos las claves opcionales vacías
+            const clean = Object.fromEntries(
+                Object.entries(raw).filter(
+                    ([, v]) => v !== undefined && v !== '',
+                ),
+            ) as FormData;
             if (isEdit) {
                 await updateProduct(initial!.id, clean);
             } else {
@@ -214,28 +216,51 @@ const ProductFormModal = ({
                         />
                     </div>
 
-                    {/* Badge + BadgeColor */}
-                    <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className={labelClass}>
-                                Badge (ej. HOT)
-                            </label>
-                            <input
-                                value={form.badge ?? ''}
-                                onChange={(e) => set('badge', e.target.value)}
-                                className={inputClass}
-                            />
-                        </div>
-                        <div>
-                            <label className={labelClass}>Color badge</label>
-                            <input
-                                placeholder="bg-[#93000a] border-[#ffb4ab]"
-                                value={form.badgeColor ?? ''}
-                                onChange={(e) =>
-                                    set('badgeColor', e.target.value)
-                                }
-                                className={inputClass}
-                            />
+                    {/* Badge */}
+                    <div>
+                        <label className={labelClass}>Badge</label>
+                        <div className="flex gap-2 mt-1">
+                            {[
+                                { label: 'Ninguno', badge: '', badgeColor: '' },
+                                {
+                                    label: 'NUEVO',
+                                    badge: 'NUEVO',
+                                    badgeColor: 'bg-[#343dff] border-[#bec2ff]',
+                                },
+                                {
+                                    label: 'HOT',
+                                    badge: 'HOT',
+                                    badgeColor: 'bg-[#93000a] border-[#ffb4ab]',
+                                },
+                            ].map((opt) => {
+                                const isSelected = form.badge === opt.badge;
+                                return (
+                                    <button
+                                        key={opt.label}
+                                        type="button"
+                                        onClick={() => {
+                                            set('badge', opt.badge);
+                                            set('badgeColor', opt.badgeColor);
+                                        }}
+                                        className={`flex items-center gap-2 px-3 py-2 border text-xs font-headline tracking-widest uppercase transition-all cursor-pointer ${
+                                            isSelected
+                                                ? 'border-primary text-primary bg-primary/10'
+                                                : 'border-outline/30 text-on-surface-variant hover:border-outline'
+                                        }`}>
+                                        {opt.badge ? (
+                                            <span
+                                                className={`px-1.5 py-0.5 text-[8px] font-headline border ${opt.badgeColor} text-[#e0e0ff]`}>
+                                                {opt.badge}
+                                            </span>
+                                        ) : (
+                                            <span className="text-[10px] text-on-surface-variant">
+                                                —
+                                            </span>
+                                        )}
+                                        {opt.label}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 
@@ -465,9 +490,10 @@ const AdminPanelPage = () => {
                                 key={product.id}
                                 className="tactical-frame p-4 flex items-center gap-4">
                                 {/* Thumbnail */}
-                                <div className="w-14 h-14 shrink-0 overflow-hidden">
-                                    <ProductImage src={product.image} />
-                                </div>
+                                <ProductImage
+                                    src={product.image}
+                                    className="w-14 h-14 shrink-0"
+                                />
 
                                 {/* Info */}
                                 <div className="flex-1 min-w-0">
