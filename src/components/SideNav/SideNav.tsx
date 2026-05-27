@@ -1,24 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
-const TCG_SUBMENU = [
-    { label: 'Pokemon', path: '/tcgs/pokemon' },
-    { label: 'Riftbound', path: '/tcgs/riftbound' },
-    { label: 'Final Fantasy', path: '/tcgs/final-fantasy' },
-    { label: 'Digimon', path: '/tcgs/digimon' },
-    { label: 'Naruto', path: '/tcgs/naruto' },
-    { label: 'One Piece', path: '/tcgs/one-piece' },
-];
-
-type NavEntry = {
-    icon: string;
-    label: string;
-};
-
-const NAV_ENTRIES: NavEntry[] = [
-    { icon: 'diamond', label: 'Accesorios TCGs' },
-    { icon: 'smart_toy', label: 'Funko Pop' },
-];
+import {
+    getSidebarConfig,
+    DEFAULT_SIDEBAR,
+    type TcgNavItem,
+    type NavEntry,
+} from '../../services/navService';
 
 type SideNavProps = {
     isOpen: boolean;
@@ -28,6 +15,25 @@ type SideNavProps = {
 const SideNav = ({ isOpen, onClose }: SideNavProps) => {
     const [tcgOpen, setTcgOpen] = useState(true);
     const [tcgHovered, setTcgHovered] = useState(false);
+
+    // Inicializamos con los defaults para que no haya flash vacío
+    const [tcgItems, setTcgItems] = useState<TcgNavItem[]>(
+        DEFAULT_SIDEBAR.tcgItems,
+    );
+    const [navEntries, setNavEntries] = useState<NavEntry[]>(
+        DEFAULT_SIDEBAR.navEntries,
+    );
+
+    useEffect(() => {
+        getSidebarConfig()
+            .then((config) => {
+                setTcgItems(config.tcgItems);
+                setNavEntries(config.navEntries);
+            })
+            .catch(() => {
+                // Mantener defaults si hay error
+            });
+    }, []);
 
     return (
         <aside
@@ -71,7 +77,7 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
 
                     {tcgOpen && (
                         <div className="ml-6 border-l-2 border-[#bec2ff]/30 flex flex-col">
-                            {TCG_SUBMENU.map(({ label, path }) => (
+                            {tcgItems.map(({ label, path }) => (
                                 <Link
                                     key={label}
                                     to={path}
@@ -84,7 +90,7 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                     )}
                 </div>
 
-                {NAV_ENTRIES.map(({ icon, label }) => (
+                {navEntries.map(({ icon, label }) => (
                     <a
                         key={label}
                         className="flex items-center py-3 pl-6 text-[#e0e0ff] opacity-70 hover:bg-[#2f336c] hover:opacity-100 transition-all"

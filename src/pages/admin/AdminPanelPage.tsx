@@ -11,6 +11,13 @@ import {
     getCategoriesByTcg,
     updateCategoriesByTcg,
 } from '../../services/categoriesService';
+import {
+    getSidebarConfig,
+    updateSidebarConfig,
+    type TcgNavItem,
+    type NavEntry,
+    type SidebarConfig,
+} from '../../services/navService';
 import type { Product, TcgId } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
 import ProductImage from '../../components/ProductImage';
@@ -551,13 +558,459 @@ const CategoriesManager = () => {
     );
 };
 
+// ─── Nav Manager ─────────────────────────────────────────────────────────────
+
+const NavManager = () => {
+    const [config, setConfig] = useState<SidebarConfig | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    // TCG items edit state
+    const [editingTcgIdx, setEditingTcgIdx] = useState<number | null>(null);
+    const [tcgEditForm, setTcgEditForm] = useState({ label: '', path: '' });
+    const [newTcg, setNewTcg] = useState({ label: '', path: '' });
+
+    // Nav entries edit state
+    const [editingNavIdx, setEditingNavIdx] = useState<number | null>(null);
+    const [navEditForm, setNavEditForm] = useState({ icon: '', label: '' });
+    const [newNav, setNewNav] = useState({ icon: '', label: '' });
+
+    useEffect(() => {
+        setLoading(true);
+        setError(null);
+        getSidebarConfig()
+            .then(setConfig)
+            .catch(() => setError('Error al cargar la configuración.'))
+            .finally(() => setLoading(false));
+    }, []);
+
+    const saveConfig = async (updated: SidebarConfig) => {
+        setSaving(true);
+        setError(null);
+        try {
+            await updateSidebarConfig(updated);
+            setConfig(updated);
+        } catch {
+            setError('Error al guardar. Inténtalo de nuevo.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex justify-center py-10">
+                <span className="material-symbols-outlined text-primary text-3xl animate-spin">
+                    progress_activity
+                </span>
+            </div>
+        );
+    }
+
+    if (!config) return null;
+
+    // ── TCG handlers ──────────────────────────────────────────────────────────
+
+    const handleTcgAdd = async () => {
+        const label = newTcg.label.trim();
+        const path = newTcg.path.trim();
+        if (!label || !path) return;
+        if (config.tcgItems.some((t) => t.label === label)) {
+            setError(`"${label}" ya existe en la lista.`);
+            return;
+        }
+        await saveConfig({
+            ...config,
+            tcgItems: [...config.tcgItems, { label, path }],
+        });
+        setNewTcg({ label: '', path: '' });
+    };
+
+    const handleTcgDelete = (idx: number) =>
+        saveConfig({
+            ...config,
+            tcgItems: config.tcgItems.filter((_, i) => i !== idx),
+        });
+
+    const handleTcgEditStart = (idx: number) => {
+        setEditingTcgIdx(idx);
+        setTcgEditForm({ ...config.tcgItems[idx] });
+    };
+
+    const handleTcgEditSave = async () => {
+        if (editingTcgIdx === null) return;
+        const label = tcgEditForm.label.trim();
+        const path = tcgEditForm.path.trim();
+        if (!label || !path) return;
+        const updated = config.tcgItems.map(
+            (item, i): TcgNavItem => (i === editingTcgIdx ? { label, path } : item),
+        );
+        await saveConfig({ ...config, tcgItems: updated });
+        setEditingTcgIdx(null);
+    };
+
+    // ── Nav entries handlers ──────────────────────────────────────────────────
+
+    const handleNavAdd = async () => {
+        const icon = newNav.icon.trim();
+        const label = newNav.label.trim();
+        if (!icon || !label) return;
+        await saveConfig({
+            ...config,
+            navEntries: [...config.navEntries, { icon, label }],
+        });
+        setNewNav({ icon: '', label: '' });
+    };
+
+    const handleNavDelete = (idx: number) =>
+        saveConfig({
+            ...config,
+            navEntries: config.navEntries.filter((_, i) => i !== idx),
+        });
+
+    const handleNavEditStart = (idx: number) => {
+        setEditingNavIdx(idx);
+        setNavEditForm({ ...config.navEntries[idx] });
+    };
+
+    const handleNavEditSave = async () => {
+        if (editingNavIdx === null) return;
+        const icon = navEditForm.icon.trim();
+        const label = navEditForm.label.trim();
+        if (!icon || !label) return;
+        const updated = config.navEntries.map(
+            (entry, i): NavEntry =>
+                i === editingNavIdx ? { icon, label } : entry,
+        );
+        await saveConfig({ ...config, navEntries: updated });
+        setEditingNavIdx(null);
+    };
+
+    return (
+        <div className="max-w-2xl">
+            {/* Error banner */}
+            {error && (
+                <div className="flex items-center gap-2 border border-error bg-error-container/20 px-3 py-2.5 mb-6">
+                    <span className="material-symbols-outlined text-error text-base shrink-0">
+                        error
+                    </span>
+                    <p className="text-sm font-body text-error flex-1">{error}</p>
+                    <button
+                        onClick={() => setError(null)}
+                        className="text-error/60 hover:text-error shrink-0">
+                        <span className="material-symbols-outlined text-sm">
+                            close
+                        </span>
+                    </button>
+                </div>
+            )}
+
+            {/* ── Sección: TCGs ──────────────────────────────────────────────── */}
+            <section className="mb-10">
+                <div className="flex items-center gap-3 mb-4">
+                    <span className="material-symbols-outlined text-primary text-base">
+                        playing_cards
+                    </span>
+                    <h3 className="font-headline font-bold text-xs uppercase tracking-widest text-on-surface">
+                        TCGs — Submenu
+                    </h3>
+                    <span className="text-[10px] font-headline text-on-surface-variant">
+                        {config.tcgItems.length} entrada
+                        {config.tcgItems.length !== 1 ? 's' : ''}
+                    </span>
+                </div>
+
+                <div className="flex flex-col gap-2 mb-4">
+                    {config.tcgItems.map((item, idx) =>
+                        editingTcgIdx === idx ? (
+                            /* Fila en modo edición */
+                            <div
+                                key={idx}
+                                className="tactical-frame px-4 py-2.5 flex items-center gap-2">
+                                <input
+                                    value={tcgEditForm.label}
+                                    onChange={(e) =>
+                                        setTcgEditForm((f) => ({
+                                            ...f,
+                                            label: e.target.value,
+                                        }))
+                                    }
+                                    placeholder="Label"
+                                    className={inputClass + ' flex-1'}
+                                    onKeyDown={(e) =>
+                                        e.key === 'Enter' && handleTcgEditSave()
+                                    }
+                                />
+                                <input
+                                    value={tcgEditForm.path}
+                                    onChange={(e) =>
+                                        setTcgEditForm((f) => ({
+                                            ...f,
+                                            path: e.target.value,
+                                        }))
+                                    }
+                                    placeholder="/tcgs/ruta"
+                                    className={inputClass + ' flex-1 font-mono'}
+                                    onKeyDown={(e) =>
+                                        e.key === 'Enter' && handleTcgEditSave()
+                                    }
+                                />
+                                <button
+                                    onClick={handleTcgEditSave}
+                                    disabled={saving}
+                                    className="text-primary hover:text-on-surface transition-colors disabled:opacity-40"
+                                    title="Guardar">
+                                    <span className="material-symbols-outlined text-sm">
+                                        check
+                                    </span>
+                                </button>
+                                <button
+                                    onClick={() => setEditingTcgIdx(null)}
+                                    className="text-on-surface-variant hover:text-on-surface transition-colors"
+                                    title="Cancelar">
+                                    <span className="material-symbols-outlined text-sm">
+                                        close
+                                    </span>
+                                </button>
+                            </div>
+                        ) : (
+                            /* Fila en modo display */
+                            <div
+                                key={idx}
+                                className="tactical-frame px-4 py-2.5 flex items-center gap-3">
+                                <span className="material-symbols-outlined text-primary/50 text-sm shrink-0">
+                                    playing_cards
+                                </span>
+                                <span className="font-body text-sm text-on-surface flex-1">
+                                    {item.label}
+                                </span>
+                                <span className="font-mono text-xs text-on-surface-variant flex-1 truncate">
+                                    {item.path}
+                                </span>
+                                <div className="flex items-center gap-1 shrink-0">
+                                    <button
+                                        onClick={() => handleTcgEditStart(idx)}
+                                        disabled={saving}
+                                        className="text-on-surface-variant hover:text-primary transition-colors disabled:opacity-40"
+                                        title="Editar">
+                                        <span className="material-symbols-outlined text-sm">
+                                            edit
+                                        </span>
+                                    </button>
+                                    <button
+                                        onClick={() => handleTcgDelete(idx)}
+                                        disabled={saving}
+                                        className="text-on-surface-variant hover:text-error transition-colors disabled:opacity-40"
+                                        title="Eliminar">
+                                        <span className="material-symbols-outlined text-sm">
+                                            delete
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        ),
+                    )}
+                </div>
+
+                {/* Añadir TCG */}
+                <div className="flex gap-2">
+                    <input
+                        value={newTcg.label}
+                        onChange={(e) =>
+                            setNewTcg((f) => ({ ...f, label: e.target.value }))
+                        }
+                        placeholder="Label (ej. Dragon Ball)"
+                        className={inputClass + ' flex-1'}
+                    />
+                    <input
+                        value={newTcg.path}
+                        onChange={(e) =>
+                            setNewTcg((f) => ({ ...f, path: e.target.value }))
+                        }
+                        placeholder="/tcgs/dragon-ball"
+                        className={inputClass + ' flex-1 font-mono'}
+                        onKeyDown={(e) => e.key === 'Enter' && handleTcgAdd()}
+                    />
+                    <button
+                        onClick={handleTcgAdd}
+                        disabled={
+                            saving ||
+                            !newTcg.label.trim() ||
+                            !newTcg.path.trim()
+                        }
+                        className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-4 hover:bg-primary hover:text-surface transition-colors disabled:opacity-40">
+                        {saving ? '...' : 'Añadir'}
+                    </button>
+                </div>
+            </section>
+
+            {/* ── Sección: Otras entradas ────────────────────────────────────── */}
+            <section>
+                <div className="flex items-center gap-3 mb-4">
+                    <span className="material-symbols-outlined text-primary text-base">
+                        menu
+                    </span>
+                    <h3 className="font-headline font-bold text-xs uppercase tracking-widest text-on-surface">
+                        Otras entradas
+                    </h3>
+                    <span className="text-[10px] font-headline text-on-surface-variant">
+                        {config.navEntries.length} entrada
+                        {config.navEntries.length !== 1 ? 's' : ''}
+                    </span>
+                </div>
+
+                <div className="flex flex-col gap-2 mb-4">
+                    {config.navEntries.map((entry, idx) =>
+                        editingNavIdx === idx ? (
+                            /* Fila en modo edición */
+                            <div
+                                key={idx}
+                                className="tactical-frame px-4 py-2.5 flex items-center gap-2">
+                                <span className="material-symbols-outlined text-primary text-base shrink-0 w-6">
+                                    {navEditForm.icon || 'category'}
+                                </span>
+                                <input
+                                    value={navEditForm.icon}
+                                    onChange={(e) =>
+                                        setNavEditForm((f) => ({
+                                            ...f,
+                                            icon: e.target.value,
+                                        }))
+                                    }
+                                    placeholder="Icono (ej. diamond)"
+                                    className={inputClass + ' w-40 font-mono'}
+                                    onKeyDown={(e) =>
+                                        e.key === 'Enter' && handleNavEditSave()
+                                    }
+                                />
+                                <input
+                                    value={navEditForm.label}
+                                    onChange={(e) =>
+                                        setNavEditForm((f) => ({
+                                            ...f,
+                                            label: e.target.value,
+                                        }))
+                                    }
+                                    placeholder="Label"
+                                    className={inputClass + ' flex-1'}
+                                    onKeyDown={(e) =>
+                                        e.key === 'Enter' && handleNavEditSave()
+                                    }
+                                />
+                                <button
+                                    onClick={handleNavEditSave}
+                                    disabled={saving}
+                                    className="text-primary hover:text-on-surface transition-colors disabled:opacity-40"
+                                    title="Guardar">
+                                    <span className="material-symbols-outlined text-sm">
+                                        check
+                                    </span>
+                                </button>
+                                <button
+                                    onClick={() => setEditingNavIdx(null)}
+                                    className="text-on-surface-variant hover:text-on-surface transition-colors"
+                                    title="Cancelar">
+                                    <span className="material-symbols-outlined text-sm">
+                                        close
+                                    </span>
+                                </button>
+                            </div>
+                        ) : (
+                            /* Fila en modo display */
+                            <div
+                                key={idx}
+                                className="tactical-frame px-4 py-2.5 flex items-center gap-3">
+                                <span className="material-symbols-outlined text-primary/70 text-base shrink-0">
+                                    {entry.icon}
+                                </span>
+                                <span className="font-body text-sm text-on-surface flex-1">
+                                    {entry.label}
+                                </span>
+                                <span className="font-mono text-xs text-on-surface-variant">
+                                    {entry.icon}
+                                </span>
+                                <div className="flex items-center gap-1 shrink-0">
+                                    <button
+                                        onClick={() => handleNavEditStart(idx)}
+                                        disabled={saving}
+                                        className="text-on-surface-variant hover:text-primary transition-colors disabled:opacity-40"
+                                        title="Editar">
+                                        <span className="material-symbols-outlined text-sm">
+                                            edit
+                                        </span>
+                                    </button>
+                                    <button
+                                        onClick={() => handleNavDelete(idx)}
+                                        disabled={saving}
+                                        className="text-on-surface-variant hover:text-error transition-colors disabled:opacity-40"
+                                        title="Eliminar">
+                                        <span className="material-symbols-outlined text-sm">
+                                            delete
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        ),
+                    )}
+                </div>
+
+                {/* Añadir entrada */}
+                <div className="flex gap-2 items-center">
+                    <span className="material-symbols-outlined text-primary/70 text-base shrink-0">
+                        {newNav.icon || 'category'}
+                    </span>
+                    <input
+                        value={newNav.icon}
+                        onChange={(e) =>
+                            setNewNav((f) => ({ ...f, icon: e.target.value }))
+                        }
+                        placeholder="Icono (ej. smart_toy)"
+                        className={inputClass + ' w-44 font-mono'}
+                    />
+                    <input
+                        value={newNav.label}
+                        onChange={(e) =>
+                            setNewNav((f) => ({ ...f, label: e.target.value }))
+                        }
+                        placeholder="Label (ej. Funko Pop)"
+                        className={inputClass + ' flex-1'}
+                        onKeyDown={(e) => e.key === 'Enter' && handleNavAdd()}
+                    />
+                    <button
+                        onClick={handleNavAdd}
+                        disabled={
+                            saving || !newNav.icon.trim() || !newNav.label.trim()
+                        }
+                        className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-4 hover:bg-primary hover:text-surface transition-colors disabled:opacity-40">
+                        {saving ? '...' : 'Añadir'}
+                    </button>
+                </div>
+                <p className="text-[10px] font-body text-on-surface-variant mt-2">
+                    Usa nombres de{' '}
+                    <a
+                        href="https://fonts.google.com/icons"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline">
+                        Material Symbols
+                    </a>{' '}
+                    para el icono (ej.{' '}
+                    <code className="text-primary">diamond</code>,{' '}
+                    <code className="text-primary">smart_toy</code>).
+                </p>
+            </section>
+        </div>
+    );
+};
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 const AdminPanelPage = () => {
     const { user, signOut } = useAuth();
     const navigate = useNavigate();
 
-    const [adminView, setAdminView] = useState<'products' | 'categories'>(
+    const [adminView, setAdminView] = useState<'products' | 'categories' | 'nav'>(
         'products',
     );
 
@@ -637,6 +1090,11 @@ const AdminPanelPage = () => {
                             label: 'Categorías',
                             icon: 'folder',
                         },
+                        {
+                            id: 'nav',
+                            label: 'Navegación',
+                            icon: 'menu',
+                        },
                     ] as const
                 ).map(({ id, label, icon }) => (
                     <button
@@ -659,6 +1117,9 @@ const AdminPanelPage = () => {
                 {/* Toolbar — solo en vista productos */}
                 {adminView === 'categories' && (
                     <CategoriesManager />
+                )}
+                {adminView === 'nav' && (
+                    <NavManager />
                 )}
                 {adminView === 'products' && (
                 <>
