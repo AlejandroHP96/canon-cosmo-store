@@ -1190,7 +1190,6 @@ const NavManager = () => {
 const AdminPanelPage = () => {
     const { user, signOut } = useAuth();
     const navigate = useNavigate();
-    const tcgOptions = useTcgOptions();
 
     const [adminView, setAdminView] = useState<'products' | 'categories' | 'nav'>(
         'products',
@@ -1198,7 +1197,11 @@ const AdminPanelPage = () => {
 
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
-    const [filterTcg, setFilterTcg] = useState<string>('all');
+
+    // Árbol de nav para los filtros en cascada
+    const [filterNavItems, setFilterNavItems] = useState<NavItem[]>([]);
+    const [filterMenuIdx, setFilterMenuIdx] = useState<number | null>(null);
+    const [filterSectionId, setFilterSectionId] = useState<string>('all');
 
     const [showForm, setShowForm] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -1223,6 +1226,7 @@ const AdminPanelPage = () => {
 
     useEffect(() => {
         refresh();
+        getSidebarConfig().then((cfg) => setFilterNavItems(cfg.items));
     }, []);
 
     const handleSignOut = async () => {
@@ -1230,10 +1234,22 @@ const AdminPanelPage = () => {
         navigate('/cosmos-admin', { replace: true });
     };
 
-    const visible =
-        filterTcg === 'all'
-            ? products
-            : products.filter((p) => p.tcg === filterTcg);
+    // IDs de sección que pertenecen al menú seleccionado
+    const selectedMenu =
+        filterMenuIdx !== null ? filterNavItems[filterMenuIdx] : null;
+    const menuSectionIds: string[] = selectedMenu
+        ? (selectedMenu.submenu?.length ?? 0) > 0
+            ? selectedMenu.submenu!.map((sub) => pathToSectionId(sub.path))
+            : selectedMenu.path
+              ? [pathToSectionId(selectedMenu.path)]
+              : [toSlug(selectedMenu.label)]
+        : [];
+
+    const visible = products.filter((p) => {
+        if (filterMenuIdx === null) return true;
+        if (filterSectionId !== 'all') return p.tcg === filterSectionId;
+        return menuSectionIds.includes(p.tcg);
+    });
 
     return (
         <div className="min-h-screen bg-surface text-on-surface">
@@ -1305,22 +1321,71 @@ const AdminPanelPage = () => {
                 )}
                 {adminView === 'products' && (
                 <>
-                <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-                    {/* TCG filter tabs */}
-                    <div className="flex flex-wrap gap-2">
-                        {[{ id: 'all', label: 'Todos' }, ...tcgOptions].map(
-                            ({ id, label }) => (
+                <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+                    {/* Filtros en cascada: menú → sección */}
+                    <div className="flex flex-col gap-2">
+                        {/* Nivel 1: menús */}
+                        <div className="flex flex-wrap gap-2">
+                            <button
+                                onClick={() => {
+                                    setFilterMenuIdx(null);
+                                    setFilterSectionId('all');
+                                }}
+                                className={`px-3 py-1.5 font-headline text-xs uppercase tracking-wider border transition-all ${
+                                    filterMenuIdx === null
+                                        ? 'border-primary text-primary bg-surface-container'
+                                        : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
+                                }`}>
+                                Todos
+                            </button>
+                            {filterNavItems.map((item, idx) => (
                                 <button
-                                    key={id}
-                                    onClick={() => setFilterTcg(id)}
-                                    className={`px-3 py-1.5 font-headline text-xs uppercase tracking-wider border transition-all ${
-                                        filterTcg === id
+                                    key={idx}
+                                    onClick={() => {
+                                        setFilterMenuIdx(idx);
+                                        setFilterSectionId('all');
+                                    }}
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 font-headline text-xs uppercase tracking-wider border transition-all ${
+                                        filterMenuIdx === idx
                                             ? 'border-primary text-primary bg-surface-container'
                                             : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
                                     }`}>
-                                    {label}
+                                    <span className="material-symbols-outlined text-sm">
+                                        {item.icon}
+                                    </span>
+                                    {item.label}
                                 </button>
-                            ),
+                            ))}
+                        </div>
+
+                        {/* Nivel 2: subitems (solo si el menú seleccionado tiene submenú) */}
+                        {(selectedMenu?.submenu?.length ?? 0) > 0 && (
+                            <div className="flex flex-wrap gap-2 pl-2 border-l-2 border-primary/30">
+                                <button
+                                    onClick={() => setFilterSectionId('all')}
+                                    className={`px-3 py-1 font-headline text-[11px] uppercase tracking-wider border transition-all ${
+                                        filterSectionId === 'all'
+                                            ? 'border-primary text-primary bg-surface-container'
+                                            : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
+                                    }`}>
+                                    Todos
+                                </button>
+                                {selectedMenu!.submenu!.map((sub) => {
+                                    const id = pathToSectionId(sub.path);
+                                    return (
+                                        <button
+                                            key={id}
+                                            onClick={() => setFilterSectionId(id)}
+                                            className={`px-3 py-1 font-headline text-[11px] uppercase tracking-wider border transition-all ${
+                                                filterSectionId === id
+                                                    ? 'border-primary text-primary bg-surface-container'
+                                                    : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
+                                            }`}>
+                                            {sub.label}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         )}
                     </div>
 
