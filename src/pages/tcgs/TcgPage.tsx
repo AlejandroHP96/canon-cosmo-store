@@ -63,9 +63,6 @@ const TcgPage = () => {
                         <h2 className="font-headline font-bold text-xl text-on-surface uppercase tracking-widest">
                             {sectionLabel}
                         </h2>
-                        <p className="text-[10px] text-primary font-headline tracking-[0.2em]">
-                            TCG
-                        </p>
                     </div>
                 </div>
                 <div className="ml-auto flex items-center gap-2 text-[10px] font-headline text-on-surface-variant uppercase tracking-widest">
@@ -76,18 +73,15 @@ const TcgPage = () => {
 
             {/* Filtro de categorías */}
             <div className="flex gap-2 mb-6 flex-wrap">
-                {categories.map(({ label, icon }) => (
+                {categories.map(({ label }) => (
                     <button
                         key={label}
                         onClick={() => setSelectedCategory(label)}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-headline uppercase tracking-wider border transition-all ${
+                        className={`px-3 py-1.5 text-xs font-headline uppercase tracking-wider border transition-all ${
                             label === selectedCategory
                                 ? 'border-primary text-primary bg-surface-container'
                                 : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
                         }`}>
-                        <span className="material-symbols-outlined text-sm">
-                            {icon}
-                        </span>
                         {label}
                     </button>
                 ))}
