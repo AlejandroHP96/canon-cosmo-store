@@ -4,53 +4,62 @@ import { db } from '../lib/firebase';
 const COLLECTION = 'nav_config';
 const DOC_ID = 'sidebar';
 
-export type TcgNavItem = {
+/** Un subitem dentro de un menú expandible */
+export type SubNavItem = {
     label: string;
     path: string;
 };
 
-export type NavEntry = {
+/** Entrada de navegación de primer nivel */
+export type NavItem = {
     icon: string;
     label: string;
+    /** Ruta directa (solo si no tiene submenú) */
+    path?: string;
+    /** Si existe y tiene items, la entrada es un grupo expandible */
+    submenu?: SubNavItem[];
 };
 
 export type SidebarConfig = {
-    tcgItems: TcgNavItem[];
-    navEntries: NavEntry[];
+    items: NavItem[];
 };
 
 export const DEFAULT_SIDEBAR: SidebarConfig = {
-    tcgItems: [
-        { label: 'Pokemon', path: '/tcgs/pokemon' },
-        { label: 'Riftbound', path: '/tcgs/riftbound' },
-        { label: 'Final Fantasy', path: '/tcgs/final-fantasy' },
-        { label: 'Digimon', path: '/tcgs/digimon' },
-        { label: 'Naruto', path: '/tcgs/naruto' },
-        { label: 'One Piece', path: '/tcgs/one-piece' },
-    ],
-    navEntries: [
+    items: [
+        {
+            icon: 'playing_cards',
+            label: 'TCGs',
+            submenu: [
+                { label: 'Pokemon', path: '/tcgs/pokemon' },
+                { label: 'Riftbound', path: '/tcgs/riftbound' },
+                { label: 'Final Fantasy', path: '/tcgs/final-fantasy' },
+                { label: 'Digimon', path: '/tcgs/digimon' },
+                { label: 'Naruto', path: '/tcgs/naruto' },
+                { label: 'One Piece', path: '/tcgs/one-piece' },
+            ],
+        },
         { icon: 'diamond', label: 'Accesorios TCGs' },
         { icon: 'smart_toy', label: 'Funko Pop' },
     ],
 };
 
 /**
- * Devuelve la configuración del sidebar desde Firestore.
- * Si no existe el documento lo crea con los valores por defecto.
+ * Devuelve la config del sidebar desde Firestore.
+ * Migra automáticamente el formato antiguo (tcgItems/navEntries) al nuevo.
+ * Si no hay documento, lo crea con los defaults.
  */
 export async function getSidebarConfig(): Promise<SidebarConfig> {
     const ref = doc(db, COLLECTION, DOC_ID);
     const snap = await getDoc(ref);
     if (snap.exists()) {
         const data = snap.data();
-        return {
-            tcgItems:
-                (data.tcgItems as TcgNavItem[]) ?? DEFAULT_SIDEBAR.tcgItems,
-            navEntries:
-                (data.navEntries as NavEntry[]) ?? DEFAULT_SIDEBAR.navEntries,
-        };
+        // Formato nuevo: { items: [...] }
+        if (Array.isArray(data.items)) {
+            return { items: data.items as NavItem[] };
+        }
+        // Formato antiguo (tcgItems + navEntries): devuelve defaults,
+        // se migrará la próxima vez que el admin guarde.
     }
-    // Primera vez: auto-seed con los valores por defecto
     await setDoc(ref, DEFAULT_SIDEBAR);
     return DEFAULT_SIDEBAR;
 }
