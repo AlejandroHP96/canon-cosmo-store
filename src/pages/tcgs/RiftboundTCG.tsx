@@ -1,18 +1,7 @@
+import { useState, useEffect } from 'react';
 import ProductImage from '../../components/ProductImage';
-
-type Category = { label: string; icon: string };
-type Product = {
-    name: string;
-    set: string;
-    price: string;
-    category: string;
-    badge?: string;
-    badgeColor?: string;
-    stock: number;
-    maxStock: number;
-    image?: string;
-    featured?: boolean;
-};
+import { getProductsByTcg } from '../../services/productsService';
+import type { Product, Category } from '../../types';
 
 const CATEGORIES: Category[] = [
     { label: 'Todo', icon: 'grid_view' },
@@ -20,76 +9,6 @@ const CATEGORIES: Category[] = [
     { label: 'Starter Decks', icon: 'inventory_2' },
     { label: 'Bundles', icon: 'package_2' },
     { label: 'Singles', icon: 'playing_cards' },
-];
-
-const PRODUCTS: Product[] = [
-    {
-        name: 'Origins Booster Display',
-        set: 'Origins',
-        price: '89,99 €',
-        category: 'Bundles',
-        badge: 'HOT',
-        badgeColor: 'bg-[#93000a] border-[#ffb4ab]',
-        stock: 2,
-        maxStock: 5,
-        image: 'https://cdn.sanity.io/images/dsfx7636/consumer_products_live/e026ee1a44bc86095f9afc5949c5fdb519b29c66-2560x2560.png?accountingTag=consumer_products',
-        featured: true,
-    },
-    {
-        name: 'Origins Booster Pack',
-        set: 'Origins',
-        price: '4,99 €',
-        category: 'Booster Packs',
-        badge: 'NUEVO',
-        badgeColor: 'bg-[#343dff] border-[#bec2ff]',
-        stock: 5,
-        maxStock: 5,
-    },
-    {
-        name: 'Starter Deck — Vanguard',
-        set: 'Origins',
-        price: '14,99 €',
-        category: 'Starter Decks',
-        stock: 3,
-        maxStock: 5,
-    },
-    {
-        name: 'Starter Deck — Shadow',
-        set: 'Origins',
-        price: '14,99 €',
-        category: 'Starter Decks',
-        stock: 4,
-        maxStock: 5,
-    },
-    {
-        name: 'Unleashed Booster Display',
-        set: 'Unleashed',
-        price: '94,99 €',
-        category: 'Bundles',
-        stock: 2,
-        maxStock: 5,
-        image: 'https://cdn.sanity.io/images/dsfx7636/consumer_products_live/46c776a96cc14227a260d24489f10b4090cd2cd9-2560x2560.png?accountingTag=consumer_products',
-    },
-    {
-        name: 'Aetherion — Full Art Legendary',
-        set: 'Origins',
-        price: '44,99 €',
-        category: 'Singles',
-        badge: 'LEG',
-        badgeColor: 'bg-[#454747] border-[#c6c6c6]',
-        stock: 1,
-        maxStock: 3,
-    },
-    {
-        name: 'Void Harbinger — Secret Rare',
-        set: 'Origins',
-        price: '29,99 €',
-        category: 'Singles',
-        badge: 'SR',
-        badgeColor: 'bg-[#454747] border-[#c6c6c6]',
-        stock: 2,
-        maxStock: 3,
-    },
 ];
 
 const StockBar = ({ stock, maxStock }: { stock: number; maxStock: number }) => (
@@ -107,6 +26,25 @@ const StockBar = ({ stock, maxStock }: { stock: number; maxStock: number }) => (
 );
 
 const RiftboundTCG = () => {
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getProductsByTcg('riftbound').then((data) => {
+            setProducts(data);
+            setLoading(false);
+        });
+    }, []);
+
+    if (loading)
+        return (
+            <div className="flex items-center justify-center h-64">
+                <span className="material-symbols-outlined text-primary text-4xl animate-spin">
+                    progress_activity
+                </span>
+            </div>
+        );
+
     return (
         <>
             <div className="flex items-center gap-4 mb-6">
@@ -125,7 +63,7 @@ const RiftboundTCG = () => {
                 </div>
                 <div className="ml-auto flex items-center gap-2 text-[10px] font-headline text-on-surface-variant uppercase tracking-widest">
                     <span className="w-1.5 h-1.5 bg-primary animate-ping" />
-                    {PRODUCTS.length} productos
+                    {products.length} productos
                 </div>
             </div>
 
@@ -144,9 +82,9 @@ const RiftboundTCG = () => {
                 ))}
             </div>
 
-            {PRODUCTS.filter((p) => p.featured).map((product) => (
+            {products.filter((p) => p.featured).map((product) => (
                 <div
-                    key={product.name}
+                    key={product.id}
                     className="tactical-frame p-6 mb-6 flex flex-col md:flex-row gap-6 group cursor-pointer hover:bg-surface-bright transition-colors">
                     <div className="w-full md:w-64 md:shrink-0">
                         <ProductImage src={product.image} featured />
@@ -192,9 +130,9 @@ const RiftboundTCG = () => {
                 Catálogo completo
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {PRODUCTS.filter((p) => !p.featured).map((product) => (
+                {products.filter((p) => !p.featured).map((product) => (
                     <div
-                        key={product.name}
+                        key={product.id}
                         className="tactical-frame p-4 hover:bg-surface-bright transition-colors cursor-pointer flex flex-col gap-3 group">
                         <ProductImage src={product.image} />
                         <div className="flex items-start justify-between gap-2">
