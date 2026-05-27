@@ -44,6 +44,16 @@ const inputClass =
 const labelClass =
     'block font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1';
 
+/** "Funko Pop" → "funko-pop" */
+const toSlug = (text: string) =>
+    text
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-');
+
 type FormData = Omit<Product, 'id'>;
 
 const ProductFormModal = ({
@@ -75,9 +85,7 @@ const ProductFormModal = ({
     // Carga el árbol de nav e inicializa los selectores según form.tcg
     useEffect(() => {
         getSidebarConfig().then((cfg) => {
-            const items = cfg.items.filter(
-                (item) => item.path || (item.submenu?.length ?? 0) > 0,
-            );
+            const items = cfg.items; // todos los items del nav
             setNavItems(items);
             // Busca qué menú/submenú coincide con el tcg actual
             let mIdx = 0;
@@ -112,6 +120,9 @@ const ProductFormModal = ({
             set('tcg', pathToSectionId(sub.path));
         } else if (menu.path) {
             set('tcg', pathToSectionId(menu.path));
+        } else {
+            // Item sin path ni submenú (ej. "Funko Pop" sin ruta configurada)
+            set('tcg', toSlug(menu.label));
         }
     }, [menuIdx, subIdx, navReady]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -746,16 +757,6 @@ const NavManager = () => {
     // ── Helpers de subitems ───────────────────────────────────────────────────
 
     const subKey = (iIdx: number, sIdx: number) => `${iIdx}-${sIdx}`;
-
-    /** Convierte un texto en slug: "One Piece" → "one-piece" */
-    const toSlug = (text: string) =>
-        text
-            .toLowerCase()
-            .normalize('NFD')
-            .replace(/[̀-ͯ]/g, '') // elimina tildes
-            .replace(/[^a-z0-9\s-]/g, '')    // elimina caracteres especiales
-            .trim()
-            .replace(/\s+/g, '-');           // espacios → guiones
 
     /** Construye el path sugerido: padre "TCGs" + sub "Dragon Ball" → /tcgs/dragon-ball */
     const deriveSubPath = (parentLabel: string, subLabel: string) =>
