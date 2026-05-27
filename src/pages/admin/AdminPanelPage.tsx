@@ -74,16 +74,21 @@ const ProductFormModal = ({
                 stock: Number(form.stock),
                 maxStock: Number(form.maxStock),
             };
-            // Firestore no acepta undefined — eliminamos las claves opcionales vacías
-            const clean = Object.fromEntries(
-                Object.entries(raw).filter(
-                    ([, v]) => v !== undefined && v !== '',
-                ),
-            ) as FormData;
             if (isEdit) {
-                await updateProduct(initial!.id, clean);
+                // En edición incluimos cadenas vacías para que Firestore
+                // sobreescriba campos opcionales (ej. quitar badge existente)
+                const updatePayload = Object.fromEntries(
+                    Object.entries(raw).filter(([, v]) => v !== undefined),
+                ) as FormData;
+                await updateProduct(initial!.id, updatePayload);
             } else {
-                await addProduct(clean);
+                // En creación omitimos cadenas vacías para no guardar campos vacíos
+                const addPayload = Object.fromEntries(
+                    Object.entries(raw).filter(
+                        ([, v]) => v !== undefined && v !== '',
+                    ),
+                ) as FormData;
+                await addProduct(addPayload);
             }
             onSaved();
         } catch {
@@ -223,14 +228,19 @@ const ProductFormModal = ({
                             {[
                                 { label: 'Ninguno', badge: '', badgeColor: '' },
                                 {
-                                    label: 'NUEVO',
-                                    badge: 'NUEVO',
+                                    label: 'NOVEDAD',
+                                    badge: 'NOVEDAD',
                                     badgeColor: 'bg-[#343dff] border-[#bec2ff]',
                                 },
                                 {
                                     label: 'HOT',
                                     badge: 'HOT',
                                     badgeColor: 'bg-[#93000a] border-[#ffb4ab]',
+                                },
+                                {
+                                    label: 'OFERTA',
+                                    badge: 'OFERTA',
+                                    badgeColor: 'bg-[#7a3500] border-[#ffb074]',
                                 },
                             ].map((opt) => {
                                 const isSelected = form.badge === opt.badge;
