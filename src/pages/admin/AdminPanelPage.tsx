@@ -30,8 +30,7 @@ const EMPTY_FORM: Omit<Product, 'id'> = {
     category: '',
     badge: '',
     badgeColor: '',
-    stock: 0,
-    maxStock: 5,
+    inStock: true,
     image: '',
     featured: false,
 };
@@ -289,40 +288,50 @@ const ProductFormModal = ({
                     {/* Price */}
                     <div>
                         <label className={labelClass}>Precio</label>
-                        <input
-                            required
-                            placeholder="4,99 €"
-                            value={form.price}
-                            onChange={(e) => set('price', e.target.value)}
-                            className={inputClass}
-                        />
+                        <div className="flex items-center">
+                            <input
+                                required
+                                placeholder="4,99"
+                                value={form.price.replace(/ ?€$/, '')}
+                                onChange={(e) =>
+                                    set('price', e.target.value ? `${e.target.value.trim()} €` : '')
+                                }
+                                className={inputClass + ' border-r-0'}
+                            />
+                            <span className="shrink-0 border border-outline-variant bg-surface-container px-3 py-2 text-sm text-on-surface-variant font-body">
+                                €
+                            </span>
+                        </div>
                     </div>
 
-                    {/* Stock + MaxStock */}
-                    <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className={labelClass}>Stock actual</label>
-                            <input
-                                type="number"
-                                min={0}
-                                value={form.stock}
-                                onChange={(e) =>
-                                    set('stock', Number(e.target.value))
-                                }
-                                className={inputClass}
-                            />
-                        </div>
-                        <div>
-                            <label className={labelClass}>Stock máximo</label>
-                            <input
-                                type="number"
-                                min={1}
-                                value={form.maxStock}
-                                onChange={(e) =>
-                                    set('maxStock', Number(e.target.value))
-                                }
-                                className={inputClass}
-                            />
+                    {/* Disponibilidad */}
+                    <div>
+                        <label className={labelClass}>Disponibilidad</label>
+                        <div className="grid grid-cols-2 gap-2">
+                            {[
+                                { value: true, label: 'DISPONIBLE', icon: 'check_circle' },
+                                { value: false, label: 'AGOTADO', icon: 'remove_shopping_cart' },
+                            ].map(({ value, label, icon }) => {
+                                const active = (form.inStock ?? true) === value;
+                                return (
+                                    <button
+                                        key={label}
+                                        type="button"
+                                        onClick={() => set('inStock', value)}
+                                        className={`flex items-center justify-center gap-2 py-2.5 border font-headline text-xs uppercase tracking-widest transition-all ${
+                                            active
+                                                ? value
+                                                    ? 'border-primary bg-primary/10 text-primary'
+                                                    : 'border-error bg-error/10 text-error'
+                                                : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
+                                        }`}>
+                                        <span className="material-symbols-outlined text-sm">
+                                            {icon}
+                                        </span>
+                                        {label}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 

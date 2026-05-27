@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import ProductImage from '../../components/ProductImage';
-import StockBar from '../../components/StockBar';
 import { getProductsByTcg } from '../../services/productsService';
 import { useTcgCategories } from '../../hooks/useTcgCategories';
 import { useTcgOptions } from '../../hooks/useTcgOptions';
@@ -102,7 +101,7 @@ const TcgPage = () => {
                         key={product.id}
                         className="tactical-frame p-6 mb-6 flex flex-col md:flex-row gap-6 group cursor-pointer hover:bg-surface-bright transition-colors">
                         <div className="w-full md:w-64 md:shrink-0">
-                            <ProductImage src={product.image} featured />
+                            <ProductImage src={product.image} featured inStock={product.inStock} />
                         </div>
                         <div className="flex flex-col justify-between flex-1">
                             <div>
@@ -132,10 +131,11 @@ const TcgPage = () => {
                                         {product.price}
                                     </p>
                                 </div>
-                                <StockBar
-                                    stock={product.stock}
-                                    maxStock={product.maxStock}
-                                />
+                                {product.inStock === false && (
+                                    <span className="text-[10px] font-headline uppercase tracking-widest text-error border border-error px-2 py-1">
+                                        Agotado
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -182,7 +182,7 @@ const TcgPage = () => {
                                 <div
                                     key={product.id}
                                     className="tactical-frame p-4 hover:bg-surface-bright transition-colors cursor-pointer flex flex-col gap-3 group">
-                                    <ProductImage src={product.image} />
+                                    <ProductImage src={product.image} inStock={product.inStock} />
                                     <div className="flex items-start justify-between gap-2">
                                         <div className="flex-1 min-w-0">
                                             <p className="text-[9px] font-headline text-primary/60 tracking-widest uppercase truncate">
@@ -203,10 +203,11 @@ const TcgPage = () => {
                                         <span className="font-headline font-bold text-sm text-primary">
                                             {product.price}
                                         </span>
-                                        <StockBar
-                                            stock={product.stock}
-                                            maxStock={product.maxStock}
-                                        />
+                                        {product.inStock === false && (
+                                            <span className="text-[8px] font-headline uppercase tracking-widest text-error border border-error px-1.5 py-0.5">
+                                                Agotado
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                             ))}
