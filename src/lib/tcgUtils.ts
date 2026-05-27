@@ -26,3 +26,32 @@ export function tcgIdToSlug(tcgId: string): string {
     const entry = Object.entries(LEGACY_SLUG_MAP).find(([, id]) => id === tcgId);
     return entry ? entry[0] : tcgId;
 }
+
+/**
+ * Convierte texto libre en slug: "Funko Pop" → "funko-pop"
+ */
+export function toSlug(text: string): string {
+    return text
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-');
+}
+
+/**
+ * Convierte cualquier pathname de la app al ID de sección en Firestore.
+ *
+ *   /tcgs/final-fantasy  →  'finalfantasy'   (legacy mapping)
+ *   /tcgs/dragon-ball    →  'dragon-ball'
+ *   /accesorios-tcgs     →  'accesorios-tcgs'
+ *   /funko-pop           →  'funko-pop'
+ */
+export function pathToSectionId(pathname: string): string {
+    const stripped = pathname.replace(/^\//, ''); // quita la / inicial
+    if (stripped.startsWith('tcgs/')) {
+        return slugToTcgId(stripped.slice('tcgs/'.length));
+    }
+    return stripped;
+}

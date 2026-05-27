@@ -5,6 +5,7 @@ import {
     DEFAULT_SIDEBAR,
     type NavItem,
 } from '../../services/navService';
+import { toSlug } from '../../lib/tcgUtils';
 
 type SideNavProps = {
     isOpen: boolean;
@@ -112,16 +113,17 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                             {item.label}
                         </Link>
                     ) : (
-                        /* ── Entrada sin ruta (próximamente) ── */
-                        <a
+                        /* ── Entrada sin ruta explícita: deriva el path del label ── */
+                        <Link
                             key={idx}
-                            href="#"
+                            to={`/${toSlug(item.label)}`}
+                            onClick={onClose}
                             className="flex items-center py-3 pl-6 text-[#e0e0ff] opacity-70 hover:bg-[#2f336c] hover:opacity-100 transition-all">
                             <span className="material-symbols-outlined mr-3">
                                 {item.icon}
                             </span>
                             {item.label}
-                        </a>
+                        </Link>
                     ),
                 )}
             </nav>
