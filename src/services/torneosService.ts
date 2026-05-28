@@ -32,11 +32,10 @@ const COL = 'torneos';
 
 export const getTorneos = async (): Promise<Torneo[]> => {
     const snap = await getDocs(query(collection(db, COL), orderBy('hora')));
-    return snap.docs.map((d) => ({
-        id: d.id,
-        estado: 'abierto',
-        ...(d.data() as Omit<Torneo, 'id'>),
-    }));
+    return snap.docs.map((d) => {
+        const { estado, ...rest } = d.data() as Omit<Torneo, 'id'>;
+        return { id: d.id, ...rest, estado: estado ?? 'abierto' } as Torneo;
+    });
 };
 
 export const addTorneo = async (data: Omit<Torneo, 'id'>): Promise<void> => {
