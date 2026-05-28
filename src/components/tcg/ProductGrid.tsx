@@ -22,9 +22,6 @@ const ProductGrid = ({ products, totalCount, search, selectedCategory, sectionLa
                             Aún no hay productos para{' '}
                             <span className="font-headline text-primary uppercase">{sectionLabel}</span>.
                             <br />
-                            <span className="text-xs">
-                                Añade productos desde el panel de administración.
-                            </span>
                         </>
                     ) : search ? (
                         <>
