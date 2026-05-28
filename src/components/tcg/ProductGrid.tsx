@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import ProductImage from '../ProductImage';
 import type { Product } from '../../types';
 
@@ -10,6 +11,8 @@ type Props = {
 };
 
 const ProductGrid = ({ products, totalCount, search, selectedCategory, sectionLabel }: Props) => {
+    const { t } = useTranslation();
+
     if (products.length === 0) {
         return (
             <div className="tactical-frame p-10 flex flex-col items-center gap-3 text-center">
@@ -19,18 +22,18 @@ const ProductGrid = ({ products, totalCount, search, selectedCategory, sectionLa
                 <p className="text-sm font-body text-on-surface-variant">
                     {totalCount === 0 ? (
                         <>
-                            Aún no hay productos para{' '}
+                            {t('productGrid.noProducts')}{' '}
                             <span className="font-headline text-primary uppercase">{sectionLabel}</span>.
                             <br />
                         </>
                     ) : search ? (
                         <>
-                            Sin resultados para{' '}
+                            {t('productGrid.noResults')}{' '}
                             <span className="font-headline text-primary">&ldquo;{search}&rdquo;</span>
                         </>
                     ) : (
                         <>
-                            Sin productos en{' '}
+                            {t('productGrid.noProductsInCategory')}{' '}
                             <span className="font-headline text-primary uppercase">{selectedCategory}</span>
                         </>
                     )}
@@ -42,7 +45,7 @@ const ProductGrid = ({ products, totalCount, search, selectedCategory, sectionLa
     return (
         <>
             <h3 className="font-headline text-primary text-xs tracking-[0.3em] mb-4 uppercase">
-                Catálogo completo
+                {t('productGrid.fullCatalog')}
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {products.map((product) => (
@@ -71,7 +74,7 @@ const ProductGrid = ({ products, totalCount, search, selectedCategory, sectionLa
                             </span>
                             {product.inStock === false && (
                                 <span className="text-[8px] font-headline uppercase tracking-widest text-error border border-error px-1.5 py-0.5">
-                                    Agotado
+                                    {t('productGrid.soldOut')}
                                 </span>
                             )}
                         </div>

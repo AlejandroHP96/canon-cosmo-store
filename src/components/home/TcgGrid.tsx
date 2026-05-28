@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
     getSidebarConfig,
     DEFAULT_SIDEBAR,
@@ -26,6 +27,7 @@ function getTcgSubmenu(): { label: string; path: string }[] {
 }
 
 const TcgGrid = () => {
+    const { t } = useTranslation();
     const hasCached = !!localStorage.getItem(NAV_CACHE_KEY);
     const [tcgItems, setTcgItems] = useState(hasCached ? getTcgSubmenu() : []);
 
@@ -44,11 +46,11 @@ const TcgGrid = () => {
         <>
             <div className="flex items-center gap-4 mb-5">
                 <h2 className="font-headline text-primary text-xs tracking-[0.3em] uppercase">
-                    TCGs
+                    {t('tcgGrid.title')}
                 </h2>
                 <div className="flex-1 h-px bg-outline-variant/30" />
                 <span className="text-[9px] font-headline text-on-surface-variant tracking-widest">
-                    {tcgItems.length} secciones
+                    {tcgItems.length} {t('tcgGrid.sections')}
                 </span>
             </div>
 
@@ -76,7 +78,7 @@ const TcgGrid = () => {
                                 </h3>
                             </div>
                             <div className="text-[10px] font-headline text-on-surface-variant uppercase tracking-widest group-hover:text-primary transition-colors">
-                                <span>Ver catálogo</span>
+                                <span>{t('tcgGrid.viewCatalog')}</span>
                             </div>
                         </div>
                     </Link>

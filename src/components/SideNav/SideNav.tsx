@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
     getSidebarConfig,
     DEFAULT_SIDEBAR,
@@ -25,14 +26,12 @@ function getCachedItems(): NavItem[] {
 }
 
 const SideNav = ({ isOpen, onClose }: SideNavProps) => {
-    // Usuarios con cache ven el orden correcto de inmediato.
-    // Usuarios sin cache arrancan con null (sin items) hasta que Firestore responde,
-    // evitando mostrar el orden hardcodeado incorrecto.
+    const { t } = useTranslation();
+
     const cached = getCachedItems();
     const hasCachedFromFirestore = !!localStorage.getItem(NAV_CACHE_KEY);
     const [items, setItems] = useState<NavItem[]>(hasCachedFromFirestore ? cached : []);
 
-    // Set de índices cuyo submenú está abierto (el primero abre por defecto)
     const [openItems, setOpenItems] = useState<Set<number>>(new Set([0]));
     const [hoveredItem, setHoveredItem] = useState<number | null>(null);
 
@@ -43,7 +42,6 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                 localStorage.setItem(NAV_CACHE_KEY, JSON.stringify(config.items));
             })
             .catch(() => {
-                // Si falla Firestore y no hay cache, usar defaults
                 if (!hasCachedFromFirestore) setItems(DEFAULT_SIDEBAR.items);
             });
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -61,10 +59,10 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
             className={`fixed left-0 top-16 h-[calc(100vh-64px)] w-64 p-4 bg-[#141851] border-r-2 border-[#e0e0ff] shadow-[inset_0_0_10px_rgba(0,1,172,0.5)] flex flex-col z-40 transition-transform duration-300 md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
             <div className="mb-8 px-2">
                 <h2 className="text-[#e0e0ff] font-black font-headline text-xl">
-                    COMMAND
+                    {t('sidenav.command')}
                 </h2>
                 <p className="text-[#bec2ff] text-[10px] tracking-[0.2em] font-headline">
-                    SELECT ACTION
+                    {t('sidenav.selectAction')}
                 </p>
             </div>
 
@@ -78,7 +76,6 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                 )}
                 {items.map((item, idx) =>
                     item.submenu && item.submenu.length > 0 ? (
-                        /* ── Entrada con submenú expandible ── */
                         <div key={idx}>
                             <button
                                 onClick={() => toggle(idx)}
@@ -128,7 +125,6 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                             )}
                         </div>
                     ) : item.path ? (
-                        /* ── Entrada con ruta directa ── */
                         <Link
                             key={idx}
                             to={item.path}
@@ -140,7 +136,6 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                             {item.label}
                         </Link>
                     ) : (
-                        /* ── Entrada sin ruta explícita: deriva el path del label ── */
                         <Link
                             key={idx}
                             to={`/${toSlug(item.label)}`}
@@ -162,10 +157,10 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                     </span>
                 </div>
                 <p className="text-[10px] text-primary mb-1 font-headline">
-                    CURRENT STATUS
+                    {t('sidenav.currentStatus')}
                 </p>
                 <p className="text-xs text-on-surface leading-tight font-body">
-                    Bugenhagen's archive is open. Planetary health: STABLE.
+                    {t('sidenav.statusMessage')}
                 </p>
             </div>
         </aside>
