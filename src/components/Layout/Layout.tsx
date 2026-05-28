@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import Header from '../Header/Header';
 import SideNav from '../SideNav/SideNav';
 import Footer from '../Footer/Footer';
@@ -13,10 +13,16 @@ const KONAMI = [
 const Layout = () => {
     const [sideNavOpen, setSideNavOpen] = useState(false);
     const navigate = useNavigate();
+    const { pathname } = useLocation();
     const progress = useRef(0);
 
     useEffect(() => {
+        progress.current = 0;
+    }, [pathname]);
+
+    useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
+            if (pathname !== '/aboutus') return;
             if (e.key === KONAMI[progress.current]) {
                 progress.current += 1;
                 if (progress.current === KONAMI.length) {
@@ -29,7 +35,7 @@ const Layout = () => {
         };
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
-    }, [navigate]);
+    }, [navigate, pathname]);
 
     return (
         <div className="bg-background text-on-surface font-body overflow-hidden h-screen select-none">

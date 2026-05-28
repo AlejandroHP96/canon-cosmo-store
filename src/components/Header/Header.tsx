@@ -46,11 +46,6 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
                     className="font-headline uppercase tracking-widest text-xs text-[#e0e0ff] opacity-60 hover:opacity-100 transition-all border border-[#e0e0ff]/30 px-2 py-0.5 hover:border-primary">
                     {LANGS.find((l) => l !== i18n.language)?.toUpperCase()}
                 </button>
-                <Link
-                    to="/cosmos-admin"
-                    className="font-headline uppercase tracking-widest text-xs text-[#e0e0ff] opacity-30 hover:opacity-60 transition-all">
-                    {t('header.admin')}
-                </Link>
             </div>
         </header>
     );
