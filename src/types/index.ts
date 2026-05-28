@@ -15,8 +15,7 @@ export type Product = {
     category: string;
     badge?: string;
     badgeColor?: string;
-    stock: number;
-    maxStock: number;
+    inStock?: boolean;
     image?: string;
     featured?: boolean;
 };

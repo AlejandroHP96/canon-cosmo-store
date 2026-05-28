@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { deleteField } from 'firebase/firestore';
 import {
     getAllProducts,
@@ -30,8 +30,7 @@ const EMPTY_FORM: Omit<Product, 'id'> = {
     category: '',
     badge: '',
     badgeColor: '',
-    stock: 0,
-    maxStock: 5,
+    inStock: true,
     image: '',
     featured: false,
 };
@@ -140,11 +139,7 @@ const ProductFormModal = ({
         setError(null);
         setSaving(true);
         try {
-            const raw: FormData = {
-                ...form,
-                stock: Number(form.stock),
-                maxStock: Number(form.maxStock),
-            };
+            const raw: FormData = { ...form };
             if (isEdit) {
                 const updatePayload: Record<string, string | number | boolean | ReturnType<typeof deleteField> | undefined> = {
                     ...Object.fromEntries(
@@ -175,9 +170,14 @@ const ProductFormModal = ({
 
     const subOptions = navItems[menuIdx]?.submenu ?? [];
 
+    const selectedPath = subOptions.length > 0
+        ? subOptions[Math.min(subIdx, subOptions.length - 1)]?.path ?? ''
+        : navItems[menuIdx]?.path ?? '';
+    const isTcgSection = selectedPath.startsWith('/tcgs/');
+
     return (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-            <div className="tactical-frame p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-2">
+            <div className="tactical-frame p-6 w-full max-w-2xl max-h-[96vh] overflow-y-auto">
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="font-headline font-bold text-lg text-on-surface uppercase tracking-widest">
                         {isEdit ? 'Editar Producto' : 'Nuevo Producto'}
@@ -190,29 +190,33 @@ const ProductFormModal = ({
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    {/* Menú + Sección (selectores en cascada) */}
-                    <div className={`grid gap-3 ${subOptions.length > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                        <div>
-                            <label className={labelClass}>Menú</label>
-                            <select
-                                value={menuIdx}
-                                onChange={(e) => {
-                                    setMenuIdx(Number(e.target.value));
-                                    setSubIdx(0);
-                                }}
-                                className={inputClass}
-                                disabled={!navReady}>
-                                {navItems.map((item, i) => (
-                                    <option key={i} value={i}>
-                                        {item.label}
-                                    </option>
-                                ))}
-                                {!navReady && <option>Cargando...</option>}
-                            </select>
-                        </div>
-                        {subOptions.length > 0 && (
-                            <div>
-                                <label className={labelClass}>Sección</label>
+                    {/* Sección del catálogo (selectores en cascada) */}
+                    <div className="border border-outline-variant/50 p-3 flex flex-col gap-2">
+                        <p className={labelClass}>Sección del catálogo</p>
+                        <div className={`grid gap-2 items-center ${subOptions.length > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                            <div className="flex items-center gap-2">
+                                {navItems[menuIdx] && (
+                                    <span className="material-symbols-outlined text-primary text-base shrink-0">
+                                        {navItems[menuIdx].icon}
+                                    </span>
+                                )}
+                                <select
+                                    value={menuIdx}
+                                    onChange={(e) => {
+                                        setMenuIdx(Number(e.target.value));
+                                        setSubIdx(0);
+                                    }}
+                                    className={inputClass}
+                                    disabled={!navReady}>
+                                    {navItems.map((item, i) => (
+                                        <option key={i} value={i}>
+                                            {item.label}
+                                        </option>
+                                    ))}
+                                    {!navReady && <option>Cargando...</option>}
+                                </select>
+                            </div>
+                            {subOptions.length > 0 && (
                                 <select
                                     value={subIdx}
                                     onChange={(e) =>
@@ -225,8 +229,8 @@ const ProductFormModal = ({
                                         </option>
                                     ))}
                                 </select>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
 
                     {/* Name */}
@@ -241,18 +245,20 @@ const ProductFormModal = ({
                     </div>
 
                     {/* Set + Category */}
-                    <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className={labelClass}>
-                                Set / Expansión
-                            </label>
-                            <input
-                                required
-                                value={form.set}
-                                onChange={(e) => set('set', e.target.value)}
-                                className={inputClass}
-                            />
-                        </div>
+                    <div className={`grid gap-3 ${isTcgSection ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                        {isTcgSection && (
+                            <div>
+                                <label className={labelClass}>
+                                    Set / Expansión
+                                </label>
+                                <input
+                                    required
+                                    value={form.set}
+                                    onChange={(e) => set('set', e.target.value)}
+                                    className={inputClass}
+                                />
+                            </div>
+                        )}
                         <div>
                             <label className={labelClass}>Categoría</label>
                             <select
@@ -275,43 +281,53 @@ const ProductFormModal = ({
                         </div>
                     </div>
 
-                    {/* Price */}
-                    <div>
-                        <label className={labelClass}>Precio</label>
-                        <input
-                            required
-                            placeholder="4,99 €"
-                            value={form.price}
-                            onChange={(e) => set('price', e.target.value)}
-                            className={inputClass}
-                        />
-                    </div>
-
-                    {/* Stock + MaxStock */}
+                    {/* Price + Disponibilidad */}
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className={labelClass}>Stock actual</label>
-                            <input
-                                type="number"
-                                min={0}
-                                value={form.stock}
-                                onChange={(e) =>
-                                    set('stock', Number(e.target.value))
-                                }
-                                className={inputClass}
-                            />
+                            <label className={labelClass}>Precio</label>
+                            <div className="flex items-center">
+                                <input
+                                    required
+                                    placeholder="4,99"
+                                    value={form.price.replace(/ ?€$/, '')}
+                                    onChange={(e) =>
+                                        set('price', e.target.value ? `${e.target.value.trim()} €` : '')
+                                    }
+                                    className={inputClass + ' border-r-0'}
+                                />
+                                <span className="shrink-0 border border-outline-variant bg-surface-container px-3 py-2 text-sm text-on-surface-variant font-body">
+                                    €
+                                </span>
+                            </div>
                         </div>
                         <div>
-                            <label className={labelClass}>Stock máximo</label>
-                            <input
-                                type="number"
-                                min={1}
-                                value={form.maxStock}
-                                onChange={(e) =>
-                                    set('maxStock', Number(e.target.value))
-                                }
-                                className={inputClass}
-                            />
+                            <label className={labelClass}>Disponibilidad</label>
+                            <div className="grid grid-cols-2 gap-2">
+                                {[
+                                    { value: true, label: 'DISPONIBLE', icon: 'check_circle' },
+                                    { value: false, label: 'AGOTADO', icon: 'remove_shopping_cart' },
+                                ].map(({ value, label, icon }) => {
+                                    const active = (form.inStock ?? true) === value;
+                                    return (
+                                        <button
+                                            key={label}
+                                            type="button"
+                                            onClick={() => set('inStock', value)}
+                                            className={`flex items-center justify-center gap-1.5 py-2.5 border font-headline text-[10px] uppercase tracking-widest transition-all ${
+                                                active
+                                                    ? value
+                                                        ? 'border-primary bg-primary/10 text-primary'
+                                                        : 'border-error bg-error/10 text-error'
+                                                    : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
+                                            }`}>
+                                            <span className="material-symbols-outlined text-sm">
+                                                {icon}
+                                            </span>
+                                            {label}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
 
@@ -1318,14 +1334,14 @@ const AdminPanelPage = () => {
         <div className="min-h-screen bg-surface text-on-surface">
             {/* Header */}
             <header className="sticky top-0 z-40 border-b-2 border-[#e0e0ff] bg-primary-container px-6 py-3 flex items-center justify-between shadow-[inset_0_0_8px_rgba(0,1,172,1)]">
-                <div>
-                    <p className="text-[10px] font-headline text-primary/60 tracking-[0.3em] uppercase">
+                <Link to="/" className="group">
+                    <p className="text-[10px] font-headline text-primary/60 tracking-[0.3em] uppercase group-hover:text-primary transition-colors">
                         COSMOS-ADMIN
                     </p>
-                    <p className="font-headline font-bold text-on-surface uppercase tracking-widest text-sm">
+                    <p className="font-headline font-bold text-on-surface uppercase tracking-widest text-sm group-hover:text-primary transition-colors">
                         Panel de Control
                     </p>
-                </div>
+                </Link>
                 <div className="flex items-center gap-4">
                     <span className="text-[10px] font-headline text-on-surface-variant hidden sm:block">
                         {user?.email}
@@ -1524,8 +1540,7 @@ const AdminPanelPage = () => {
                                         {product.price}
                                     </p>
                                     <p className="text-[10px] text-on-surface-variant font-body">
-                                        Stock: {product.stock}/
-                                        {product.maxStock}
+                                        {product.inStock === false ? 'Agotado' : 'Disponible'}
                                     </p>
                                 </div>
 
