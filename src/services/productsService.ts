@@ -6,6 +6,7 @@ import {
     addDoc,
     updateDoc,
     deleteDoc,
+    writeBatch,
     doc,
     type FieldValue,
 } from 'firebase/firestore';
@@ -54,4 +55,16 @@ export async function updateProduct(
 /** Elimina un producto */
 export async function deleteProduct(id: string): Promise<void> {
     await deleteDoc(doc(db, COLLECTION, id));
+}
+
+/** Elimina varios productos en lotes de 500 (límite de writeBatch) */
+export async function deleteProducts(ids: string[]): Promise<void> {
+    const BATCH_SIZE = 500;
+    for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+        const batch = writeBatch(db);
+        ids.slice(i, i + BATCH_SIZE).forEach((id) =>
+            batch.delete(doc(db, COLLECTION, id)),
+        );
+        await batch.commit();
+    }
 }

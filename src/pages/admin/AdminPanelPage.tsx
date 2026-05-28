@@ -6,6 +6,7 @@ import {
     addProduct,
     updateProduct,
     deleteProduct,
+    deleteProducts,
 } from '../../services/productsService';
 import {
     getCategoriesByTcg,
@@ -1576,6 +1577,10 @@ const AdminPanelPage = () => {
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
 
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+    const [bulkDeleting, setBulkDeleting] = useState(false);
+    const [showBulkConfirm, setShowBulkConfirm] = useState(false);
+
     const openAdd = () => {
         setEditingProduct(null);
         setShowForm(true);
@@ -1619,6 +1624,37 @@ const AdminPanelPage = () => {
         if (filterSectionId !== 'all') return p.tcg === filterSectionId;
         return menuSectionIds.includes(p.tcg);
     });
+
+    const toggleSelect = (id: string) =>
+        setSelectedIds((prev) => {
+            const next = new Set(prev);
+            next.has(id) ? next.delete(id) : next.add(id);
+            return next;
+        });
+
+    const allVisibleSelected =
+        visible.length > 0 && visible.every((p) => selectedIds.has(p.id));
+
+    const toggleSelectAll = () =>
+        setSelectedIds(
+            allVisibleSelected
+                ? new Set()
+                : new Set(visible.map((p) => p.id)),
+        );
+
+    const handleBulkDelete = async () => {
+        setBulkDeleting(true);
+        try {
+            await deleteProducts([...selectedIds]);
+            setSelectedIds(new Set());
+            setShowBulkConfirm(false);
+            refresh();
+        } finally {
+            setBulkDeleting(false);
+        }
+    };
+
+
 
     return (
         <div className="min-h-screen bg-surface text-on-surface">
@@ -1758,18 +1794,50 @@ const AdminPanelPage = () => {
                     <button
                         onClick={openAdd}
                         className="flex items-center gap-2 border border-primary text-primary font-headline text-xs uppercase tracking-widest px-4 py-2 hover:bg-primary hover:text-surface transition-colors">
-                        <span className="material-symbols-outlined text-sm">
-                            add
-                        </span>
+                        <span className="material-symbols-outlined text-sm">add</span>
                         Nuevo producto
                     </button>
                 </div>
 
-                {/* Product count */}
-                <p className="text-[10px] font-headline text-on-surface-variant uppercase tracking-widest mb-4">
-                    <span className="w-1.5 h-1.5 bg-primary animate-ping inline-block mr-2" />
-                    {visible.length} producto{visible.length !== 1 ? 's' : ''}
-                </p>
+                {/* Barra de selección múltiple */}
+                <div className="flex items-center justify-between mb-4 gap-4 flex-wrap">
+                    <div className="flex items-center gap-3">
+                        {/* Checkbox seleccionar todos los visibles */}
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                                type="checkbox"
+                                checked={allVisibleSelected}
+                                onChange={toggleSelectAll}
+                                className="w-4 h-4 accent-primary"
+                            />
+                            <span className="text-[10px] font-headline text-on-surface-variant uppercase tracking-widest">
+                                {allVisibleSelected ? 'Deseleccionar todo' : 'Seleccionar todo'}
+                            </span>
+                        </label>
+                        <span className="text-[10px] font-headline text-on-surface-variant uppercase tracking-widest">
+                            <span className="w-1.5 h-1.5 bg-primary animate-ping inline-block mr-2" />
+                            {visible.length} producto{visible.length !== 1 ? 's' : ''}
+                        </span>
+                    </div>
+                    {selectedIds.size > 0 && (
+                        <div className="flex items-center gap-3">
+                            <span className="text-[10px] font-headline text-primary uppercase tracking-widest">
+                                {selectedIds.size} seleccionado{selectedIds.size !== 1 ? 's' : ''}
+                            </span>
+                            <button
+                                onClick={() => setSelectedIds(new Set())}
+                                className="text-[10px] font-headline text-on-surface-variant uppercase tracking-widest hover:text-primary transition-colors">
+                                Limpiar
+                            </button>
+                            <button
+                                onClick={() => setShowBulkConfirm(true)}
+                                className="flex items-center gap-1.5 border border-error text-error font-headline text-xs uppercase tracking-widest px-3 py-1.5 hover:bg-error hover:text-surface transition-colors">
+                                <span className="material-symbols-outlined text-sm">delete_sweep</span>
+                                Eliminar seleccionados
+                            </button>
+                        </div>
+                    )}
+                </div>
 
                 {/* Table */}
                 {loading ? (
@@ -1784,73 +1852,80 @@ const AdminPanelPage = () => {
                     </div>
                 ) : (
                     <div className="flex flex-col gap-3">
-                        {visible.map((product) => (
-                            <div
-                                key={product.id}
-                                className="tactical-frame p-4 flex items-center gap-4">
-                                {/* Thumbnail */}
-                                <ProductImage
-                                    src={product.image}
-                                    className="w-14 h-14 shrink-0"
-                                />
+                        {visible.map((product) => {
+                            const isSelected = selectedIds.has(product.id);
+                            return (
+                                <div
+                                    key={product.id}
+                                    className={`tactical-frame p-4 flex items-center gap-4 transition-colors ${isSelected ? 'bg-primary/5 border-primary/40' : ''}`}>
+                                    {/* Checkbox */}
+                                    <input
+                                        type="checkbox"
+                                        checked={isSelected}
+                                        onChange={() => toggleSelect(product.id)}
+                                        className="w-4 h-4 accent-primary shrink-0"
+                                    />
 
-                                {/* Info */}
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                                        <span className="text-[9px] font-headline uppercase tracking-widest text-primary/60">
-                                            {product.tcg}
-                                        </span>
-                                        {product.badge && (
-                                            <span
-                                                className={`px-1.5 py-0.5 text-[8px] font-headline border ${product.badgeColor} text-[#e0e0ff]`}>
-                                                {product.badge}
+                                    {/* Thumbnail */}
+                                    <ProductImage
+                                        src={product.image}
+                                        className="w-14 h-14 shrink-0"
+                                    />
+
+                                    {/* Info */}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                                            <span className="text-[9px] font-headline uppercase tracking-widest text-primary/60">
+                                                {product.tcg}
                                             </span>
-                                        )}
-                                        {product.featured && (
-                                            <span className="text-[9px] font-headline text-primary">
-                                                ★ Destacado
-                                            </span>
-                                        )}
+                                            {product.badge && (
+                                                <span
+                                                    className={`px-1.5 py-0.5 text-[8px] font-headline border ${product.badgeColor} text-[#e0e0ff]`}>
+                                                    {product.badge}
+                                                </span>
+                                            )}
+                                            {product.featured && (
+                                                <span className="text-[9px] font-headline text-primary">
+                                                    ★ Destacado
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="font-headline font-bold text-sm text-on-surface uppercase truncate">
+                                            {product.name}
+                                        </p>
+                                        <p className="text-[10px] text-on-surface-variant font-body">
+                                            {product.set} · {product.category}
+                                        </p>
                                     </div>
-                                    <p className="font-headline font-bold text-sm text-on-surface uppercase truncate">
-                                        {product.name}
-                                    </p>
-                                    <p className="text-[10px] text-on-surface-variant font-body">
-                                        {product.set} · {product.category}
-                                    </p>
-                                </div>
 
-                                {/* Price + Stock */}
-                                <div className="text-right shrink-0 hidden sm:block">
-                                    <p className="font-headline font-bold text-primary text-sm">
-                                        {product.price}
-                                    </p>
-                                    <p className="text-[10px] text-on-surface-variant font-body">
-                                        {product.inStock === false ? 'Agotado' : 'Disponible'}
-                                    </p>
-                                </div>
+                                    {/* Price + Stock */}
+                                    <div className="text-right shrink-0 hidden sm:block">
+                                        <p className="font-headline font-bold text-primary text-sm">
+                                            {product.price}
+                                        </p>
+                                        <p className="text-[10px] text-on-surface-variant font-body">
+                                            {product.inStock === false ? 'Agotado' : 'Disponible'}
+                                        </p>
+                                    </div>
 
-                                {/* Actions */}
-                                <div className="flex items-center gap-2 shrink-0">
-                                    <button
-                                        onClick={() => openEdit(product)}
-                                        className="border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary p-1.5 transition-colors"
-                                        title="Editar">
-                                        <span className="material-symbols-outlined text-sm">
-                                            edit
-                                        </span>
-                                    </button>
-                                    <button
-                                        onClick={() => setDeleteTarget(product)}
-                                        className="border border-outline-variant text-on-surface-variant hover:border-error hover:text-error p-1.5 transition-colors"
-                                        title="Eliminar">
-                                        <span className="material-symbols-outlined text-sm">
-                                            delete
-                                        </span>
-                                    </button>
+                                    {/* Actions */}
+                                    <div className="flex items-center gap-2 shrink-0">
+                                        <button
+                                            onClick={() => openEdit(product)}
+                                            className="border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary p-1.5 transition-colors"
+                                            title="Editar">
+                                            <span className="material-symbols-outlined text-sm">edit</span>
+                                        </button>
+                                        <button
+                                            onClick={() => setDeleteTarget(product)}
+                                            className="border border-outline-variant text-on-surface-variant hover:border-error hover:text-error p-1.5 transition-colors"
+                                            title="Eliminar">
+                                            <span className="material-symbols-outlined text-sm">delete</span>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
                 </>
@@ -1875,9 +1950,46 @@ const AdminPanelPage = () => {
                     onClose={() => setDeleteTarget(null)}
                     onDeleted={() => {
                         setDeleteTarget(null);
+                        setSelectedIds((prev) => {
+                            const next = new Set(prev);
+                            next.delete(deleteTarget.id);
+                            return next;
+                        });
                         refresh();
                     }}
                 />
+            )}
+
+            {/* Modal confirmación borrado masivo */}
+            {showBulkConfirm && (
+                <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+                    <div className="tactical-frame p-6 w-full max-w-sm">
+                        <h2 className="font-headline font-bold text-lg text-on-surface uppercase tracking-widest mb-2">
+                            Eliminar productos
+                        </h2>
+                        <p className="text-sm font-body text-on-surface-variant mb-6">
+                            ¿Seguro que quieres eliminar{' '}
+                            <span className="text-on-surface font-bold">
+                                {selectedIds.size} producto{selectedIds.size !== 1 ? 's' : ''}
+                            </span>
+                            ? Esta acción no se puede deshacer.
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowBulkConfirm(false)}
+                                disabled={bulkDeleting}
+                                className="flex-1 border border-outline-variant text-on-surface-variant font-headline text-xs uppercase tracking-widest py-2.5 hover:border-primary hover:text-primary transition-colors disabled:opacity-50">
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={handleBulkDelete}
+                                disabled={bulkDeleting}
+                                className="flex-1 border border-error bg-error-container/30 text-error font-headline text-xs uppercase tracking-widest py-2.5 hover:bg-error-container/60 transition-colors disabled:opacity-50">
+                                {bulkDeleting ? 'Eliminando...' : `Eliminar ${selectedIds.size}`}
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
