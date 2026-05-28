@@ -2,53 +2,49 @@ import {
     collection,
     getDocs,
     addDoc,
-    deleteDoc,
-    doc,
     updateDoc,
-    query,
-    orderBy,
+    deleteDoc,
+    deleteField,
+    doc,
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
-export type DiaSemana =
-    | 'lunes'
-    | 'martes'
-    | 'miercoles'
-    | 'jueves'
-    | 'viernes'
-    | 'sabado'
-    | 'domingo';
-
-export type Torneo = {
+export type JuegoTorneo = {
     id: string;
     nombre: string;
-    dia: DiaSemana;
-    hora: string;
+    imagen?: string;
     descripcion?: string;
-    estado: 'abierto' | 'cerrado';
+    url?: string;
 };
 
-const COL = 'torneos';
+const COLLECTION = 'torneosJuegos';
 
-export const getTorneos = async (): Promise<Torneo[]> => {
-    const snap = await getDocs(query(collection(db, COL), orderBy('hora')));
-    return snap.docs.map((d) => {
-        const { estado, ...rest } = d.data() as Omit<Torneo, 'id'>;
-        return { id: d.id, ...rest, estado: estado ?? 'abierto' } as Torneo;
-    });
-};
+export async function getJuegos(): Promise<JuegoTorneo[]> {
+    const snapshot = await getDocs(collection(db, COLLECTION));
+    return snapshot.docs
+        .map((d) => ({ id: d.id, ...d.data() }) as JuegoTorneo)
+        .sort((a, b) => a.nombre.localeCompare(b.nombre));
+}
 
-export const addTorneo = async (data: Omit<Torneo, 'id'>): Promise<void> => {
-    await addDoc(collection(db, COL), data);
-};
+export async function addJuego(
+    juego: Omit<JuegoTorneo, 'id'>,
+): Promise<string> {
+    const ref = await addDoc(collection(db, COLLECTION), juego);
+    return ref.id;
+}
 
-export const updateTorneoEstado = async (
+export async function updateJuego(
     id: string,
-    estado: Torneo['estado'],
-): Promise<void> => {
-    await updateDoc(doc(db, COL, id), { estado });
-};
+    data: Omit<JuegoTorneo, 'id'>,
+): Promise<void> {
+    await updateDoc(doc(db, COLLECTION, id), {
+        nombre: data.nombre,
+        imagen: data.imagen || deleteField(),
+        descripcion: data.descripcion || deleteField(),
+        url: data.url || deleteField(),
+    });
+}
 
-export const deleteTorneo = async (id: string): Promise<void> => {
-    await deleteDoc(doc(db, COL, id));
-};
+export async function deleteJuego(id: string): Promise<void> {
+    await deleteDoc(doc(db, COLLECTION, id));
+}

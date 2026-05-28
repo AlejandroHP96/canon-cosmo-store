@@ -1,91 +1,96 @@
 import { useEffect, useState } from 'react';
-import { getTorneos, type DiaSemana, type Torneo } from '../services/torneosService';
-
-const DIAS: { id: DiaSemana; label: string }[] = [
-    { id: 'lunes',     label: 'Lunes' },
-    { id: 'martes',    label: 'Martes' },
-    { id: 'miercoles', label: 'Miércoles' },
-    { id: 'jueves',    label: 'Jueves' },
-    { id: 'viernes',   label: 'Viernes' },
-    { id: 'sabado',    label: 'Sábado' },
-    { id: 'domingo',   label: 'Domingo' },
-];
+import { getJuegos, type JuegoTorneo } from '../services/torneosService';
 
 const Torneos = () => {
-    const [torneos, setTorneos] = useState<Torneo[]>([]);
+    const [juegos, setJuegos] = useState<JuegoTorneo[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        getTorneos()
-            .then(setTorneos)
+        getJuegos()
+            .then(setJuegos)
             .finally(() => setLoading(false));
     }, []);
 
-    const porDia = (dia: DiaSemana) => torneos.filter((t) => t.dia === dia);
-
     return (
-        <div className="min-h-screen px-4 py-16 md:px-8">
-            <h1 className="text-2xl md:text-3xl font-headline font-bold uppercase tracking-widest text-[#e0e0ff] mb-10 text-center">
-                Torneos
-            </h1>
-
-            {loading ? (
-                <div className="flex justify-center py-20">
-                    <span className="material-symbols-outlined text-primary text-4xl animate-spin">
-                        progress_activity
-                    </span>
+        <div className="min-h-screen bg-surface text-on-surface pt-20 px-6 pb-12">
+            <div className="max-w-4xl mx-auto">
+                <div className="mb-8">
+                    <p className="font-headline text-[10px] uppercase tracking-[0.3em] text-primary/60 mb-1">
+                        Cañón Cosmo Store
+                    </p>
+                    <h1 className="font-headline font-bold text-2xl md:text-3xl uppercase tracking-widest text-on-surface">
+                        Torneos
+                    </h1>
+                    <div className="h-px bg-primary/30 mt-4" />
                 </div>
-            ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 max-w-7xl mx-auto">
-                    {DIAS.map(({ id, label }) => {
-                        const eventos = porDia(id);
-                        return (
-                            <div
-                                key={id}
-                                className="tactical-frame flex flex-col min-h-[160px]">
-                                {/* Cabecera del día */}
-                                <div className="px-3 py-2 border-b border-outline-variant/40">
-                                    <p className="font-headline text-xs uppercase tracking-widest text-primary">
-                                        {label}
-                                    </p>
-                                </div>
 
-                                {/* Torneos del día */}
-                                <div className="flex flex-col gap-2 p-2 flex-1">
-                                    {eventos.length === 0 ? (
-                                        <p className="text-[10px] font-body text-on-surface-variant text-center my-auto opacity-40 italic">
-                                            Sin torneos
-                                        </p>
+                {loading ? (
+                    <div className="flex justify-center py-20">
+                        <span className="material-symbols-outlined text-primary text-4xl animate-spin">
+                            progress_activity
+                        </span>
+                    </div>
+                ) : juegos.length === 0 ? (
+                    <div className="tactical-frame p-10 text-center text-on-surface-variant font-body text-sm">
+                        Próximamente torneos disponibles.
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {juegos.map((juego) => {
+                            const cardClass = `tactical-frame overflow-hidden flex flex-col${juego.url ? ' cursor-pointer hover:border-primary transition-colors' : ''}`;
+                            const inner = (
+                                <>
+                                    {juego.imagen ? (
+                                        <div className="h-40 overflow-hidden bg-surface-container">
+                                            <img
+                                                src={juego.imagen}
+                                                alt={juego.nombre}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
                                     ) : (
-                                        eventos.map((t) => (
-                                            <div
-                                                key={t.id}
-                                                className="border border-outline-variant/50 bg-surface-container-lowest px-2.5 py-2">
-                                                <div className="flex items-start justify-between gap-1 mb-0.5">
-                                                    <p className="font-headline text-xs text-[#e0e0ff] uppercase tracking-wide leading-tight flex-1">
-                                                        {t.nombre}
-                                                    </p>
-                                                    <span className={`shrink-0 px-1.5 py-0.5 text-[8px] font-headline border ${t.estado === 'cerrado' ? 'border-error/60 text-error' : 'border-primary/60 text-primary'}`}>
-                                                        {t.estado === 'cerrado' ? 'CERRADO' : 'ABIERTO'}
-                                                    </span>
-                                                </div>
-                                                <p className="font-body text-[10px] text-primary">
-                                                    {t.hora}
-                                                </p>
-                                                {t.descripcion && (
-                                                    <p className="font-body text-[10px] text-on-surface-variant mt-1 leading-relaxed">
-                                                        {t.descripcion}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        ))
+                                        <div className="h-40 bg-surface-container flex items-center justify-center">
+                                            <span className="material-symbols-outlined text-primary/30 text-5xl">
+                                                emoji_events
+                                            </span>
+                                        </div>
                                     )}
+                                    <div className="p-4 flex flex-col gap-1 flex-1">
+                                        <h2 className="font-headline font-bold text-sm uppercase tracking-widest text-on-surface">
+                                            {juego.nombre}
+                                        </h2>
+                                        {juego.descripcion && (
+                                            <p className="font-body text-xs text-on-surface-variant leading-relaxed">
+                                                {juego.descripcion}
+                                            </p>
+                                        )}
+                                        {juego.url && (
+                                            <span className="mt-auto pt-2 flex items-center gap-1 text-[10px] font-headline uppercase tracking-widest text-primary/60">
+                                                <span className="material-symbols-outlined text-xs">open_in_new</span>
+                                                Ver más
+                                            </span>
+                                        )}
+                                    </div>
+                                </>
+                            );
+                            return juego.url ? (
+                                <a
+                                    key={juego.id}
+                                    href={juego.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={cardClass}>
+                                    {inner}
+                                </a>
+                            ) : (
+                                <div key={juego.id} className={cardClass}>
+                                    {inner}
                                 </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

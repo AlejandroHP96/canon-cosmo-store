@@ -22,12 +22,11 @@ import type { Product } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
 import ProductImage from '../../components/ProductImage';
 import {
-    getTorneos,
-    addTorneo,
-    updateTorneoEstado,
-    deleteTorneo,
-    type DiaSemana,
-    type Torneo,
+    getJuegos,
+    addJuego,
+    updateJuego,
+    deleteJuego,
+    type JuegoTorneo,
 } from '../../services/torneosService';
 
 const EMPTY_FORM: Omit<Product, 'id'> = {
@@ -1272,54 +1271,49 @@ const NavManager = () => {
     );
 };
 
-// ─── Torneos Manager ──────────────────────────────────────────────────────────
+// ─── Juegos Torneos Manager ───────────────────────────────────────────────────
 
-const DIAS_SEMANA: { id: DiaSemana; label: string }[] = [
-    { id: 'lunes',     label: 'Lunes' },
-    { id: 'martes',    label: 'Martes' },
-    { id: 'miercoles', label: 'Miércoles' },
-    { id: 'jueves',    label: 'Jueves' },
-    { id: 'viernes',   label: 'Viernes' },
-    { id: 'sabado',    label: 'Sábado' },
-    { id: 'domingo',   label: 'Domingo' },
-];
+const EMPTY_JUEGO = { nombre: '', imagen: '', descripcion: '', url: '' };
 
-const EMPTY_TORNEO = { nombre: '', dia: 'lunes' as DiaSemana, hora: '', descripcion: '', estado: 'abierto' as Torneo['estado'] };
-
-const TorneosManager = () => {
-    const [torneos, setTorneos] = useState<Torneo[]>([]);
+const JuegosManager = () => {
+    const [juegos, setJuegos] = useState<JuegoTorneo[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [form, setForm] = useState({ ...EMPTY_TORNEO });
+    const [form, setForm] = useState({ ...EMPTY_JUEGO });
+
+    // Edición inline
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editForm, setEditForm] = useState({ ...EMPTY_JUEGO });
 
     const refresh = () => {
         setLoading(true);
-        getTorneos()
-            .then(setTorneos)
-            .catch(() => setError('Error al cargar torneos.'))
+        getJuegos()
+            .then(setJuegos)
+            .catch(() => setError('Error al cargar juegos.'))
             .finally(() => setLoading(false));
     };
 
     useEffect(() => { refresh(); }, []);
 
-    const set = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) =>
+    const set = <K extends keyof typeof form>(key: K, value: string) =>
         setForm((prev) => ({ ...prev, [key]: value }));
+
+    const setEdit = <K extends keyof typeof editForm>(key: K, value: string) =>
+        setEditForm((prev) => ({ ...prev, [key]: value }));
 
     const handleAdd = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!form.nombre.trim() || !form.hora.trim()) return;
+        if (!form.nombre.trim()) return;
         setSaving(true);
         setError(null);
         try {
-            await addTorneo({
-                nombre: form.nombre.trim(),
-                dia: form.dia,
-                hora: form.hora.trim(),
-                estado: form.estado,
-                ...(form.descripcion.trim() && { descripcion: form.descripcion.trim() }),
-            });
-            setForm({ ...EMPTY_TORNEO });
+            const payload: Omit<JuegoTorneo, 'id'> = { nombre: form.nombre.trim() };
+            if (form.imagen.trim()) payload.imagen = form.imagen.trim();
+            if (form.descripcion.trim()) payload.descripcion = form.descripcion.trim();
+            if (form.url.trim()) payload.url = form.url.trim();
+            await addJuego(payload);
+            setForm({ ...EMPTY_JUEGO });
             refresh();
         } catch {
             setError('Error al guardar. Inténtalo de nuevo.');
@@ -1328,14 +1322,31 @@ const TorneosManager = () => {
         }
     };
 
-    const handleToggleEstado = async (t: Torneo) => {
-        const next = t.estado === 'abierto' ? 'cerrado' : 'abierto';
+    const handleEditStart = (juego: JuegoTorneo) => {
+        setEditingId(juego.id);
+        setEditForm({
+            nombre: juego.nombre,
+            imagen: juego.imagen ?? '',
+            descripcion: juego.descripcion ?? '',
+            url: juego.url ?? '',
+        });
+    };
+
+    const handleEditSave = async () => {
+        if (!editingId || !editForm.nombre.trim()) return;
         setSaving(true);
+        setError(null);
         try {
-            await updateTorneoEstado(t.id, next);
+            await updateJuego(editingId, {
+                nombre: editForm.nombre.trim(),
+                imagen: editForm.imagen.trim() || undefined,
+                descripcion: editForm.descripcion.trim() || undefined,
+                url: editForm.url.trim() || undefined,
+            });
+            setEditingId(null);
             refresh();
         } catch {
-            setError('Error al actualizar.');
+            setError('Error al guardar. Inténtalo de nuevo.');
         } finally {
             setSaving(false);
         }
@@ -1344,7 +1355,7 @@ const TorneosManager = () => {
     const handleDelete = async (id: string) => {
         setSaving(true);
         try {
-            await deleteTorneo(id);
+            await deleteJuego(id);
             refresh();
         } catch {
             setError('Error al eliminar.');
@@ -1353,87 +1364,57 @@ const TorneosManager = () => {
         }
     };
 
-    const porDia = (dia: DiaSemana) => torneos.filter((t) => t.dia === dia);
-
     return (
-        <div className="max-w-3xl">
+        <div className="max-w-2xl">
             {/* Formulario añadir */}
             <div className="border border-dashed border-outline-variant/60 p-4 mb-8">
-                <p className={labelClass}>Nuevo torneo</p>
+                <p className={labelClass}>Nuevo juego</p>
                 <form onSubmit={handleAdd} className="flex flex-col gap-3 mt-2">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div className="sm:col-span-2">
-                            <label className={labelClass}>Nombre</label>
-                            <input
-                                required
-                                value={form.nombre}
-                                onChange={(e) => set('nombre', e.target.value)}
-                                placeholder="Torneo de Pokémon..."
-                                className={inputClass}
-                            />
-                        </div>
-                        <div>
-                            <label className={labelClass}>Hora</label>
-                            <input
-                                required
-                                type="time"
-                                value={form.hora}
-                                onChange={(e) => set('hora', e.target.value)}
-                                className={inputClass}
-                            />
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label className={labelClass}>Día</label>
-                            <select
-                                value={form.dia}
-                                onChange={(e) => set('dia', e.target.value as DiaSemana)}
-                                className={inputClass}>
-                                {DIAS_SEMANA.map(({ id, label }) => (
-                                    <option key={id} value={id}>{label}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label className={labelClass}>Descripción (opcional)</label>
-                            <input
-                                value={form.descripcion}
-                                onChange={(e) => set('descripcion', e.target.value)}
-                                placeholder="Formato, premios..."
-                                className={inputClass}
-                            />
-                        </div>
+                    <div>
+                        <label className={labelClass}>Nombre</label>
+                        <input
+                            required
+                            value={form.nombre}
+                            onChange={(e) => set('nombre', e.target.value)}
+                            placeholder="Pokémon, Dragon Ball..."
+                            className={inputClass}
+                        />
                     </div>
                     <div>
-                        <label className={labelClass}>Estado</label>
-                        <div className="grid grid-cols-2 gap-2 max-w-xs">
-                            {(['abierto', 'cerrado'] as const).map((estado) => {
-                                const active = form.estado === estado;
-                                return (
-                                    <button
-                                        key={estado}
-                                        type="button"
-                                        onClick={() => set('estado', estado)}
-                                        className={`py-2 border font-headline text-[10px] uppercase tracking-widest transition-all ${
-                                            active
-                                                ? estado === 'abierto'
-                                                    ? 'border-primary bg-primary/10 text-primary'
-                                                    : 'border-error bg-error/10 text-error'
-                                                : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
-                                        }`}>
-                                        {estado}
-                                    </button>
-                                );
-                            })}
-                        </div>
+                        <label className={labelClass}>Imagen (URL, opcional)</label>
+                        <input
+                            type="url"
+                            value={form.imagen}
+                            onChange={(e) => set('imagen', e.target.value)}
+                            placeholder="https://..."
+                            className={inputClass}
+                        />
+                    </div>
+                    <div>
+                        <label className={labelClass}>Descripción (opcional)</label>
+                        <input
+                            value={form.descripcion}
+                            onChange={(e) => set('descripcion', e.target.value)}
+                            placeholder="Formato, info adicional..."
+                            className={inputClass}
+                        />
+                    </div>
+                    <div>
+                        <label className={labelClass}>URL (opcional — el cuadrado abrirá este enlace)</label>
+                        <input
+                            type="url"
+                            value={form.url}
+                            onChange={(e) => set('url', e.target.value)}
+                            placeholder="https://..."
+                            className={inputClass}
+                        />
                     </div>
                     <div className="flex justify-end">
                         <button
                             type="submit"
-                            disabled={saving || !form.nombre.trim() || !form.hora.trim()}
+                            disabled={saving || !form.nombre.trim()}
                             className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-6 py-2 hover:bg-primary hover:text-surface transition-colors disabled:opacity-40">
-                            {saving ? 'Guardando...' : 'Añadir torneo'}
+                            {saving ? 'Guardando...' : 'Añadir juego'}
                         </button>
                     </div>
                 </form>
@@ -1450,68 +1431,123 @@ const TorneosManager = () => {
                 </div>
             )}
 
-            {/* Calendario */}
+            {/* Lista */}
             {loading ? (
                 <div className="flex justify-center py-10">
                     <span className="material-symbols-outlined text-primary text-3xl animate-spin">progress_activity</span>
                 </div>
+            ) : juegos.length === 0 ? (
+                <p className="text-sm font-body text-on-surface-variant text-center py-6">
+                    Sin juegos. Añade uno arriba.
+                </p>
             ) : (
-                <div className="flex flex-col gap-4">
-                    {DIAS_SEMANA.map(({ id, label }) => {
-                        const eventos = porDia(id);
-                        return (
-                            <div key={id} className="tactical-frame">
-                                <div className="px-4 py-2 border-b border-outline-variant/40 flex items-center justify-between">
-                                    <p className="font-headline text-xs uppercase tracking-widest text-primary">{label}</p>
-                                    <span className="text-[10px] font-body text-on-surface-variant">
-                                        {eventos.length} torneo{eventos.length !== 1 ? 's' : ''}
-                                    </span>
+                <div className="flex flex-col gap-3">
+                    {juegos.map((juego) =>
+                        editingId === juego.id ? (
+                            /* ── Fila en edición ── */
+                            <div key={juego.id} className="tactical-frame p-4 flex flex-col gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label className={labelClass}>Nombre</label>
+                                        <input
+                                            required
+                                            value={editForm.nombre}
+                                            onChange={(e) => setEdit('nombre', e.target.value)}
+                                            className={inputClass}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className={labelClass}>Imagen (URL)</label>
+                                        <input
+                                            type="url"
+                                            value={editForm.imagen}
+                                            onChange={(e) => setEdit('imagen', e.target.value)}
+                                            placeholder="https://..."
+                                            className={inputClass}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className={labelClass}>Descripción</label>
+                                        <input
+                                            value={editForm.descripcion}
+                                            onChange={(e) => setEdit('descripcion', e.target.value)}
+                                            placeholder="Formato, info adicional..."
+                                            className={inputClass}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className={labelClass}>URL</label>
+                                        <input
+                                            type="url"
+                                            value={editForm.url}
+                                            onChange={(e) => setEdit('url', e.target.value)}
+                                            placeholder="https://..."
+                                            className={inputClass}
+                                        />
+                                    </div>
                                 </div>
-                                <div className="p-3 flex flex-col gap-2">
-                                    {eventos.length === 0 ? (
-                                        <p className="text-[10px] font-body text-on-surface-variant italic opacity-40 text-center py-2">
-                                            Sin torneos
-                                        </p>
-                                    ) : (
-                                        eventos.map((t) => (
-                                            <div key={t.id} className="flex items-start gap-3 border border-outline-variant/40 bg-surface-container-lowest px-3 py-2">
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                                                        <p className="font-headline text-sm text-on-surface uppercase tracking-wide truncate">{t.nombre}</p>
-                                                        <span className={`px-1.5 py-0.5 text-[8px] font-headline border ${t.estado === 'cerrado' ? 'border-error/60 text-error' : 'border-primary/60 text-primary'}`}>
-                                                            {t.estado}
-                                                        </span>
-                                                    </div>
-                                                    <p className="font-body text-[10px] text-primary">{t.hora}</p>
-                                                    {t.descripcion && (
-                                                        <p className="font-body text-[10px] text-on-surface-variant mt-0.5">{t.descripcion}</p>
-                                                    )}
-                                                </div>
-                                                <div className="flex items-center gap-1 shrink-0">
-                                                    <button
-                                                        onClick={() => handleToggleEstado(t)}
-                                                        disabled={saving}
-                                                        className={`transition-colors disabled:opacity-40 ${t.estado === 'abierto' ? 'text-primary hover:text-error' : 'text-error hover:text-primary'}`}
-                                                        title={t.estado === 'abierto' ? 'Marcar cerrado' : 'Marcar abierto'}>
-                                                        <span className="material-symbols-outlined text-sm">
-                                                            {t.estado === 'abierto' ? 'lock_open' : 'lock'}
-                                                        </span>
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDelete(t.id)}
-                                                        disabled={saving}
-                                                        className="text-on-surface-variant hover:text-error transition-colors disabled:opacity-40"
-                                                        title="Eliminar">
-                                                        <span className="material-symbols-outlined text-sm">delete</span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))
-                                    )}
+                                <div className="flex gap-2 justify-end">
+                                    <button
+                                        onClick={() => setEditingId(null)}
+                                        className="border border-outline-variant text-on-surface-variant font-headline text-xs uppercase tracking-widest px-4 py-1.5 hover:border-primary hover:text-primary transition-colors">
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        onClick={handleEditSave}
+                                        disabled={saving || !editForm.nombre.trim()}
+                                        className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-4 py-1.5 hover:bg-primary hover:text-surface transition-colors disabled:opacity-40">
+                                        {saving ? 'Guardando...' : 'Guardar'}
+                                    </button>
                                 </div>
                             </div>
-                        );
-                    })}
+                        ) : (
+                            /* ── Fila normal ── */
+                            <div key={juego.id} className="tactical-frame p-4 flex items-center gap-4">
+                                {juego.imagen ? (
+                                    <img
+                                        src={juego.imagen}
+                                        alt={juego.nombre}
+                                        className="w-14 h-14 object-cover shrink-0"
+                                    />
+                                ) : (
+                                    <div className="w-14 h-14 bg-surface-container flex items-center justify-center shrink-0">
+                                        <span className="material-symbols-outlined text-primary/30 text-2xl">emoji_events</span>
+                                    </div>
+                                )}
+                                <div className="flex-1 min-w-0">
+                                    <p className="font-headline font-bold text-sm uppercase tracking-widest text-on-surface truncate">
+                                        {juego.nombre}
+                                    </p>
+                                    {juego.descripcion && (
+                                        <p className="font-body text-xs text-on-surface-variant truncate">
+                                            {juego.descripcion}
+                                        </p>
+                                    )}
+                                    {juego.url && (
+                                        <p className="font-mono text-[10px] text-primary/50 truncate mt-0.5">
+                                            {juego.url}
+                                        </p>
+                                    )}
+                                </div>
+                                <div className="flex items-center gap-1 shrink-0">
+                                    <button
+                                        onClick={() => handleEditStart(juego)}
+                                        disabled={saving}
+                                        className="text-on-surface-variant hover:text-primary transition-colors disabled:opacity-40"
+                                        title="Editar">
+                                        <span className="material-symbols-outlined text-sm">edit</span>
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(juego.id)}
+                                        disabled={saving}
+                                        className="text-on-surface-variant hover:text-error transition-colors disabled:opacity-40"
+                                        title="Eliminar">
+                                        <span className="material-symbols-outlined text-sm">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )
+                    )}
                 </div>
             )}
         </div>
@@ -1646,7 +1682,7 @@ const AdminPanelPage = () => {
                     <NavManager />
                 )}
                 {adminView === 'torneos' && (
-                    <TorneosManager />
+                    <JuegosManager />
                 )}
                 {adminView === 'products' && (
                 <>
