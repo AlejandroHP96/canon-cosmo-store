@@ -6,6 +6,7 @@ import {
     addProduct,
     updateProduct,
     deleteProduct,
+    deleteProducts,
 } from '../../services/productsService';
 import {
     getCategoriesByTcg,
@@ -21,6 +22,13 @@ import { pathToSectionId, toSlug } from '../../lib/tcgUtils';
 import type { Product } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
 import ProductImage from '../../components/ProductImage';
+import {
+    getJuegos,
+    addJuego,
+    updateJuego,
+    deleteJuego,
+    type JuegoTorneo,
+} from '../../services/torneosService';
 
 const EMPTY_FORM: Omit<Product, 'id'> = {
     tcg: 'pokemon',
@@ -1264,13 +1272,296 @@ const NavManager = () => {
     );
 };
 
+// ─── Juegos Torneos Manager ───────────────────────────────────────────────────
+
+const EMPTY_JUEGO = { nombre: '', imagen: '', descripcion: '', url: '' };
+
+const JuegosManager = () => {
+    const [juegos, setJuegos] = useState<JuegoTorneo[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [form, setForm] = useState({ ...EMPTY_JUEGO });
+
+    // Edición inline
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editForm, setEditForm] = useState({ ...EMPTY_JUEGO });
+
+    const refresh = () => {
+        setLoading(true);
+        getJuegos()
+            .then(setJuegos)
+            .catch(() => setError('Error al cargar juegos.'))
+            .finally(() => setLoading(false));
+    };
+
+    useEffect(() => { refresh(); }, []);
+
+    const set = <K extends keyof typeof form>(key: K, value: string) =>
+        setForm((prev) => ({ ...prev, [key]: value }));
+
+    const setEdit = <K extends keyof typeof editForm>(key: K, value: string) =>
+        setEditForm((prev) => ({ ...prev, [key]: value }));
+
+    const handleAdd = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!form.nombre.trim()) return;
+        setSaving(true);
+        setError(null);
+        try {
+            const payload: Omit<JuegoTorneo, 'id'> = { nombre: form.nombre.trim() };
+            if (form.imagen.trim()) payload.imagen = form.imagen.trim();
+            if (form.descripcion.trim()) payload.descripcion = form.descripcion.trim();
+            if (form.url.trim()) payload.url = form.url.trim();
+            await addJuego(payload);
+            setForm({ ...EMPTY_JUEGO });
+            refresh();
+        } catch {
+            setError('Error al guardar. Inténtalo de nuevo.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleEditStart = (juego: JuegoTorneo) => {
+        setEditingId(juego.id);
+        setEditForm({
+            nombre: juego.nombre,
+            imagen: juego.imagen ?? '',
+            descripcion: juego.descripcion ?? '',
+            url: juego.url ?? '',
+        });
+    };
+
+    const handleEditSave = async () => {
+        if (!editingId || !editForm.nombre.trim()) return;
+        setSaving(true);
+        setError(null);
+        try {
+            await updateJuego(editingId, {
+                nombre: editForm.nombre.trim(),
+                imagen: editForm.imagen.trim() || undefined,
+                descripcion: editForm.descripcion.trim() || undefined,
+                url: editForm.url.trim() || undefined,
+            });
+            setEditingId(null);
+            refresh();
+        } catch {
+            setError('Error al guardar. Inténtalo de nuevo.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        setSaving(true);
+        try {
+            await deleteJuego(id);
+            refresh();
+        } catch {
+            setError('Error al eliminar.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    return (
+        <div className="max-w-2xl">
+            {/* Formulario añadir */}
+            <div className="border border-dashed border-outline-variant/60 p-4 mb-8">
+                <p className={labelClass}>Nuevo juego</p>
+                <form onSubmit={handleAdd} className="flex flex-col gap-3 mt-2">
+                    <div>
+                        <label className={labelClass}>Nombre</label>
+                        <input
+                            required
+                            value={form.nombre}
+                            onChange={(e) => set('nombre', e.target.value)}
+                            placeholder="Pokémon, Dragon Ball..."
+                            className={inputClass}
+                        />
+                    </div>
+                    <div>
+                        <label className={labelClass}>Imagen (URL, opcional)</label>
+                        <input
+                            type="url"
+                            value={form.imagen}
+                            onChange={(e) => set('imagen', e.target.value)}
+                            placeholder="https://..."
+                            className={inputClass}
+                        />
+                    </div>
+                    <div>
+                        <label className={labelClass}>Descripción (opcional)</label>
+                        <input
+                            value={form.descripcion}
+                            onChange={(e) => set('descripcion', e.target.value)}
+                            placeholder="Formato, info adicional..."
+                            className={inputClass}
+                        />
+                    </div>
+                    <div>
+                        <label className={labelClass}>URL (opcional — el cuadrado abrirá este enlace)</label>
+                        <input
+                            type="url"
+                            value={form.url}
+                            onChange={(e) => set('url', e.target.value)}
+                            placeholder="https://..."
+                            className={inputClass}
+                        />
+                    </div>
+                    <div className="flex justify-end">
+                        <button
+                            type="submit"
+                            disabled={saving || !form.nombre.trim()}
+                            className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-6 py-2 hover:bg-primary hover:text-surface transition-colors disabled:opacity-40">
+                            {saving ? 'Guardando...' : 'Añadir juego'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            {/* Error */}
+            {error && (
+                <div className="flex items-center gap-2 border border-error bg-error-container/20 px-3 py-2.5 mb-4">
+                    <span className="material-symbols-outlined text-error text-base shrink-0">error</span>
+                    <p className="text-sm font-body text-error flex-1">{error}</p>
+                    <button onClick={() => setError(null)} className="text-error/60 hover:text-error shrink-0">
+                        <span className="material-symbols-outlined text-sm">close</span>
+                    </button>
+                </div>
+            )}
+
+            {/* Lista */}
+            {loading ? (
+                <div className="flex justify-center py-10">
+                    <span className="material-symbols-outlined text-primary text-3xl animate-spin">progress_activity</span>
+                </div>
+            ) : juegos.length === 0 ? (
+                <p className="text-sm font-body text-on-surface-variant text-center py-6">
+                    Sin juegos. Añade uno arriba.
+                </p>
+            ) : (
+                <div className="flex flex-col gap-3">
+                    {juegos.map((juego) =>
+                        editingId === juego.id ? (
+                            /* ── Fila en edición ── */
+                            <div key={juego.id} className="tactical-frame p-4 flex flex-col gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label className={labelClass}>Nombre</label>
+                                        <input
+                                            required
+                                            value={editForm.nombre}
+                                            onChange={(e) => setEdit('nombre', e.target.value)}
+                                            className={inputClass}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className={labelClass}>Imagen (URL)</label>
+                                        <input
+                                            type="url"
+                                            value={editForm.imagen}
+                                            onChange={(e) => setEdit('imagen', e.target.value)}
+                                            placeholder="https://..."
+                                            className={inputClass}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className={labelClass}>Descripción</label>
+                                        <input
+                                            value={editForm.descripcion}
+                                            onChange={(e) => setEdit('descripcion', e.target.value)}
+                                            placeholder="Formato, info adicional..."
+                                            className={inputClass}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className={labelClass}>URL</label>
+                                        <input
+                                            type="url"
+                                            value={editForm.url}
+                                            onChange={(e) => setEdit('url', e.target.value)}
+                                            placeholder="https://..."
+                                            className={inputClass}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex gap-2 justify-end">
+                                    <button
+                                        onClick={() => setEditingId(null)}
+                                        className="border border-outline-variant text-on-surface-variant font-headline text-xs uppercase tracking-widest px-4 py-1.5 hover:border-primary hover:text-primary transition-colors">
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        onClick={handleEditSave}
+                                        disabled={saving || !editForm.nombre.trim()}
+                                        className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-4 py-1.5 hover:bg-primary hover:text-surface transition-colors disabled:opacity-40">
+                                        {saving ? 'Guardando...' : 'Guardar'}
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            /* ── Fila normal ── */
+                            <div key={juego.id} className="tactical-frame p-4 flex items-center gap-4">
+                                {juego.imagen ? (
+                                    <img
+                                        src={juego.imagen}
+                                        alt={juego.nombre}
+                                        className="w-14 h-14 object-cover shrink-0"
+                                    />
+                                ) : (
+                                    <div className="w-14 h-14 bg-surface-container flex items-center justify-center shrink-0">
+                                        <span className="material-symbols-outlined text-primary/30 text-2xl">emoji_events</span>
+                                    </div>
+                                )}
+                                <div className="flex-1 min-w-0">
+                                    <p className="font-headline font-bold text-sm uppercase tracking-widest text-on-surface truncate">
+                                        {juego.nombre}
+                                    </p>
+                                    {juego.descripcion && (
+                                        <p className="font-body text-xs text-on-surface-variant truncate">
+                                            {juego.descripcion}
+                                        </p>
+                                    )}
+                                    {juego.url && (
+                                        <p className="font-mono text-[10px] text-primary/50 truncate mt-0.5">
+                                            {juego.url}
+                                        </p>
+                                    )}
+                                </div>
+                                <div className="flex items-center gap-1 shrink-0">
+                                    <button
+                                        onClick={() => handleEditStart(juego)}
+                                        disabled={saving}
+                                        className="text-on-surface-variant hover:text-primary transition-colors disabled:opacity-40"
+                                        title="Editar">
+                                        <span className="material-symbols-outlined text-sm">edit</span>
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(juego.id)}
+                                        disabled={saving}
+                                        className="text-on-surface-variant hover:text-error transition-colors disabled:opacity-40"
+                                        title="Eliminar">
+                                        <span className="material-symbols-outlined text-sm">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )
+                    )}
+                </div>
+            )}
+        </div>
+    );
+};
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 const AdminPanelPage = () => {
     const { user, signOut } = useAuth();
     const navigate = useNavigate();
 
-    const [adminView, setAdminView] = useState<'products' | 'categories' | 'nav'>(
+    const [adminView, setAdminView] = useState<'products' | 'categories' | 'nav' | 'torneos'>(
         'products',
     );
 
@@ -1285,6 +1576,10 @@ const AdminPanelPage = () => {
     const [showForm, setShowForm] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
+
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+    const [bulkDeleting, setBulkDeleting] = useState(false);
+    const [showBulkConfirm, setShowBulkConfirm] = useState(false);
 
     const openAdd = () => {
         setEditingProduct(null);
@@ -1330,6 +1625,37 @@ const AdminPanelPage = () => {
         return menuSectionIds.includes(p.tcg);
     });
 
+    const toggleSelect = (id: string) =>
+        setSelectedIds((prev) => {
+            const next = new Set(prev);
+            next.has(id) ? next.delete(id) : next.add(id);
+            return next;
+        });
+
+    const allVisibleSelected =
+        visible.length > 0 && visible.every((p) => selectedIds.has(p.id));
+
+    const toggleSelectAll = () =>
+        setSelectedIds(
+            allVisibleSelected
+                ? new Set()
+                : new Set(visible.map((p) => p.id)),
+        );
+
+    const handleBulkDelete = async () => {
+        setBulkDeleting(true);
+        try {
+            await deleteProducts([...selectedIds]);
+            setSelectedIds(new Set());
+            setShowBulkConfirm(false);
+            refresh();
+        } finally {
+            setBulkDeleting(false);
+        }
+    };
+
+
+
     return (
         <div className="min-h-screen bg-surface text-on-surface">
             {/* Header */}
@@ -1361,17 +1687,10 @@ const AdminPanelPage = () => {
             <div className="border-b border-outline-variant/30 px-6 flex gap-0">
                 {(
                     [
-                        { id: 'products', label: 'Productos', icon: 'inventory' },
-                        {
-                            id: 'categories',
-                            label: 'Categorías',
-                            icon: 'folder',
-                        },
-                        {
-                            id: 'nav',
-                            label: 'Navegación',
-                            icon: 'menu',
-                        },
+                        { id: 'products',   label: 'Productos',   icon: 'inventory' },
+                        { id: 'categories', label: 'Categorías',  icon: 'folder' },
+                        { id: 'nav',        label: 'Navegación',  icon: 'menu' },
+                        { id: 'torneos',    label: 'Torneos',     icon: 'emoji_events' },
                     ] as const
                 ).map(({ id, label, icon }) => (
                     <button
@@ -1397,6 +1716,9 @@ const AdminPanelPage = () => {
                 )}
                 {adminView === 'nav' && (
                     <NavManager />
+                )}
+                {adminView === 'torneos' && (
+                    <JuegosManager />
                 )}
                 {adminView === 'products' && (
                 <>
@@ -1472,18 +1794,50 @@ const AdminPanelPage = () => {
                     <button
                         onClick={openAdd}
                         className="flex items-center gap-2 border border-primary text-primary font-headline text-xs uppercase tracking-widest px-4 py-2 hover:bg-primary hover:text-surface transition-colors">
-                        <span className="material-symbols-outlined text-sm">
-                            add
-                        </span>
+                        <span className="material-symbols-outlined text-sm">add</span>
                         Nuevo producto
                     </button>
                 </div>
 
-                {/* Product count */}
-                <p className="text-[10px] font-headline text-on-surface-variant uppercase tracking-widest mb-4">
-                    <span className="w-1.5 h-1.5 bg-primary animate-ping inline-block mr-2" />
-                    {visible.length} producto{visible.length !== 1 ? 's' : ''}
-                </p>
+                {/* Barra de selección múltiple */}
+                <div className="flex items-center justify-between mb-4 gap-4 flex-wrap">
+                    <div className="flex items-center gap-3">
+                        {/* Checkbox seleccionar todos los visibles */}
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                                type="checkbox"
+                                checked={allVisibleSelected}
+                                onChange={toggleSelectAll}
+                                className="w-4 h-4 accent-primary"
+                            />
+                            <span className="text-[10px] font-headline text-on-surface-variant uppercase tracking-widest">
+                                {allVisibleSelected ? 'Deseleccionar todo' : 'Seleccionar todo'}
+                            </span>
+                        </label>
+                        <span className="text-[10px] font-headline text-on-surface-variant uppercase tracking-widest">
+                            <span className="w-1.5 h-1.5 bg-primary animate-ping inline-block mr-2" />
+                            {visible.length} producto{visible.length !== 1 ? 's' : ''}
+                        </span>
+                    </div>
+                    {selectedIds.size > 0 && (
+                        <div className="flex items-center gap-3">
+                            <span className="text-[10px] font-headline text-primary uppercase tracking-widest">
+                                {selectedIds.size} seleccionado{selectedIds.size !== 1 ? 's' : ''}
+                            </span>
+                            <button
+                                onClick={() => setSelectedIds(new Set())}
+                                className="text-[10px] font-headline text-on-surface-variant uppercase tracking-widest hover:text-primary transition-colors">
+                                Limpiar
+                            </button>
+                            <button
+                                onClick={() => setShowBulkConfirm(true)}
+                                className="flex items-center gap-1.5 border border-error text-error font-headline text-xs uppercase tracking-widest px-3 py-1.5 hover:bg-error hover:text-surface transition-colors">
+                                <span className="material-symbols-outlined text-sm">delete_sweep</span>
+                                Eliminar seleccionados
+                            </button>
+                        </div>
+                    )}
+                </div>
 
                 {/* Table */}
                 {loading ? (
@@ -1498,73 +1852,80 @@ const AdminPanelPage = () => {
                     </div>
                 ) : (
                     <div className="flex flex-col gap-3">
-                        {visible.map((product) => (
-                            <div
-                                key={product.id}
-                                className="tactical-frame p-4 flex items-center gap-4">
-                                {/* Thumbnail */}
-                                <ProductImage
-                                    src={product.image}
-                                    className="w-14 h-14 shrink-0"
-                                />
+                        {visible.map((product) => {
+                            const isSelected = selectedIds.has(product.id);
+                            return (
+                                <div
+                                    key={product.id}
+                                    className={`tactical-frame p-4 flex items-center gap-4 transition-colors ${isSelected ? 'bg-primary/5 border-primary/40' : ''}`}>
+                                    {/* Checkbox */}
+                                    <input
+                                        type="checkbox"
+                                        checked={isSelected}
+                                        onChange={() => toggleSelect(product.id)}
+                                        className="w-4 h-4 accent-primary shrink-0"
+                                    />
 
-                                {/* Info */}
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                                        <span className="text-[9px] font-headline uppercase tracking-widest text-primary/60">
-                                            {product.tcg}
-                                        </span>
-                                        {product.badge && (
-                                            <span
-                                                className={`px-1.5 py-0.5 text-[8px] font-headline border ${product.badgeColor} text-[#e0e0ff]`}>
-                                                {product.badge}
+                                    {/* Thumbnail */}
+                                    <ProductImage
+                                        src={product.image}
+                                        className="w-14 h-14 shrink-0"
+                                    />
+
+                                    {/* Info */}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                                            <span className="text-[9px] font-headline uppercase tracking-widest text-primary/60">
+                                                {product.tcg}
                                             </span>
-                                        )}
-                                        {product.featured && (
-                                            <span className="text-[9px] font-headline text-primary">
-                                                ★ Destacado
-                                            </span>
-                                        )}
+                                            {product.badge && (
+                                                <span
+                                                    className={`px-1.5 py-0.5 text-[8px] font-headline border ${product.badgeColor} text-[#e0e0ff]`}>
+                                                    {product.badge}
+                                                </span>
+                                            )}
+                                            {product.featured && (
+                                                <span className="text-[9px] font-headline text-primary">
+                                                    ★ Destacado
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="font-headline font-bold text-sm text-on-surface uppercase truncate">
+                                            {product.name}
+                                        </p>
+                                        <p className="text-[10px] text-on-surface-variant font-body">
+                                            {product.set} · {product.category}
+                                        </p>
                                     </div>
-                                    <p className="font-headline font-bold text-sm text-on-surface uppercase truncate">
-                                        {product.name}
-                                    </p>
-                                    <p className="text-[10px] text-on-surface-variant font-body">
-                                        {product.set} · {product.category}
-                                    </p>
-                                </div>
 
-                                {/* Price + Stock */}
-                                <div className="text-right shrink-0 hidden sm:block">
-                                    <p className="font-headline font-bold text-primary text-sm">
-                                        {product.price}
-                                    </p>
-                                    <p className="text-[10px] text-on-surface-variant font-body">
-                                        {product.inStock === false ? 'Agotado' : 'Disponible'}
-                                    </p>
-                                </div>
+                                    {/* Price + Stock */}
+                                    <div className="text-right shrink-0 hidden sm:block">
+                                        <p className="font-headline font-bold text-primary text-sm">
+                                            {product.price}
+                                        </p>
+                                        <p className="text-[10px] text-on-surface-variant font-body">
+                                            {product.inStock === false ? 'Agotado' : 'Disponible'}
+                                        </p>
+                                    </div>
 
-                                {/* Actions */}
-                                <div className="flex items-center gap-2 shrink-0">
-                                    <button
-                                        onClick={() => openEdit(product)}
-                                        className="border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary p-1.5 transition-colors"
-                                        title="Editar">
-                                        <span className="material-symbols-outlined text-sm">
-                                            edit
-                                        </span>
-                                    </button>
-                                    <button
-                                        onClick={() => setDeleteTarget(product)}
-                                        className="border border-outline-variant text-on-surface-variant hover:border-error hover:text-error p-1.5 transition-colors"
-                                        title="Eliminar">
-                                        <span className="material-symbols-outlined text-sm">
-                                            delete
-                                        </span>
-                                    </button>
+                                    {/* Actions */}
+                                    <div className="flex items-center gap-2 shrink-0">
+                                        <button
+                                            onClick={() => openEdit(product)}
+                                            className="border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary p-1.5 transition-colors"
+                                            title="Editar">
+                                            <span className="material-symbols-outlined text-sm">edit</span>
+                                        </button>
+                                        <button
+                                            onClick={() => setDeleteTarget(product)}
+                                            className="border border-outline-variant text-on-surface-variant hover:border-error hover:text-error p-1.5 transition-colors"
+                                            title="Eliminar">
+                                            <span className="material-symbols-outlined text-sm">delete</span>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
                 </>
@@ -1589,9 +1950,46 @@ const AdminPanelPage = () => {
                     onClose={() => setDeleteTarget(null)}
                     onDeleted={() => {
                         setDeleteTarget(null);
+                        setSelectedIds((prev) => {
+                            const next = new Set(prev);
+                            next.delete(deleteTarget.id);
+                            return next;
+                        });
                         refresh();
                     }}
                 />
+            )}
+
+            {/* Modal confirmación borrado masivo */}
+            {showBulkConfirm && (
+                <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+                    <div className="tactical-frame p-6 w-full max-w-sm">
+                        <h2 className="font-headline font-bold text-lg text-on-surface uppercase tracking-widest mb-2">
+                            Eliminar productos
+                        </h2>
+                        <p className="text-sm font-body text-on-surface-variant mb-6">
+                            ¿Seguro que quieres eliminar{' '}
+                            <span className="text-on-surface font-bold">
+                                {selectedIds.size} producto{selectedIds.size !== 1 ? 's' : ''}
+                            </span>
+                            ? Esta acción no se puede deshacer.
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowBulkConfirm(false)}
+                                disabled={bulkDeleting}
+                                className="flex-1 border border-outline-variant text-on-surface-variant font-headline text-xs uppercase tracking-widest py-2.5 hover:border-primary hover:text-primary transition-colors disabled:opacity-50">
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={handleBulkDelete}
+                                disabled={bulkDeleting}
+                                className="flex-1 border border-error bg-error-container/30 text-error font-headline text-xs uppercase tracking-widest py-2.5 hover:bg-error-container/60 transition-colors disabled:opacity-50">
+                                {bulkDeleting ? 'Eliminando...' : `Eliminar ${selectedIds.size}`}
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

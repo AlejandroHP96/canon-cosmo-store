@@ -20,6 +20,7 @@ const TcgPage = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState('Todo');
+    const [search, setSearch] = useState('');
 
     // Nombre legible desde el nav config, o se formatea el último segmento del path
     const lastSegment = pathname.split('/').filter(Boolean).at(-1) ?? '';
@@ -30,6 +31,7 @@ const TcgPage = () => {
     useEffect(() => {
         setLoading(true);
         setSelectedCategory('Todo');
+        setSearch('');
         getProductsByTcg(sectionId).then((data) => {
             setProducts(data);
             setLoading(false);
@@ -46,10 +48,14 @@ const TcgPage = () => {
         );
     }
 
-    const visible =
-        selectedCategory === 'Todo'
-            ? products
-            : products.filter((p) => p.category === selectedCategory);
+    const needle = search.trim().toLowerCase();
+    const visible = products.filter((p) => {
+        const matchCat = selectedCategory === 'Todo' || p.category === selectedCategory;
+        const matchSearch = !needle ||
+            p.name.toLowerCase().includes(needle) ||
+            p.set?.toLowerCase().includes(needle);
+        return matchCat && matchSearch;
+    });
 
     return (
         <>
@@ -67,8 +73,32 @@ const TcgPage = () => {
                 </div>
                 <div className="ml-auto flex items-center gap-2 text-[10px] font-headline text-on-surface-variant uppercase tracking-widest">
                     <span className="w-1.5 h-1.5 bg-primary animate-ping" />
-                    {products.length} producto{products.length !== 1 ? 's' : ''}
+                    {needle || selectedCategory !== 'Todo'
+                        ? `${visible.length} / ${products.length}`
+                        : products.length}{' '}
+                    producto{products.length !== 1 ? 's' : ''}
                 </div>
+            </div>
+
+            {/* Buscador */}
+            <div className="flex items-center border border-outline-variant bg-surface-container-lowest mb-4 focus-within:border-primary transition-colors">
+                <span className="material-symbols-outlined text-on-surface-variant text-base px-3 shrink-0">
+                    search
+                </span>
+                <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Buscar producto..."
+                    className="flex-1 bg-transparent text-on-surface font-body text-sm py-2 pr-3 focus:outline-none placeholder:text-on-surface-variant/50"
+                />
+                {search && (
+                    <button
+                        onClick={() => setSearch('')}
+                        className="text-on-surface-variant hover:text-primary px-3 shrink-0 transition-colors">
+                        <span className="material-symbols-outlined text-base">close</span>
+                    </button>
+                )}
             </div>
 
             {/* Filtro de categorías */}
@@ -152,6 +182,13 @@ const TcgPage = () => {
                                 <span className="text-xs">
                                     Añade productos desde el panel de
                                     administración.
+                                </span>
+                            </>
+                        ) : needle ? (
+                            <>
+                                Sin resultados para{' '}
+                                <span className="font-headline text-primary">
+                                    &ldquo;{search}&rdquo;
                                 </span>
                             </>
                         ) : (

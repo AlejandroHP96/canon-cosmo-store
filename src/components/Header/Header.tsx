@@ -16,7 +16,12 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
                 <Link
                     to="/"
                     className="text-xl md:text-2xl font-bold text-[#e0e0ff] font-headline uppercase tracking-widest hover:text-primary transition-colors">
-                    CAÑÓN COSMO
+                    CAÑÓN COSMO STORE
+                </Link>
+                <Link
+                    to="/torneos"
+                    className="hidden sm:block font-headline uppercase tracking-widest text-sm text-[#e0e0ff] opacity-70 hover:text-[#bec2ff] hover:opacity-100 transition-all">
+                    Torneos
                 </Link>
             </div>
             <div className="flex items-center gap-4">

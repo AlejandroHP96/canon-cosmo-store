@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { getSidebarConfig, type NavItem } from '../services/navService';
-import { slugToTcgId } from '../lib/tcgUtils';
+import { pathToSectionId } from '../lib/tcgUtils';
 
 export type TcgOption = {
-    id: string;   // ID en Firestore (ej. 'finalfantasy', 'dragon-ball')
-    label: string; // Nombre legible (ej. 'Final Fantasy', 'Dragon Ball')
+    id: string;    // ID en Firestore (ej. 'finalfantasy', 'accesorios-tcgs')
+    label: string; // Nombre legible (ej. 'Final Fantasy', 'Accesorios TCGs')
 };
 
 /** Opciones de fallback mientras carga el nav config */
@@ -18,16 +18,15 @@ const FALLBACK: TcgOption[] = [
 ];
 
 /**
- * Extrae los TCGs disponibles del nav config:
- * - Subitems de cualquier entrada que apunten a /tcgs/xxx
- * - Entradas de primer nivel que apunten a /tcgs/xxx
+ * Extrae TODAS las páginas disponibles del nav config:
+ * subitems y entradas de primer nivel con path, de cualquier sección.
  */
-function extractTcgsFromNav(items: NavItem[]): TcgOption[] {
+function extractSectionsFromNav(items: NavItem[]): TcgOption[] {
     const seen = new Set<string>();
     const result: TcgOption[] = [];
 
-    const push = (urlSlug: string, label: string) => {
-        const id = slugToTcgId(urlSlug);
+    const push = (path: string, label: string) => {
+        const id = pathToSectionId(path);
         if (id && !seen.has(id)) {
             seen.add(id);
             result.push({ id, label });
@@ -35,15 +34,13 @@ function extractTcgsFromNav(items: NavItem[]): TcgOption[] {
     };
 
     for (const item of items) {
-        // Subitems de grupos expandibles
+        // Subitems de grupos expandibles (ej. pokemon, digimon…)
         for (const sub of item.submenu ?? []) {
-            if (sub.path.startsWith('/tcgs/')) {
-                push(sub.path.slice('/tcgs/'.length), sub.label);
-            }
+            push(sub.path, sub.label);
         }
-        // Entradas directas de primer nivel
-        if (item.path?.startsWith('/tcgs/')) {
-            push(item.path.slice('/tcgs/'.length), item.label);
+        // Entradas directas de primer nivel (ej. /accesorios-tcgs, /funko-pop)
+        if (item.path) {
+            push(item.path, item.label);
         }
     }
 
@@ -51,7 +48,7 @@ function extractTcgsFromNav(items: NavItem[]): TcgOption[] {
 }
 
 /**
- * Devuelve la lista de TCGs disponibles cargada desde el nav config.
+ * Devuelve todas las secciones/páginas disponibles desde el nav config.
  * Inicializa con fallback para evitar flash vacío.
  */
 export function useTcgOptions(): TcgOption[] {
@@ -60,8 +57,8 @@ export function useTcgOptions(): TcgOption[] {
     useEffect(() => {
         getSidebarConfig()
             .then((config) => {
-                const tcgs = extractTcgsFromNav(config.items);
-                setOptions(tcgs);
+                const sections = extractSectionsFromNav(config.items);
+                setOptions(sections);
             })
             .catch(() => {
                 // Mantener fallback en caso de error
