@@ -738,6 +738,14 @@ const NavManager = () => {
         Record<number, { label: string; path: string; pathAutoSync: boolean }>
     >({});
 
+    // Drag & drop — primer nivel
+    const [dragIdx, setDragIdx] = useState<number | null>(null);
+    const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+
+    // Drag & drop — subitems: clave `itemIdx`, valor subIdx arrastrado/hoveredado
+    const [subDragKey, setSubDragKey] = useState<{ item: number; sub: number } | null>(null);
+    const [subDragOverKey, setSubDragOverKey] = useState<{ item: number; sub: number } | null>(null);
+
     useEffect(() => {
         getSidebarConfig()
             .then((cfg) => {
@@ -903,6 +911,59 @@ const NavManager = () => {
         setEditSubKey(null);
     };
 
+    // ── Drag handlers — primer nivel ─────────────────────────────────────────
+
+    const handleDragStart = (idx: number) => setDragIdx(idx);
+
+    const handleDragOver = (e: React.DragEvent, idx: number) => {
+        e.preventDefault();
+        setDragOverIdx(idx);
+    };
+
+    const handleDrop = async (idx: number) => {
+        if (dragIdx === null || dragIdx === idx || !config) return;
+        const items = [...config.items];
+        const [moved] = items.splice(dragIdx, 1);
+        items.splice(idx, 0, moved);
+        setDragIdx(null);
+        setDragOverIdx(null);
+        await saveConfig({ items });
+    };
+
+    const handleDragEnd = () => {
+        setDragIdx(null);
+        setDragOverIdx(null);
+    };
+
+    // ── Drag handlers — subitems ──────────────────────────────────────────────
+
+    const handleSubDragStart = (itemIdx: number, subIdx: number) =>
+        setSubDragKey({ item: itemIdx, sub: subIdx });
+
+    const handleSubDragOver = (e: React.DragEvent, itemIdx: number, subIdx: number) => {
+        e.preventDefault();
+        setSubDragOverKey({ item: itemIdx, sub: subIdx });
+    };
+
+    const handleSubDrop = async (itemIdx: number, toSubIdx: number) => {
+        if (!subDragKey || subDragKey.item !== itemIdx || subDragKey.sub === toSubIdx || !config) return;
+        const items = config.items.map((item, i): NavItem => {
+            if (i !== itemIdx) return item;
+            const subs = [...(item.submenu ?? [])];
+            const [moved] = subs.splice(subDragKey.sub, 1);
+            subs.splice(toSubIdx, 0, moved);
+            return { ...item, submenu: subs };
+        });
+        setSubDragKey(null);
+        setSubDragOverKey(null);
+        await saveConfig({ items });
+    };
+
+    const handleSubDragEnd = () => {
+        setSubDragKey(null);
+        setSubDragOverKey(null);
+    };
+
     // ── Render ────────────────────────────────────────────────────────────────
 
     return (
@@ -933,7 +994,20 @@ const NavManager = () => {
                 )}
 
                 {config.items.map((item, idx) => (
-                    <div key={idx} className="tactical-frame">
+                    <div
+                        key={idx}
+                        draggable={editItemIdx !== idx}
+                        onDragStart={() => handleDragStart(idx)}
+                        onDragOver={(e) => handleDragOver(e, idx)}
+                        onDrop={() => handleDrop(idx)}
+                        onDragEnd={handleDragEnd}
+                        className={`tactical-frame transition-all ${
+                            dragOverIdx === idx && dragIdx !== idx
+                                ? 'border-primary border-2 opacity-80'
+                                : dragIdx === idx
+                                  ? 'opacity-40'
+                                  : ''
+                        }`}>
                         {/* ── Fila de primer nivel ── */}
                         {editItemIdx === idx ? (
                             /* Modo edición */
@@ -998,6 +1072,11 @@ const NavManager = () => {
                         ) : (
                             /* Modo display */
                             <div className="px-4 py-3 flex items-center gap-3">
+                                <span
+                                    className="material-symbols-outlined text-on-surface-variant/40 hover:text-on-surface-variant text-base shrink-0 cursor-grab active:cursor-grabbing"
+                                    title="Arrastrar para reordenar">
+                                    drag_indicator
+                                </span>
                                 <span className="material-symbols-outlined text-primary text-base shrink-0">
                                     {item.icon}
                                 </span>
@@ -1118,9 +1197,22 @@ const NavManager = () => {
                                         /* Sub display */
                                         <div
                                             key={sIdx}
-                                            className="flex items-center gap-3 pl-3 border-l-2 border-outline-variant/40">
-                                            <span className="text-xs text-on-surface-variant shrink-0">
-                                                ▸
+                                            draggable
+                                            onDragStart={() => handleSubDragStart(idx, sIdx)}
+                                            onDragOver={(e) => handleSubDragOver(e, idx, sIdx)}
+                                            onDrop={() => handleSubDrop(idx, sIdx)}
+                                            onDragEnd={handleSubDragEnd}
+                                            className={`flex items-center gap-3 pl-2 border-l-2 transition-all ${
+                                                subDragOverKey?.item === idx && subDragOverKey?.sub === sIdx && subDragKey?.sub !== sIdx
+                                                    ? 'border-primary opacity-80'
+                                                    : subDragKey?.item === idx && subDragKey?.sub === sIdx
+                                                      ? 'border-outline-variant/40 opacity-40'
+                                                      : 'border-outline-variant/40'
+                                            }`}>
+                                            <span
+                                                className="material-symbols-outlined text-on-surface-variant/40 hover:text-on-surface-variant text-sm shrink-0 cursor-grab active:cursor-grabbing"
+                                                title="Arrastrar para reordenar">
+                                                drag_indicator
                                             </span>
                                             <span className="font-body text-sm text-on-surface flex-1">
                                                 {sub.label}

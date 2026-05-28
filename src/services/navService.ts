@@ -69,4 +69,9 @@ export async function updateSidebarConfig(
     config: SidebarConfig,
 ): Promise<void> {
     await setDoc(doc(db, COLLECTION, DOC_ID), config);
+    try {
+        localStorage.setItem('canon-cosmo-nav-config', JSON.stringify(config.items));
+    } catch {
+        // localStorage no disponible (SSR, modo privado, etc.)
+    }
 }

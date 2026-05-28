@@ -12,9 +12,25 @@ type SideNavProps = {
     onClose: () => void;
 };
 
+const NAV_CACHE_KEY = 'canon-cosmo-nav-config';
+
+function getCachedItems(): NavItem[] {
+    try {
+        const raw = localStorage.getItem(NAV_CACHE_KEY);
+        if (raw) return JSON.parse(raw) as NavItem[];
+    } catch {
+        // cache corrupto — ignorar
+    }
+    return DEFAULT_SIDEBAR.items;
+}
+
 const SideNav = ({ isOpen, onClose }: SideNavProps) => {
-    // Inicializamos con defaults para evitar flash vacío mientras carga Firestore
-    const [items, setItems] = useState<NavItem[]>(DEFAULT_SIDEBAR.items);
+    // Usuarios con cache ven el orden correcto de inmediato.
+    // Usuarios sin cache arrancan con null (sin items) hasta que Firestore responde,
+    // evitando mostrar el orden hardcodeado incorrecto.
+    const cached = getCachedItems();
+    const hasCachedFromFirestore = !!localStorage.getItem(NAV_CACHE_KEY);
+    const [items, setItems] = useState<NavItem[]>(hasCachedFromFirestore ? cached : []);
 
     // Set de índices cuyo submenú está abierto (el primero abre por defecto)
     const [openItems, setOpenItems] = useState<Set<number>>(new Set([0]));
@@ -22,11 +38,15 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
 
     useEffect(() => {
         getSidebarConfig()
-            .then((config) => setItems(config.items))
+            .then((config) => {
+                setItems(config.items);
+                localStorage.setItem(NAV_CACHE_KEY, JSON.stringify(config.items));
+            })
             .catch(() => {
-                // Mantener defaults si hay error
+                // Si falla Firestore y no hay cache, usar defaults
+                if (!hasCachedFromFirestore) setItems(DEFAULT_SIDEBAR.items);
             });
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const toggle = (idx: number) =>
         setOpenItems((prev) => {
@@ -49,6 +69,13 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
             </div>
 
             <nav className="flex flex-col gap-2 font-headline font-bold text-lg">
+                {items.length === 0 && (
+                    <div className="flex flex-col gap-2 px-2 opacity-30 animate-pulse">
+                        {[...Array(3)].map((_, i) => (
+                            <div key={i} className="h-10 bg-[#bec2ff]/20 rounded-sm" />
+                        ))}
+                    </div>
+                )}
                 {items.map((item, idx) =>
                     item.submenu && item.submenu.length > 0 ? (
                         /* ── Entrada con submenú expandible ── */
