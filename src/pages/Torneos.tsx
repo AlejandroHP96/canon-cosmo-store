@@ -61,10 +61,15 @@ const Torneos = () => {
                                             <div
                                                 key={t.id}
                                                 className="border border-outline-variant/50 bg-surface-container-lowest px-2.5 py-2">
-                                                <p className="font-headline text-xs text-[#e0e0ff] uppercase tracking-wide leading-tight">
-                                                    {t.nombre}
-                                                </p>
-                                                <p className="font-body text-[10px] text-primary mt-0.5">
+                                                <div className="flex items-start justify-between gap-1 mb-0.5">
+                                                    <p className="font-headline text-xs text-[#e0e0ff] uppercase tracking-wide leading-tight flex-1">
+                                                        {t.nombre}
+                                                    </p>
+                                                    <span className={`shrink-0 px-1.5 py-0.5 text-[8px] font-headline border ${t.estado === 'cerrado' ? 'border-error/60 text-error' : 'border-primary/60 text-primary'}`}>
+                                                        {t.estado === 'cerrado' ? 'CERRADO' : 'ABIERTO'}
+                                                    </span>
+                                                </div>
+                                                <p className="font-body text-[10px] text-primary">
                                                     {t.hora}
                                                 </p>
                                                 {t.descripcion && (

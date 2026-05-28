@@ -24,6 +24,7 @@ import ProductImage from '../../components/ProductImage';
 import {
     getTorneos,
     addTorneo,
+    updateTorneoEstado,
     deleteTorneo,
     type DiaSemana,
     type Torneo,
@@ -1283,7 +1284,7 @@ const DIAS_SEMANA: { id: DiaSemana; label: string }[] = [
     { id: 'domingo',   label: 'Domingo' },
 ];
 
-const EMPTY_TORNEO = { nombre: '', dia: 'lunes' as DiaSemana, hora: '', descripcion: '' };
+const EMPTY_TORNEO = { nombre: '', dia: 'lunes' as DiaSemana, hora: '', descripcion: '', estado: 'abierto' as Torneo['estado'] };
 
 const TorneosManager = () => {
     const [torneos, setTorneos] = useState<Torneo[]>([]);
@@ -1315,12 +1316,26 @@ const TorneosManager = () => {
                 nombre: form.nombre.trim(),
                 dia: form.dia,
                 hora: form.hora.trim(),
+                estado: form.estado,
                 ...(form.descripcion.trim() && { descripcion: form.descripcion.trim() }),
             });
             setForm({ ...EMPTY_TORNEO });
             refresh();
         } catch {
             setError('Error al guardar. Inténtalo de nuevo.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleToggleEstado = async (t: Torneo) => {
+        const next = t.estado === 'abierto' ? 'cerrado' : 'abierto';
+        setSaving(true);
+        try {
+            await updateTorneoEstado(t.id, next);
+            refresh();
+        } catch {
+            setError('Error al actualizar.');
         } finally {
             setSaving(false);
         }
@@ -1390,6 +1405,29 @@ const TorneosManager = () => {
                             />
                         </div>
                     </div>
+                    <div>
+                        <label className={labelClass}>Estado</label>
+                        <div className="grid grid-cols-2 gap-2 max-w-xs">
+                            {(['abierto', 'cerrado'] as const).map((estado) => {
+                                const active = form.estado === estado;
+                                return (
+                                    <button
+                                        key={estado}
+                                        type="button"
+                                        onClick={() => set('estado', estado)}
+                                        className={`py-2 border font-headline text-[10px] uppercase tracking-widest transition-all ${
+                                            active
+                                                ? estado === 'abierto'
+                                                    ? 'border-primary bg-primary/10 text-primary'
+                                                    : 'border-error bg-error/10 text-error'
+                                                : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
+                                        }`}>
+                                        {estado}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
                     <div className="flex justify-end">
                         <button
                             type="submit"
@@ -1438,19 +1476,35 @@ const TorneosManager = () => {
                                         eventos.map((t) => (
                                             <div key={t.id} className="flex items-start gap-3 border border-outline-variant/40 bg-surface-container-lowest px-3 py-2">
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="font-headline text-sm text-on-surface uppercase tracking-wide truncate">{t.nombre}</p>
+                                                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                                                        <p className="font-headline text-sm text-on-surface uppercase tracking-wide truncate">{t.nombre}</p>
+                                                        <span className={`px-1.5 py-0.5 text-[8px] font-headline border ${t.estado === 'cerrado' ? 'border-error/60 text-error' : 'border-primary/60 text-primary'}`}>
+                                                            {t.estado}
+                                                        </span>
+                                                    </div>
                                                     <p className="font-body text-[10px] text-primary">{t.hora}</p>
                                                     {t.descripcion && (
                                                         <p className="font-body text-[10px] text-on-surface-variant mt-0.5">{t.descripcion}</p>
                                                     )}
                                                 </div>
-                                                <button
-                                                    onClick={() => handleDelete(t.id)}
-                                                    disabled={saving}
-                                                    className="text-on-surface-variant hover:text-error transition-colors disabled:opacity-40 shrink-0"
-                                                    title="Eliminar">
-                                                    <span className="material-symbols-outlined text-sm">delete</span>
-                                                </button>
+                                                <div className="flex items-center gap-1 shrink-0">
+                                                    <button
+                                                        onClick={() => handleToggleEstado(t)}
+                                                        disabled={saving}
+                                                        className={`transition-colors disabled:opacity-40 ${t.estado === 'abierto' ? 'text-primary hover:text-error' : 'text-error hover:text-primary'}`}
+                                                        title={t.estado === 'abierto' ? 'Marcar cerrado' : 'Marcar abierto'}>
+                                                        <span className="material-symbols-outlined text-sm">
+                                                            {t.estado === 'abierto' ? 'lock_open' : 'lock'}
+                                                        </span>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(t.id)}
+                                                        disabled={saving}
+                                                        className="text-on-surface-variant hover:text-error transition-colors disabled:opacity-40"
+                                                        title="Eliminar">
+                                                        <span className="material-symbols-outlined text-sm">delete</span>
+                                                    </button>
+                                                </div>
                                             </div>
                                         ))
                                     )}
