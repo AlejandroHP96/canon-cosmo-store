@@ -21,6 +21,13 @@ import { pathToSectionId, toSlug } from '../../lib/tcgUtils';
 import type { Product } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
 import ProductImage from '../../components/ProductImage';
+import {
+    getTorneos,
+    addTorneo,
+    deleteTorneo,
+    type DiaSemana,
+    type Torneo,
+} from '../../services/torneosService';
 
 const EMPTY_FORM: Omit<Product, 'id'> = {
     tcg: 'pokemon',
@@ -1264,13 +1271,206 @@ const NavManager = () => {
     );
 };
 
+// ─── Torneos Manager ──────────────────────────────────────────────────────────
+
+const DIAS_SEMANA: { id: DiaSemana; label: string }[] = [
+    { id: 'lunes',     label: 'Lunes' },
+    { id: 'martes',    label: 'Martes' },
+    { id: 'miercoles', label: 'Miércoles' },
+    { id: 'jueves',    label: 'Jueves' },
+    { id: 'viernes',   label: 'Viernes' },
+    { id: 'sabado',    label: 'Sábado' },
+    { id: 'domingo',   label: 'Domingo' },
+];
+
+const EMPTY_TORNEO = { nombre: '', dia: 'lunes' as DiaSemana, hora: '', descripcion: '' };
+
+const TorneosManager = () => {
+    const [torneos, setTorneos] = useState<Torneo[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [form, setForm] = useState({ ...EMPTY_TORNEO });
+
+    const refresh = () => {
+        setLoading(true);
+        getTorneos()
+            .then(setTorneos)
+            .catch(() => setError('Error al cargar torneos.'))
+            .finally(() => setLoading(false));
+    };
+
+    useEffect(() => { refresh(); }, []);
+
+    const set = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) =>
+        setForm((prev) => ({ ...prev, [key]: value }));
+
+    const handleAdd = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!form.nombre.trim() || !form.hora.trim()) return;
+        setSaving(true);
+        setError(null);
+        try {
+            await addTorneo({
+                nombre: form.nombre.trim(),
+                dia: form.dia,
+                hora: form.hora.trim(),
+                ...(form.descripcion.trim() && { descripcion: form.descripcion.trim() }),
+            });
+            setForm({ ...EMPTY_TORNEO });
+            refresh();
+        } catch {
+            setError('Error al guardar. Inténtalo de nuevo.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        setSaving(true);
+        try {
+            await deleteTorneo(id);
+            refresh();
+        } catch {
+            setError('Error al eliminar.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const porDia = (dia: DiaSemana) => torneos.filter((t) => t.dia === dia);
+
+    return (
+        <div className="max-w-3xl">
+            {/* Formulario añadir */}
+            <div className="border border-dashed border-outline-variant/60 p-4 mb-8">
+                <p className={labelClass}>Nuevo torneo</p>
+                <form onSubmit={handleAdd} className="flex flex-col gap-3 mt-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="sm:col-span-2">
+                            <label className={labelClass}>Nombre</label>
+                            <input
+                                required
+                                value={form.nombre}
+                                onChange={(e) => set('nombre', e.target.value)}
+                                placeholder="Torneo de Pokémon..."
+                                className={inputClass}
+                            />
+                        </div>
+                        <div>
+                            <label className={labelClass}>Hora</label>
+                            <input
+                                required
+                                type="time"
+                                value={form.hora}
+                                onChange={(e) => set('hora', e.target.value)}
+                                className={inputClass}
+                            />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label className={labelClass}>Día</label>
+                            <select
+                                value={form.dia}
+                                onChange={(e) => set('dia', e.target.value as DiaSemana)}
+                                className={inputClass}>
+                                {DIAS_SEMANA.map(({ id, label }) => (
+                                    <option key={id} value={id}>{label}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className={labelClass}>Descripción (opcional)</label>
+                            <input
+                                value={form.descripcion}
+                                onChange={(e) => set('descripcion', e.target.value)}
+                                placeholder="Formato, premios..."
+                                className={inputClass}
+                            />
+                        </div>
+                    </div>
+                    <div className="flex justify-end">
+                        <button
+                            type="submit"
+                            disabled={saving || !form.nombre.trim() || !form.hora.trim()}
+                            className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-6 py-2 hover:bg-primary hover:text-surface transition-colors disabled:opacity-40">
+                            {saving ? 'Guardando...' : 'Añadir torneo'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            {/* Error */}
+            {error && (
+                <div className="flex items-center gap-2 border border-error bg-error-container/20 px-3 py-2.5 mb-4">
+                    <span className="material-symbols-outlined text-error text-base shrink-0">error</span>
+                    <p className="text-sm font-body text-error flex-1">{error}</p>
+                    <button onClick={() => setError(null)} className="text-error/60 hover:text-error shrink-0">
+                        <span className="material-symbols-outlined text-sm">close</span>
+                    </button>
+                </div>
+            )}
+
+            {/* Calendario */}
+            {loading ? (
+                <div className="flex justify-center py-10">
+                    <span className="material-symbols-outlined text-primary text-3xl animate-spin">progress_activity</span>
+                </div>
+            ) : (
+                <div className="flex flex-col gap-4">
+                    {DIAS_SEMANA.map(({ id, label }) => {
+                        const eventos = porDia(id);
+                        return (
+                            <div key={id} className="tactical-frame">
+                                <div className="px-4 py-2 border-b border-outline-variant/40 flex items-center justify-between">
+                                    <p className="font-headline text-xs uppercase tracking-widest text-primary">{label}</p>
+                                    <span className="text-[10px] font-body text-on-surface-variant">
+                                        {eventos.length} torneo{eventos.length !== 1 ? 's' : ''}
+                                    </span>
+                                </div>
+                                <div className="p-3 flex flex-col gap-2">
+                                    {eventos.length === 0 ? (
+                                        <p className="text-[10px] font-body text-on-surface-variant italic opacity-40 text-center py-2">
+                                            Sin torneos
+                                        </p>
+                                    ) : (
+                                        eventos.map((t) => (
+                                            <div key={t.id} className="flex items-start gap-3 border border-outline-variant/40 bg-surface-container-lowest px-3 py-2">
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="font-headline text-sm text-on-surface uppercase tracking-wide truncate">{t.nombre}</p>
+                                                    <p className="font-body text-[10px] text-primary">{t.hora}</p>
+                                                    {t.descripcion && (
+                                                        <p className="font-body text-[10px] text-on-surface-variant mt-0.5">{t.descripcion}</p>
+                                                    )}
+                                                </div>
+                                                <button
+                                                    onClick={() => handleDelete(t.id)}
+                                                    disabled={saving}
+                                                    className="text-on-surface-variant hover:text-error transition-colors disabled:opacity-40 shrink-0"
+                                                    title="Eliminar">
+                                                    <span className="material-symbols-outlined text-sm">delete</span>
+                                                </button>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+};
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 const AdminPanelPage = () => {
     const { user, signOut } = useAuth();
     const navigate = useNavigate();
 
-    const [adminView, setAdminView] = useState<'products' | 'categories' | 'nav'>(
+    const [adminView, setAdminView] = useState<'products' | 'categories' | 'nav' | 'torneos'>(
         'products',
     );
 
@@ -1361,17 +1561,10 @@ const AdminPanelPage = () => {
             <div className="border-b border-outline-variant/30 px-6 flex gap-0">
                 {(
                     [
-                        { id: 'products', label: 'Productos', icon: 'inventory' },
-                        {
-                            id: 'categories',
-                            label: 'Categorías',
-                            icon: 'folder',
-                        },
-                        {
-                            id: 'nav',
-                            label: 'Navegación',
-                            icon: 'menu',
-                        },
+                        { id: 'products',   label: 'Productos',   icon: 'inventory' },
+                        { id: 'categories', label: 'Categorías',  icon: 'folder' },
+                        { id: 'nav',        label: 'Navegación',  icon: 'menu' },
+                        { id: 'torneos',    label: 'Torneos',     icon: 'emoji_events' },
                     ] as const
                 ).map(({ id, label, icon }) => (
                     <button
@@ -1397,6 +1590,9 @@ const AdminPanelPage = () => {
                 )}
                 {adminView === 'nav' && (
                     <NavManager />
+                )}
+                {adminView === 'torneos' && (
+                    <TorneosManager />
                 )}
                 {adminView === 'products' && (
                 <>

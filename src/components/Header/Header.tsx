@@ -21,6 +21,11 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
             </div>
             <div className="flex items-center gap-4">
                 <Link
+                    to="/torneos"
+                    className="font-headline uppercase tracking-widest text-sm text-[#e0e0ff] opacity-70 hover:text-[#bec2ff] hover:opacity-100 transition-all">
+                    Torneos
+                </Link>
+                <Link
                     to="/aboutus"
                     className="font-headline uppercase tracking-widest text-sm text-[#e0e0ff] opacity-70 hover:text-[#bec2ff] hover:opacity-100 transition-all">
                     Sobre Nosotros
