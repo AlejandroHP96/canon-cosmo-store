@@ -24,31 +24,13 @@ const TcgGrid = () => (
                         style={{ backgroundColor: tcg.color }}
                     />
                     <div className="flex-1 p-5 flex flex-col gap-3">
-                        <div className="flex items-start justify-between">
-                            <span
-                                className="material-symbols-outlined text-2xl transition-transform group-hover:scale-110"
-                                style={{ color: tcg.color }}>
-                                {tcg.icon}
-                            </span>
-                            {tcg.tag && (
-                                <span className={`px-2 py-0.5 text-[9px] font-headline border ${tcg.tagColor} text-[#e0e0ff]`}>
-                                    {tcg.tag}
-                                </span>
-                            )}
-                        </div>
                         <div className="flex-1">
                             <h3 className="font-headline font-bold text-base text-on-surface uppercase tracking-wider leading-tight">
                                 {tcg.name}
                             </h3>
-                            <p
-                                className="text-[9px] font-headline tracking-[0.12em] uppercase mt-1"
-                                style={{ color: `${tcg.color}99` }}>
-                                {tcg.subtitle}
-                            </p>
                         </div>
-                        <div className="flex items-center gap-1 text-[10px] font-headline text-on-surface-variant uppercase tracking-widest group-hover:text-primary transition-colors">
+                        <div className="text-[10px] font-headline text-on-surface-variant uppercase tracking-widest group-hover:text-primary transition-colors">
                             <span>Ver catálogo</span>
-                            <span className="material-symbols-outlined text-sm">arrow_forward</span>
                         </div>
                     </div>
                 </Link>
