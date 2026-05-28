@@ -176,8 +176,8 @@ const ProductFormModal = ({
     const isTcgSection = selectedPath.startsWith('/tcgs/');
 
     return (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-            <div className="tactical-frame p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-2">
+            <div className="tactical-frame p-6 w-full max-w-2xl max-h-[96vh] overflow-y-auto">
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="font-headline font-bold text-lg text-on-surface uppercase tracking-widest">
                         {isEdit ? 'Editar Producto' : 'Nuevo Producto'}
@@ -281,53 +281,53 @@ const ProductFormModal = ({
                         </div>
                     </div>
 
-                    {/* Price */}
-                    <div>
-                        <label className={labelClass}>Precio</label>
-                        <div className="flex items-center">
-                            <input
-                                required
-                                placeholder="4,99"
-                                value={form.price.replace(/ ?€$/, '')}
-                                onChange={(e) =>
-                                    set('price', e.target.value ? `${e.target.value.trim()} €` : '')
-                                }
-                                className={inputClass + ' border-r-0'}
-                            />
-                            <span className="shrink-0 border border-outline-variant bg-surface-container px-3 py-2 text-sm text-on-surface-variant font-body">
-                                €
-                            </span>
+                    {/* Price + Disponibilidad */}
+                    <div className="grid grid-cols-2 gap-3">
+                        <div>
+                            <label className={labelClass}>Precio</label>
+                            <div className="flex items-center">
+                                <input
+                                    required
+                                    placeholder="4,99"
+                                    value={form.price.replace(/ ?€$/, '')}
+                                    onChange={(e) =>
+                                        set('price', e.target.value ? `${e.target.value.trim()} €` : '')
+                                    }
+                                    className={inputClass + ' border-r-0'}
+                                />
+                                <span className="shrink-0 border border-outline-variant bg-surface-container px-3 py-2 text-sm text-on-surface-variant font-body">
+                                    €
+                                </span>
+                            </div>
                         </div>
-                    </div>
-
-                    {/* Disponibilidad */}
-                    <div>
-                        <label className={labelClass}>Disponibilidad</label>
-                        <div className="grid grid-cols-2 gap-2">
-                            {[
-                                { value: true, label: 'DISPONIBLE', icon: 'check_circle' },
-                                { value: false, label: 'AGOTADO', icon: 'remove_shopping_cart' },
-                            ].map(({ value, label, icon }) => {
-                                const active = (form.inStock ?? true) === value;
-                                return (
-                                    <button
-                                        key={label}
-                                        type="button"
-                                        onClick={() => set('inStock', value)}
-                                        className={`flex items-center justify-center gap-2 py-2.5 border font-headline text-xs uppercase tracking-widest transition-all ${
-                                            active
-                                                ? value
-                                                    ? 'border-primary bg-primary/10 text-primary'
-                                                    : 'border-error bg-error/10 text-error'
-                                                : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
-                                        }`}>
-                                        <span className="material-symbols-outlined text-sm">
-                                            {icon}
-                                        </span>
-                                        {label}
-                                    </button>
-                                );
-                            })}
+                        <div>
+                            <label className={labelClass}>Disponibilidad</label>
+                            <div className="grid grid-cols-2 gap-2">
+                                {[
+                                    { value: true, label: 'DISPONIBLE', icon: 'check_circle' },
+                                    { value: false, label: 'AGOTADO', icon: 'remove_shopping_cart' },
+                                ].map(({ value, label, icon }) => {
+                                    const active = (form.inStock ?? true) === value;
+                                    return (
+                                        <button
+                                            key={label}
+                                            type="button"
+                                            onClick={() => set('inStock', value)}
+                                            className={`flex items-center justify-center gap-1.5 py-2.5 border font-headline text-[10px] uppercase tracking-widest transition-all ${
+                                                active
+                                                    ? value
+                                                        ? 'border-primary bg-primary/10 text-primary'
+                                                        : 'border-error bg-error/10 text-error'
+                                                    : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
+                                            }`}>
+                                            <span className="material-symbols-outlined text-sm">
+                                                {icon}
+                                            </span>
+                                            {label}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
 
