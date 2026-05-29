@@ -15,6 +15,8 @@ const CategoriesManager = () => {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [newCat, setNewCat] = useState('');
+    const [editingCat, setEditingCat] = useState<string | null>(null);
+    const [editValue, setEditValue] = useState('');
 
     useEffect(() => {
         getSidebarConfig()
@@ -69,6 +71,20 @@ const CategoriesManager = () => {
     };
 
     const handleRemove = (cat: string) => save(categories.filter((c) => c !== cat));
+
+    const startEdit = (cat: string) => { setEditingCat(cat); setEditValue(cat); setError(null); };
+    const cancelEdit = () => { setEditingCat(null); setEditValue(''); };
+
+    const handleRename = async () => {
+        const trimmed = editValue.trim();
+        if (!trimmed || trimmed === editingCat) { cancelEdit(); return; }
+        if (categories.includes(trimmed)) {
+            setError(`"${trimmed}" ya existe en la lista.`);
+            return;
+        }
+        await save(categories.map((c) => (c === editingCat ? trimmed : c)));
+        cancelEdit();
+    };
 
     if (!navReady) {
         return (
@@ -134,17 +150,52 @@ const CategoriesManager = () => {
             ) : (
                 <div className="flex flex-col gap-2 mb-4">
                     {categories.map((cat) => (
-                        <div
-                            key={cat}
-                            className="tactical-frame px-4 py-2.5 flex items-center justify-between">
-                            <span className="font-body text-sm text-on-surface">{cat}</span>
-                            <button
-                                onClick={() => handleRemove(cat)}
-                                disabled={saving}
-                                className="text-on-surface-variant hover:text-error transition-colors disabled:opacity-40"
-                                title="Eliminar">
-                                <span className="material-symbols-outlined text-sm">delete</span>
-                            </button>
+                        <div key={cat} className="tactical-frame px-3 py-2 flex items-center gap-2">
+                            {editingCat === cat ? (
+                                <>
+                                    <input
+                                        autoFocus
+                                        value={editValue}
+                                        onChange={(e) => setEditValue(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') handleRename();
+                                            if (e.key === 'Escape') cancelEdit();
+                                        }}
+                                        className={inputClass + ' flex-1 py-1 text-sm'}
+                                    />
+                                    <button
+                                        onClick={handleRename}
+                                        disabled={saving}
+                                        className="text-primary hover:text-on-surface transition-colors disabled:opacity-40"
+                                        title="Guardar">
+                                        <span className="material-symbols-outlined text-sm">check</span>
+                                    </button>
+                                    <button
+                                        onClick={cancelEdit}
+                                        className="text-on-surface-variant hover:text-on-surface transition-colors"
+                                        title="Cancelar">
+                                        <span className="material-symbols-outlined text-sm">close</span>
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <span className="font-body text-sm text-on-surface flex-1">{cat}</span>
+                                    <button
+                                        onClick={() => startEdit(cat)}
+                                        disabled={saving}
+                                        className="text-on-surface-variant hover:text-primary transition-colors disabled:opacity-40"
+                                        title="Editar">
+                                        <span className="material-symbols-outlined text-sm">edit</span>
+                                    </button>
+                                    <button
+                                        onClick={() => handleRemove(cat)}
+                                        disabled={saving}
+                                        className="text-on-surface-variant hover:text-error transition-colors disabled:opacity-40"
+                                        title="Eliminar">
+                                        <span className="material-symbols-outlined text-sm">delete</span>
+                                    </button>
+                                </>
+                            )}
                         </div>
                     ))}
                 </div>
