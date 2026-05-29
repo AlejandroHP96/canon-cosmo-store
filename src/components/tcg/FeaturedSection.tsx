@@ -11,34 +11,76 @@ const GRID_COLS: Record<number, string> = {
     3: 'grid-cols-1 sm:grid-cols-3',
 };
 
+const SIZE = {
+    2: { img: 'w-36', title: 'text-2xl', padding: 'p-5', gap: 'gap-5', pricePad: 'px-5 py-4' },
+    3: { img: 'w-24', title: 'text-xl',  padding: 'p-4', gap: 'gap-4', pricePad: 'px-4 py-3' },
+} as const;
+
 const PER_PAGE = 3;
 const AUTO_INTERVAL = 4000;
 
-const CompactCard = ({ product }: { product: Product }) => {
+const CatalogCard = ({ product }: { product: Product }) => {
     const { t } = useTranslation();
     return (
-        <div className="tactical-frame overflow-hidden group cursor-pointer hover:bg-surface-bright transition-colors flex flex-col">
-            <ProductImage src={product.image} featured inStock={product.inStock} />
-            <div className="p-4 flex flex-col gap-1 flex-1">
-                <p className="text-[9px] font-headline text-primary tracking-[0.2em] uppercase">
-                    {[product.set, product.category].filter(Boolean).join(' · ')}
-                </p>
-                <h3 className="font-headline font-bold text-base text-on-surface uppercase leading-tight flex-1">
-                    {product.name}
-                </h3>
+        <div className="tactical-frame p-4 hover:bg-surface-bright transition-colors cursor-pointer flex flex-col gap-3 group">
+            <ProductImage src={product.image} inStock={product.inStock} />
+            <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                    <p className="text-[9px] font-headline text-primary/60 tracking-widest uppercase truncate">
+                        {product.set}
+                    </p>
+                    <p className="text-sm font-headline font-bold text-on-surface uppercase leading-tight mt-0.5">
+                        {product.name}
+                    </p>
+                </div>
                 {product.badge && (
-                    <span className={`self-start px-2 py-0.5 text-[9px] font-headline border ${product.badgeColor} text-[#e0e0ff]`}>
+                    <span className={`shrink-0 px-1.5 py-0.5 text-[8px] font-headline border ${product.badgeColor} text-[#e0e0ff]`}>
                         {product.badge}
                     </span>
                 )}
-                <div className="flex items-center justify-between mt-2 pt-2 border-t border-outline-variant/30">
-                    <p className="text-xl font-headline font-bold text-on-surface">{product.price}</p>
-                    {product.inStock === false && (
-                        <span className="text-[9px] font-headline uppercase tracking-widest text-error border border-error px-2 py-0.5">
-                            {t('featuredProduct.soldOut')}
+            </div>
+            <div className="flex items-center justify-between mt-auto pt-2 border-t border-outline-variant/30">
+                <span className="font-headline font-bold text-sm text-primary">{product.price}</span>
+                {product.inStock === false && (
+                    <span className="text-[8px] font-headline uppercase tracking-widest text-error border border-error px-1.5 py-0.5">
+                        {t('productGrid.soldOut')}
+                    </span>
+                )}
+            </div>
+        </div>
+    );
+};
+
+const CompactCard = ({ product, count }: { product: Product; count: 2 | 3 }) => {
+    const { t } = useTranslation();
+    const s = SIZE[count];
+    return (
+        <div className="tactical-frame flex flex-col group cursor-pointer hover:bg-surface-bright transition-colors overflow-hidden">
+            <div className={`flex flex-row ${s.gap} ${s.padding} pb-3`}>
+                <div className={`${s.img} shrink-0`}>
+                    <ProductImage src={product.image} featured inStock={product.inStock} />
+                </div>
+                <div className="flex flex-col justify-center flex-1 min-w-0 gap-1">
+                    <p className="text-[9px] font-headline text-primary tracking-[0.2em] uppercase">
+                        {[product.set, product.category].filter(Boolean).join(' · ')}
+                    </p>
+                    <h3 className={`font-headline font-bold ${s.title} text-on-surface uppercase leading-tight`}>
+                        {product.name}
+                    </h3>
+                    {product.badge && (
+                        <span className={`self-start px-2 py-0.5 text-[9px] font-headline border ${product.badgeColor} text-[#e0e0ff]`}>
+                            {product.badge}
                         </span>
                     )}
                 </div>
+            </div>
+            <div className={`flex items-center justify-between ${s.pricePad} border-t border-outline-variant/30`}>
+                <p className="text-xl font-headline font-bold text-on-surface">{product.price}</p>
+                {product.inStock === false && (
+                    <span className="text-[9px] font-headline uppercase tracking-widest text-error border border-error px-2 py-0.5">
+                        {t('featuredProduct.soldOut')}
+                    </span>
+                )}
             </div>
         </div>
     );
@@ -63,10 +105,20 @@ const FeaturedSection = ({ products }: Props) => {
     if (products.length === 0) return null;
 
     if (products.length <= PER_PAGE) {
+        if (products.length === 3) {
+            return (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    {products.map((p) => (
+                        <CatalogCard key={p.id} product={p} />
+                    ))}
+                </div>
+            );
+        }
+        const count = products.length as 2 | 3;
         return (
-            <div className={`grid ${GRID_COLS[products.length]} gap-4 mb-6`}>
+            <div className={`grid ${GRID_COLS[count]} gap-4 mb-6`}>
                 {products.map((p) => (
-                    <CompactCard key={p.id} product={p} />
+                    <CompactCard key={p.id} product={p} count={count} />
                 ))}
             </div>
         );
@@ -82,7 +134,7 @@ const FeaturedSection = ({ products }: Props) => {
         >
             <div key={page} className="featured-page-enter grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {visible.map((p) => (
-                    <CompactCard key={p.id} product={p} />
+                    <CompactCard key={p.id} product={p} count={3} />
                 ))}
                 {visible.length < PER_PAGE &&
                     [...Array(PER_PAGE - visible.length)].map((_, i) => (
