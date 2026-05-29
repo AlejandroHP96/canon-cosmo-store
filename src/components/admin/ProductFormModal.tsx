@@ -198,7 +198,6 @@ const ProductFormModal = ({ initial, onClose, onSaved }: Props) => {
                             <div>
                                 <label className={labelClass}>Set / Expansión</label>
                                 <input
-                                    required
                                     value={form.set}
                                     onChange={(e) => set('set', e.target.value)}
                                     className={inputClass}
