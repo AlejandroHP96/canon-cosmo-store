@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import ProductImage from '../ProductImage';
+import PriceTag from './PriceTag';
 import type { Product } from '../../types';
 
 type Props = {
@@ -69,9 +70,7 @@ const ProductGrid = ({ products, totalCount, search, selectedCategory, sectionLa
                             )}
                         </div>
                         <div className="flex items-center justify-between mt-auto pt-2 border-t border-outline-variant/30">
-                            <span className="font-headline font-bold text-sm text-primary">
-                                {product.price}
-                            </span>
+                            <PriceTag price={product.price} salePrice={product.salePrice} badge={product.badge} size="sm" />
                             {product.inStock === false && (
                                 <span className="text-[8px] font-headline uppercase tracking-widest text-error border border-error px-1.5 py-0.5">
                                     {t('productGrid.soldOut')}

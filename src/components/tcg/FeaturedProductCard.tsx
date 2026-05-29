@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import ProductImage from '../ProductImage';
+import PriceTag from './PriceTag';
 import type { Product } from '../../types';
 
 type Props = { product: Product };
@@ -32,12 +33,7 @@ const FeaturedProductCard = ({ product }: Props) => {
 
             {/* Bottom: precio */}
             <div className="flex items-center justify-between px-6 py-4 border-t border-outline-variant/30">
-                <div>
-                    <p className="text-[10px] text-primary font-headline tracking-widest mb-1">
-                        {t('featuredProduct.price')}
-                    </p>
-                    <p className="text-3xl font-headline font-bold text-on-surface">{product.price}</p>
-                </div>
+                <PriceTag price={product.price} salePrice={product.salePrice} badge={product.badge} size="lg" />
                 {product.inStock === false && (
                     <span className="text-[10px] font-headline uppercase tracking-widest text-error border border-error px-2 py-1">
                         {t('featuredProduct.soldOut')}
