@@ -17,6 +17,7 @@ const EMPTY_FORM: FormData = {
     category: '',
     badge: '',
     badgeColor: '',
+    salePrice: '',
     inStock: true,
     image: '',
     featured: false,
@@ -110,6 +111,7 @@ const ProductFormModal = ({ initial, onClose, onSaved }: Props) => {
                     ...Object.fromEntries(Object.entries(raw).filter(([, v]) => v !== undefined && v !== '')),
                     badge: raw.badge || deleteField(),
                     badgeColor: raw.badgeColor || deleteField(),
+                    salePrice: raw.badge === 'OFERTA' && raw.salePrice ? raw.salePrice : deleteField(),
                     image: raw.image || deleteField(),
                 };
                 await updateProduct(initial!.id, updatePayload);
@@ -290,6 +292,7 @@ const ProductFormModal = ({ initial, onClose, onSaved }: Props) => {
                                     const opt = BADGE_OPTIONS.find((o) => o.badge === e.target.value)!;
                                     set('badge', opt.badge);
                                     set('badgeColor', opt.badgeColor);
+                                    if (opt.badge !== 'OFERTA') set('salePrice', '');
                                 }}
                                 className={inputClass}>
                                 {BADGE_OPTIONS.map((o) => (
@@ -303,6 +306,26 @@ const ProductFormModal = ({ initial, onClose, onSaved }: Props) => {
                             </span>
                         )}
                     </div>
+
+                    {/* Precio de oferta */}
+                    {form.badge === 'OFERTA' && (
+                        <div>
+                            <label className={labelClass}>Precio de oferta</label>
+                            <div className="flex items-center">
+                                <input
+                                    placeholder="3,99"
+                                    value={(form.salePrice ?? '').replace(/ ?€$/, '')}
+                                    onChange={(e) =>
+                                        set('salePrice', e.target.value ? `${e.target.value.trim()} €` : '')
+                                    }
+                                    className={inputClass + ' border-r-0 border-[#ffb074]/60 focus:border-[#ffb074]'}
+                                />
+                                <span className="shrink-0 border border-[#ffb074]/60 bg-[#7a3500]/30 px-3 py-2 text-sm text-[#ffb074] font-body">
+                                    €
+                                </span>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Visibilidad */}
                     <div>
