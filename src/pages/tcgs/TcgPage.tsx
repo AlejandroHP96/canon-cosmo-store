@@ -8,7 +8,7 @@ import type { Product } from '../../types';
 import TcgHeader from '../../components/tcg/TcgHeader';
 import TcgSearch from '../../components/tcg/TcgSearch';
 import TcgCategoryFilter from '../../components/tcg/TcgCategoryFilter';
-import FeaturedProductCard from '../../components/tcg/FeaturedProductCard';
+import FeaturedSection from '../../components/tcg/FeaturedSection';
 import ProductGrid from '../../components/tcg/ProductGrid';
 import SEO from '../../components/SEO';
 
@@ -112,9 +112,7 @@ const TcgPage = () => {
                 selected={selectedCategory}
                 onSelect={setSelectedCategory}
             />
-            {featuredProducts.map((product) => (
-                <FeaturedProductCard key={product.id} product={product} />
-            ))}
+            <FeaturedSection products={featuredProducts} />
             <ProductGrid
                 products={gridProducts}
                 totalCount={products.length}

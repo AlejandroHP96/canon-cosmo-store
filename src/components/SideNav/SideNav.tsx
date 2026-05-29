@@ -64,7 +64,7 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                 </p>
             </div>
 
-            <nav className="flex flex-col gap-2 font-headline font-bold text-lg flex-1 overflow-y-auto min-h-0">
+            <nav className="flex flex-col gap-2 font-headline font-bold text-lg flex-1 overflow-y-auto min-h-0 ff7-scrollbar">
                 {items.length === 0 && (
                     <div className="flex flex-col gap-2 px-2 opacity-30 animate-pulse">
                         {[...Array(3)].map((_, i) => (
