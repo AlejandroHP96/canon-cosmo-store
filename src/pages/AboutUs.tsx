@@ -1,11 +1,15 @@
+import { useTranslation } from 'react-i18next';
+
 const AboutUs = () => {
+    const { t } = useTranslation();
+
     return (
         <section className="max-w-5xl mx-auto px-6 py-20">
             <h2 className="text-3xl font-bold font-headline text-on-surface mb-6 uppercase tracking-widest">
-                Sobre Nosotros
+                {t('aboutUs.title')}
             </h2>
             <p className="text-on-surface-variant text-lg leading-relaxed font-body">
-                Hola, somos Cañon Cosmo y estamos felices de tenerles.
+                {t('aboutUs.description')}
             </p>
         </section>
     );

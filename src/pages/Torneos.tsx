@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getJuegos, type JuegoTorneo } from '../services/torneosService';
 
 const Torneos = () => {
+    const { t } = useTranslation();
     const [juegos, setJuegos] = useState<JuegoTorneo[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -16,10 +18,10 @@ const Torneos = () => {
             <div className="max-w-4xl mx-auto">
                 <div className="mb-8">
                     <p className="font-headline text-[10px] uppercase tracking-[0.3em] text-primary/60 mb-1">
-                        Cañón Cosmo Store
+                        {t('tournaments.subtitle')}
                     </p>
                     <h1 className="font-headline font-bold text-2xl md:text-3xl uppercase tracking-widest text-on-surface">
-                        Torneos
+                        {t('tournaments.title')}
                     </h1>
                     <div className="h-px bg-primary/30 mt-4" />
                 </div>
@@ -32,7 +34,7 @@ const Torneos = () => {
                     </div>
                 ) : juegos.length === 0 ? (
                     <div className="tactical-frame p-10 text-center text-on-surface-variant font-body text-sm">
-                        Próximamente torneos disponibles.
+                        {t('tournaments.comingSoon')}
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -67,7 +69,7 @@ const Torneos = () => {
                                         {juego.url && (
                                             <span className="mt-auto pt-2 flex items-center gap-1 text-[10px] font-headline uppercase tracking-widest text-primary/60">
                                                 <span className="material-symbols-outlined text-xs">open_in_new</span>
-                                                Ver más
+                                                {t('tournaments.viewMore')}
                                             </span>
                                         )}
                                     </div>

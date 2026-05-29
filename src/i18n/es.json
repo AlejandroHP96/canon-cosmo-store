@@ -1,0 +1,70 @@
+{
+  "header": {
+    "tournaments": "Torneos",
+    "aboutUs": "Sobre Nosotros",
+    "admin": "Admin"
+  },
+  "sidenav": {
+    "command": "COMMAND",
+    "selectAction": "SELECT ACTION",
+    "currentStatus": "CURRENT STATUS",
+    "statusMessage": "El archivo de Bugenhagen está abierto. Salud planetaria: ESTABLE."
+  },
+  "footer": {
+    "copyright": "© 2023-2026 SHINRA ELECTRIC POWER CO.",
+    "whereWeAre": "Donde estamos",
+    "connection": "CONNECTION: SECURE"
+  },
+  "hero": {
+    "systemActive": "Sistema activo · Cañón Cosmo Store · Midgar District VII",
+    "description": "Tienda especializada en juegos de cartas coleccionables. Sobres, mazos, bundles y singles de los mejores TCGs del mercado.",
+    "viewCatalog": "Ver catálogo",
+    "tournaments": "Torneos",
+    "systemStatus": "// Estado del sistema",
+    "statusInventory": "Inventario",
+    "statusInventoryValue": "ACTUALIZADO",
+    "statusNews": "Últimas novedades",
+    "statusNewsValue": "3 ITEMS",
+    "statusTournaments": "Torneos",
+    "statusTournamentsValue": "DISPONIBLES",
+    "statusCatalog": "Catálogo",
+    "statusCatalogValue": "ACTIVO"
+  },
+  "tcgGrid": {
+    "title": "TCGs",
+    "sections": "secciones",
+    "viewCatalog": "Ver catálogo"
+  },
+  "tournamentBanner": {
+    "comingSoon": "Próximamente",
+    "title": "Torneos & Eventos",
+    "description": "Consulta el calendario de torneos y apúntate a los próximos eventos."
+  },
+  "productGrid": {
+    "noProducts": "Aún no hay productos para",
+    "noResults": "Sin resultados para",
+    "noProductsInCategory": "Sin productos en",
+    "fullCatalog": "Catálogo completo",
+    "soldOut": "Agotado"
+  },
+  "featuredProduct": {
+    "price": "PRECIO",
+    "soldOut": "Agotado"
+  },
+  "aboutUs": {
+    "title": "Sobre Nosotros",
+    "description": "Hola, somos Cañon Cosmo y estamos felices de tenerles."
+  },
+  "tournaments": {
+    "subtitle": "Cañón Cosmo Store",
+    "title": "Torneos",
+    "comingSoon": "Próximamente torneos disponibles.",
+    "viewMore": "Ver más"
+  },
+  "stats": {
+    "games": "Juegos",
+    "new": "Novedades",
+    "shipping": "Envío",
+    "official": "Oficial"
+  }
+}

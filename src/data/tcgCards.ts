@@ -1,0 +1,63 @@
+export const TCG_CARDS = [
+    {
+        name: 'Pokémon TCG',
+        subtitle: 'Scarlet & Violet — Prismatic Evolutions',
+        path: '/tcgs/pokemon',
+        icon: 'sports_esports',
+        color: '#FFCB05',
+        tag: 'HOT',
+        tagColor: 'bg-[#93000a] border-[#ffb4ab]',
+    },
+    {
+        name: 'One Piece TCG',
+        subtitle: 'OP-08 — Two Legends',
+        path: '/tcgs/one-piece',
+        icon: 'sailing',
+        color: '#e63946',
+        tag: 'NUEVO',
+        tagColor: 'bg-[#343dff] border-[#bec2ff]',
+    },
+    {
+        name: 'Digimon TCG',
+        subtitle: 'BT-15 — Exceed Apocalypse',
+        path: '/tcgs/digimon',
+        icon: 'memory',
+        color: '#4cc9f0',
+        tag: 'NUEVO',
+        tagColor: 'bg-[#343dff] border-[#bec2ff]',
+    },
+    {
+        name: 'Final Fantasy TCG',
+        subtitle: 'Opus XVIII — Resurgence of Power',
+        path: '/tcgs/final-fantasy',
+        icon: 'auto_awesome',
+        color: '#c77dff',
+        tag: null,
+        tagColor: '',
+    },
+    {
+        name: 'Naruto TCG',
+        subtitle: 'Serie 2 — Naruto Shippuden',
+        path: '/tcgs/naruto',
+        icon: 'bolt',
+        color: '#f4a261',
+        tag: null,
+        tagColor: '',
+    },
+    {
+        name: 'Riftbound TCG',
+        subtitle: 'League of Legends — Origins',
+        path: '/tcgs/riftbound',
+        icon: 'hexagon',
+        color: '#c9b458',
+        tag: 'NUEVO',
+        tagColor: 'bg-[#343dff] border-[#bec2ff]',
+    },
+];
+
+export const STATS = [
+    { value: TCG_CARDS.length.toString(), labelKey: 'games' },
+    { value: '3', labelKey: 'new' },
+    { value: '24h', labelKey: 'shipping' },
+    { value: '100%', labelKey: 'official' },
+];
