@@ -15,6 +15,15 @@ type SideNavProps = {
 
 const NAV_CACHE_KEY = 'canon-cosmo-nav-config';
 
+// Sine wave: pico al mediodía (~90%), mínimo a medianoche (~10%)
+const getMakoLevel = (): number => {
+    const now = new Date();
+    const minutes = now.getHours() * 60 + now.getMinutes();
+    const normalized = minutes / (24 * 60);
+    const level = Math.round(50 + 40 * Math.sin(2 * Math.PI * (normalized - 0.25)));
+    return Math.max(10, Math.min(99, level));
+};
+
 function getCachedItems(): NavItem[] {
     try {
         const raw = localStorage.getItem(NAV_CACHE_KEY);
@@ -34,6 +43,12 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
 
     const [openItems, setOpenItems] = useState<Set<number>>(new Set());
     const [hoveredItem, setHoveredItem] = useState<number | null>(null);
+    const [makoLevel, setMakoLevel] = useState(getMakoLevel);
+
+    useEffect(() => {
+        const id = setInterval(() => setMakoLevel(getMakoLevel()), 60_000);
+        return () => clearInterval(id);
+    }, []);
 
     useEffect(() => {
         getSidebarConfig()
@@ -163,10 +178,13 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                                 <span className="material-symbols-outlined text-sm text-yellow-400">bolt</span>
                                 <span className="text-[9px] font-headline text-[#bec2ff]/70 tracking-widest uppercase">Mako Lvl</span>
                             </div>
-                            <span className="text-[9px] font-headline text-yellow-400">80%</span>
+                            <span className="text-[9px] font-headline text-yellow-400">{makoLevel}%</span>
                         </div>
                         <div className="h-1 bg-[#bec2ff]/10 w-full">
-                            <div className="h-full bg-yellow-400/80 w-4/5" />
+                            <div
+                                className="h-full bg-yellow-400/80 transition-all duration-[2000ms] ease-in-out"
+                                style={{ width: `${makoLevel}%` }}
+                            />
                         </div>
                     </div>
 
