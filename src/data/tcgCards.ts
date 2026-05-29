@@ -58,6 +58,5 @@ export const TCG_CARDS = [
 export const STATS = [
     { value: TCG_CARDS.length.toString(), labelKey: 'games' },
     { value: '3', labelKey: 'new' },
-    { value: '24h', labelKey: 'shipping' },
     { value: '100%', labelKey: 'official' },
 ];
