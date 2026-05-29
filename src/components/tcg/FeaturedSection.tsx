@@ -20,37 +20,6 @@ const SIZE = {
 const PER_PAGE = 3;
 const AUTO_INTERVAL = 4000;
 
-const CatalogCard = ({ product }: { product: Product }) => {
-    const { t } = useTranslation();
-    return (
-        <div className="tactical-frame p-4 hover:bg-surface-bright transition-colors cursor-pointer flex flex-col gap-3 group">
-            <ProductImage src={product.image} inStock={product.inStock} />
-            <div className="flex items-start justify-between gap-2">
-                <div className="flex-1 min-w-0">
-                    <p className="text-[9px] font-headline text-primary/60 tracking-widest uppercase truncate">
-                        {product.set}
-                    </p>
-                    <p className="text-sm font-headline font-bold text-on-surface uppercase leading-tight mt-0.5">
-                        {product.name}
-                    </p>
-                </div>
-                {product.badge && (
-                    <span className={`shrink-0 px-1.5 py-0.5 text-[8px] font-headline border ${product.badgeColor} text-[#e0e0ff]`}>
-                        {product.badge}
-                    </span>
-                )}
-            </div>
-            <div className="flex items-center justify-between mt-auto pt-2 border-t border-outline-variant/30">
-                <PriceTag price={product.price} salePrice={product.salePrice} badge={product.badge} size="sm" />
-                {product.inStock === false && (
-                    <span className="text-[8px] font-headline uppercase tracking-widest text-error border border-error px-1.5 py-0.5">
-                        {t('productGrid.soldOut')}
-                    </span>
-                )}
-            </div>
-        </div>
-    );
-};
 
 const CompactCard = ({ product, count }: { product: Product; count: 2 | 3 }) => {
     const { t } = useTranslation();
