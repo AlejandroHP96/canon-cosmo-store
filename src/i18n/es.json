@@ -19,16 +19,7 @@
     "systemActive": "Sistema activo · Cañón Cosmo Store · Midgar District VII",
     "description": "Tienda especializada en juegos de cartas coleccionables. Sobres, mazos, bundles y singles de los mejores TCGs del mercado.",
     "viewCatalog": "Ver catálogo",
-    "tournaments": "Torneos",
-    "systemStatus": "// Estado del sistema",
-    "statusInventory": "Inventario",
-    "statusInventoryValue": "ACTUALIZADO",
-    "statusNews": "Últimas novedades",
-    "statusNewsValue": "3 ITEMS",
-    "statusTournaments": "Torneos",
-    "statusTournamentsValue": "DISPONIBLES",
-    "statusCatalog": "Catálogo",
-    "statusCatalogValue": "ACTIVO"
+    "tournaments": "Torneos"
   },
   "tcgGrid": {
     "title": "TCGs",
@@ -60,9 +51,5 @@
     "title": "Torneos",
     "comingSoon": "Próximamente torneos disponibles.",
     "viewMore": "Ver más"
-  },
-  "stats": {
-    "games": "Juegos",
-    "official": "Oficial"
   }
 }

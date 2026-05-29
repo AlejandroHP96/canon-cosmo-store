@@ -19,16 +19,7 @@
     "systemActive": "System active · Cañón Cosmo Store · Midgar District VII",
     "description": "Specialised store for trading card games. Booster packs, decks, bundles and singles from the best TCGs on the market.",
     "viewCatalog": "View catalog",
-    "tournaments": "Tournaments",
-    "systemStatus": "// System status",
-    "statusInventory": "Inventory",
-    "statusInventoryValue": "UPDATED",
-    "statusNews": "Latest releases",
-    "statusNewsValue": "3 ITEMS",
-    "statusTournaments": "Tournaments",
-    "statusTournamentsValue": "AVAILABLE",
-    "statusCatalog": "Catalogue",
-    "statusCatalogValue": "ACTIVE"
+    "tournaments": "Tournaments"
   },
   "tcgGrid": {
     "title": "TCGs",
@@ -60,9 +51,5 @@
     "title": "Tournaments",
     "comingSoon": "Tournaments coming soon.",
     "viewMore": "View more"
-  },
-  "stats": {
-    "games": "Games",
-    "official": "Official"
   }
 }
