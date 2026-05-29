@@ -48,10 +48,8 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
 
     const toggle = (idx: number) =>
         setOpenItems((prev) => {
-            const next = new Set(prev);
-            if (next.has(idx)) next.delete(idx);
-            else next.add(idx);
-            return next;
+            if (prev.has(idx)) return new Set<number>();
+            return new Set<number>([idx]);
         });
 
     return (
@@ -66,7 +64,7 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                 </p>
             </div>
 
-            <nav className="flex flex-col gap-2 font-headline font-bold text-lg">
+            <nav className="flex flex-col gap-2 font-headline font-bold text-lg flex-1 overflow-y-auto min-h-0">
                 {items.length === 0 && (
                     <div className="flex flex-col gap-2 px-2 opacity-30 animate-pulse">
                         {[...Array(3)].map((_, i) => (
@@ -81,7 +79,7 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                                 onClick={() => toggle(idx)}
                                 onMouseEnter={() => setHoveredItem(idx)}
                                 onMouseLeave={() => setHoveredItem(null)}
-                                className="relative w-full flex items-center py-3 px-6 text-[#bec2ff] hover:bg-[#2f336c] transition-all">
+                                className="relative w-full flex items-center py-3 px-6 text-[#bec2ff] hover:bg-[#2f336c] transition-all cursor-pointer">
                                 <span
                                     className="absolute left-1 text-xs transition-opacity duration-150"
                                     style={{
