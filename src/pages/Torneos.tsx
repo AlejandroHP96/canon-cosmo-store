@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getJuegos, type JuegoTorneo } from '../services/torneosService';
+import SEO from '../components/SEO';
 
 const Torneos = () => {
     const { t } = useTranslation();
@@ -15,6 +16,11 @@ const Torneos = () => {
 
     return (
         <div className="min-h-screen bg-surface text-on-surface pt-20 px-6 pb-12">
+            <SEO
+                title="Torneos"
+                description="Consulta los próximos torneos de TCG en Cañón Cosmo Store. Pokémon, One Piece, Final Fantasy y más."
+                path="/torneos"
+            />
             <div className="max-w-4xl mx-auto">
                 <div className="mb-8">
                     <p className="font-headline text-[10px] uppercase tracking-[0.3em] text-primary/60 mb-1">
