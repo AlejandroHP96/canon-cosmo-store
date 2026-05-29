@@ -1,9 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import ProductImage from '../ProductImage';
 import type { Product } from '../../types';
 
 type Props = { products: Product[] };
+
+const GRID_COLS: Record<number, string> = {
+    1: 'grid-cols-1',
+    2: 'grid-cols-1 sm:grid-cols-2',
+    3: 'grid-cols-1 sm:grid-cols-3',
+};
+
+const PER_PAGE = 3;
+const AUTO_INTERVAL = 4000;
 
 const CompactCard = ({ product }: { product: Product }) => {
     const { t } = useTranslation();
@@ -35,19 +44,25 @@ const CompactCard = ({ product }: { product: Product }) => {
     );
 };
 
-const GRID_COLS: Record<number, string> = {
-    1: 'grid-cols-1',
-    2: 'grid-cols-1 sm:grid-cols-2',
-    3: 'grid-cols-1 sm:grid-cols-3',
-};
-const PER_PAGE = 3;
-
 const FeaturedSection = ({ products }: Props) => {
     const [page, setPage] = useState(0);
+    const hovered = useRef(false);
+
+    const totalPages = Math.ceil(products.length / PER_PAGE);
+
+    useEffect(() => {
+        if (products.length <= PER_PAGE) return;
+        const id = setInterval(() => {
+            if (!hovered.current) {
+                setPage((p) => (p + 1) % totalPages);
+            }
+        }, AUTO_INTERVAL);
+        return () => clearInterval(id);
+    }, [totalPages, products.length]);
 
     if (products.length === 0) return null;
 
-    if (products.length <= 3) {
+    if (products.length <= PER_PAGE) {
         return (
             <div className={`grid ${GRID_COLS[products.length]} gap-4 mb-6`}>
                 {products.map((p) => (
@@ -57,12 +72,15 @@ const FeaturedSection = ({ products }: Props) => {
         );
     }
 
-    const totalPages = Math.ceil(products.length / PER_PAGE);
     const visible = products.slice(page * PER_PAGE, (page + 1) * PER_PAGE);
 
     return (
-        <div className="mb-6">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div
+            className="mb-6"
+            onMouseEnter={() => { hovered.current = true; }}
+            onMouseLeave={() => { hovered.current = false; }}
+        >
+            <div key={page} className="featured-page-enter grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {visible.map((p) => (
                     <CompactCard key={p.id} product={p} />
                 ))}
@@ -86,16 +104,14 @@ const FeaturedSection = ({ products }: Props) => {
                 </div>
                 <div className="flex gap-3">
                     <button
-                        onClick={() => setPage((p) => p - 1)}
-                        disabled={page === 0}
-                        className="flex items-center gap-1 text-[10px] font-headline text-primary disabled:opacity-30 hover:text-on-surface transition-colors tracking-widest uppercase cursor-pointer disabled:cursor-default">
+                        onClick={() => setPage((p) => (p - 1 + totalPages) % totalPages)}
+                        className="flex items-center gap-1 text-[10px] font-headline text-primary hover:text-on-surface transition-colors tracking-widest uppercase cursor-pointer">
                         <span className="material-symbols-outlined text-sm">chevron_left</span>
                         Prev
                     </button>
                     <button
-                        onClick={() => setPage((p) => p + 1)}
-                        disabled={page === totalPages - 1}
-                        className="flex items-center gap-1 text-[10px] font-headline text-primary disabled:opacity-30 hover:text-on-surface transition-colors tracking-widest uppercase cursor-pointer disabled:cursor-default">
+                        onClick={() => setPage((p) => (p + 1) % totalPages)}
+                        className="flex items-center gap-1 text-[10px] font-headline text-primary hover:text-on-surface transition-colors tracking-widest uppercase cursor-pointer">
                         Next
                         <span className="material-symbols-outlined text-sm">chevron_right</span>
                     </button>

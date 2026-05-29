@@ -182,7 +182,7 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                         </div>
                         <div className="h-1 bg-[#bec2ff]/10 w-full">
                             <div
-                                className="h-full bg-yellow-400/80 transition-all duration-[2000ms] ease-in-out"
+                                className="h-full bg-yellow-400/80 transition-all duration-2000 ease-in-out"
                                 style={{ width: `${makoLevel}%` }}
                             />
                         </div>
