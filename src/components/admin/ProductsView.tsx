@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getAllProducts, deleteProducts } from '../../services/productsService';
+import { getAllProducts, deleteProducts, updateProduct } from '../../services/productsService';
 import { getSidebarConfig, type NavItem } from '../../services/navService';
 import { pathToSectionId, toSlug } from '../../lib/tcgUtils';
 import type { Product } from '../../types';
@@ -126,6 +126,10 @@ const ProductsView = () => {
                             onToggleSelect={() => toggleSelect(product.id)}
                             onEdit={() => { setEditingProduct(product); setShowForm(true); }}
                             onDelete={() => setDeleteTarget(product)}
+                            onToggleVisible={async () => {
+                                await updateProduct(product.id, { visible: product.visible === false });
+                                refresh();
+                            }}
                         />
                     ))}
                 </div>

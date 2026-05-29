@@ -20,6 +20,7 @@ const EMPTY_FORM: FormData = {
     inStock: true,
     image: '',
     featured: false,
+    visible: true,
 };
 
 type Props = {
@@ -302,6 +303,35 @@ const ProductFormModal = ({ initial, onClose, onSaved }: Props) => {
                                 {selectedBadge.badge}
                             </span>
                         )}
+                    </div>
+
+                    {/* Visibilidad */}
+                    <div>
+                        <label className={labelClass}>Visibilidad</label>
+                        <div className="grid grid-cols-2 gap-2">
+                            {[
+                                { value: true,  label: 'Visible',  icon: 'visibility' },
+                                { value: false, label: 'Oculto',   icon: 'visibility_off' },
+                            ].map(({ value, label, icon }) => {
+                                const active = (form.visible ?? true) === value;
+                                return (
+                                    <button
+                                        key={label}
+                                        type="button"
+                                        onClick={() => set('visible', value)}
+                                        className={`flex items-center justify-center gap-1.5 py-2.5 border font-headline text-[10px] uppercase tracking-widest transition-all ${
+                                            active
+                                                ? value
+                                                    ? 'border-primary bg-primary/10 text-primary'
+                                                    : 'border-yellow-500 bg-yellow-500/10 text-yellow-400'
+                                                : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
+                                        }`}>
+                                        <span className="material-symbols-outlined text-sm">{icon}</span>
+                                        {label}
+                                    </button>
+                                );
+                            })}
+                        </div>
                     </div>
 
                     {/* Destacado */}

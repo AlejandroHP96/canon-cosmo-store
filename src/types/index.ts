@@ -18,6 +18,7 @@ export type Product = {
     inStock?: boolean;
     image?: string;
     featured?: boolean;
+    visible?: boolean;
 };
 
 export type Category = {
