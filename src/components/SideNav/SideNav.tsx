@@ -32,7 +32,7 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
     const hasCachedFromFirestore = !!localStorage.getItem(NAV_CACHE_KEY);
     const [items, setItems] = useState<NavItem[]>(hasCachedFromFirestore ? cached : []);
 
-    const [openItems, setOpenItems] = useState<Set<number>>(new Set([0]));
+    const [openItems, setOpenItems] = useState<Set<number>>(new Set());
     const [hoveredItem, setHoveredItem] = useState<number | null>(null);
 
     useEffect(() => {
