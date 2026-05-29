@@ -1,3 +1,5 @@
+const SALE_BADGE = 'OFERTA';
+
 type Props = {
     price: string;
     salePrice?: string;
@@ -13,7 +15,7 @@ const SIZE = {
 
 const PriceTag = ({ price, salePrice, badge, size = 'md' }: Props) => {
     const s = SIZE[size];
-    if (badge === 'OFERTA' && salePrice) {
+    if (badge === SALE_BADGE && salePrice) {
         return (
             <div className="flex items-baseline gap-2">
                 <span className={`${s.sale} font-headline text-[#ffb074]`}>
