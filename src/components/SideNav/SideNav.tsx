@@ -148,18 +148,46 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                 )}
             </nav>
 
-            <div className="mt-auto tactical-frame p-4 relative overflow-hidden group">
-                <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <span className="material-symbols-outlined text-8xl">
-                        auto_awesome
-                    </span>
+            <div className="mt-auto tactical-frame overflow-hidden hidden md:block">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-[#1a1f5e] border-b border-[#bec2ff]/20">
+                    <span className="material-symbols-outlined text-sm text-primary">terminal</span>
+                    <p className="text-[9px] text-primary tracking-[0.25em] font-headline uppercase">
+                        Shinra Inc. Terminal
+                    </p>
+                    <span className="ml-auto w-1.5 h-1.5 bg-green-400 animate-ping shrink-0" />
                 </div>
-                <p className="text-[10px] text-primary mb-1 font-headline">
-                    {t('sidenav.currentStatus')}
-                </p>
-                <p className="text-xs text-on-surface leading-tight font-body">
-                    {t('sidenav.statusMessage')}
-                </p>
+                <div className="p-3 pb-8 flex flex-col gap-2">
+                    <div className="flex flex-col gap-0.5">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                                <span className="material-symbols-outlined text-sm text-yellow-400">bolt</span>
+                                <span className="text-[9px] font-headline text-[#bec2ff]/70 tracking-widest uppercase">Mako Lvl</span>
+                            </div>
+                            <span className="text-[9px] font-headline text-yellow-400">80%</span>
+                        </div>
+                        <div className="h-1 bg-[#bec2ff]/10 w-full">
+                            <div className="h-full bg-yellow-400/80 w-4/5" />
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-sm text-green-400">public</span>
+                        <span className="text-[9px] font-headline text-[#bec2ff]/70 tracking-widest uppercase flex-1">Planeta</span>
+                        <span className="text-[9px] font-headline text-green-400 tracking-widest">ESTABLE</span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-sm text-red-400">warning</span>
+                        <span className="text-[9px] font-headline text-[#bec2ff]/70 tracking-widest uppercase flex-1">Avalancha</span>
+                        <span className="text-[9px] font-headline text-red-400 tracking-widest">DETECTADA</span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-sm text-primary">wifi</span>
+                        <span className="text-[9px] font-headline text-[#bec2ff]/70 tracking-widest uppercase flex-1">Señal</span>
+                        <span className="text-[9px] font-headline text-primary tracking-widest">ACTIVA</span>
+                    </div>
+                </div>
             </div>
         </aside>
     );
