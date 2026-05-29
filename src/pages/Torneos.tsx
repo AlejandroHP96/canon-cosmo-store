@@ -45,55 +45,39 @@ const Torneos = () => {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         {juegos.map((juego) => {
-                            const cardClass = `tactical-frame overflow-hidden flex flex-col${juego.url ? ' cursor-pointer hover:border-primary transition-colors' : ''}`;
                             const inner = (
-                                <>
+                                <div className="relative h-56 overflow-hidden group">
                                     {juego.imagen ? (
-                                        <div className="h-40 overflow-hidden bg-surface-container">
-                                            <img
-                                                src={juego.imagen}
-                                                alt={juego.nombre}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        </div>
+                                        <img src={juego.imagen} alt={juego.nombre} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                     ) : (
-                                        <div className="h-40 bg-surface-container flex items-center justify-center">
-                                            <span className="material-symbols-outlined text-primary/30 text-5xl">
-                                                emoji_events
-                                            </span>
+                                        <div className="w-full h-full bg-surface-container flex items-center justify-center">
+                                            <span className="material-symbols-outlined text-primary/20 text-7xl">emoji_events</span>
                                         </div>
                                     )}
-                                    <div className="p-4 flex flex-col gap-1 flex-1">
-                                        <h2 className="font-headline font-bold text-sm uppercase tracking-widest text-on-surface">
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#010241] via-[#010241]/60 to-transparent" />
+                                    <div className="absolute bottom-0 left-0 right-0 p-4 flex flex-col gap-1">
+                                        <h2 className="font-headline font-bold text-base uppercase tracking-widest text-on-surface">
                                             {juego.nombre}
                                         </h2>
                                         {juego.descripcion && (
-                                            <p className="font-body text-xs text-on-surface-variant leading-relaxed">
+                                            <p className="font-body text-[11px] text-on-surface-variant leading-snug line-clamp-2">
                                                 {juego.descripcion}
                                             </p>
                                         )}
                                         {juego.url && (
-                                            <span className="mt-auto pt-2 flex items-center gap-1 text-[10px] font-headline uppercase tracking-widest text-primary/60">
-                                                <span className="material-symbols-outlined text-xs">open_in_new</span>
+                                            <span className="mt-1 flex items-center gap-1 text-[10px] font-headline uppercase tracking-widest text-primary opacity-0 group-hover:opacity-100 transition-opacity">
                                                 {t('tournaments.viewMore')}
+                                                <span className="material-symbols-outlined text-sm">arrow_forward</span>
                                             </span>
                                         )}
                                     </div>
-                                </>
-                            );
-                            return juego.url ? (
-                                <a
-                                    key={juego.id}
-                                    href={juego.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={cardClass}>
-                                    {inner}
-                                </a>
-                            ) : (
-                                <div key={juego.id} className={cardClass}>
-                                    {inner}
                                 </div>
+                            );
+                            const cls = `tactical-frame overflow-hidden${juego.url ? ' cursor-pointer hover:border-primary transition-colors' : ''}`;
+                            return juego.url ? (
+                                <a key={juego.id} href={juego.url} target="_blank" rel="noopener noreferrer" className={cls}>{inner}</a>
+                            ) : (
+                                <div key={juego.id} className={cls}>{inner}</div>
                             );
                         })}
                     </div>
