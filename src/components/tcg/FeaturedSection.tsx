@@ -75,15 +75,6 @@ const FeaturedSection = ({ products }: Props) => {
     if (products.length === 0) return null;
 
     if (products.length <= PER_PAGE) {
-        if (products.length === 3) {
-            return (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                    {products.map((p) => (
-                        <CompactCard key={p.id} product={p} count={3} />
-                    ))}
-                </div>
-            );
-        }
         const count = products.length as 2 | 3;
         return (
             <div className={`grid ${GRID_COLS[count]} gap-4 mb-6`}>

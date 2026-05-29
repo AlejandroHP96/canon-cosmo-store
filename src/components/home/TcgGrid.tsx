@@ -1,46 +1,14 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-    getSidebarConfig,
-    DEFAULT_SIDEBAR,
-    type NavItem,
-} from '../../services/navService';
+import { useNavItems } from '../../hooks/useNavItems';
 import { TCG_CARDS } from '../../data/tcgCards';
-
-const NAV_CACHE_KEY = 'canon-cosmo-nav-config';
 
 const colorMap = Object.fromEntries(TCG_CARDS.map((c) => [c.path, c.color]));
 
-function getTcgSubmenu(): { label: string; path: string }[] {
-    try {
-        const raw = localStorage.getItem(NAV_CACHE_KEY);
-        if (raw) {
-            const items: NavItem[] = JSON.parse(raw);
-            const group = items.find((i) => i.label === 'TCGs');
-            if (group?.submenu?.length) return group.submenu;
-        }
-    } catch {
-        // cache corrupto — ignorar
-    }
-    return DEFAULT_SIDEBAR.items[0].submenu ?? [];
-}
-
 const TcgGrid = () => {
     const { t } = useTranslation();
-    const hasCached = !!localStorage.getItem(NAV_CACHE_KEY);
-    const [tcgItems, setTcgItems] = useState(hasCached ? getTcgSubmenu() : []);
-
-    useEffect(() => {
-        getSidebarConfig()
-            .then((config) => {
-                const group = config.items.find((i) => i.label === 'TCGs');
-                if (group?.submenu?.length) setTcgItems(group.submenu);
-            })
-            .catch(() => {
-                if (!hasCached) setTcgItems(DEFAULT_SIDEBAR.items[0].submenu ?? []);
-            });
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    const navItems = useNavItems();
+    const tcgItems = navItems.find((i) => i.label === 'TCGs')?.submenu ?? [];
 
     return (
         <>

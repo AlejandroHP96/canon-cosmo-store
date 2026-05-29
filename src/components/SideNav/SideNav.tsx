@@ -1,19 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-    getSidebarConfig,
-    DEFAULT_SIDEBAR,
-    type NavItem,
-} from '../../services/navService';
+import { useNavItems } from '../../hooks/useNavItems';
 import { toSlug } from '../../lib/tcgUtils';
 
 type SideNavProps = {
     isOpen: boolean;
     onClose: () => void;
 };
-
-const NAV_CACHE_KEY = 'canon-cosmo-nav-config';
 
 // Sine wave: pico al mediodía (~90%), mínimo a medianoche (~10%)
 const getMakoLevel = (): number => {
@@ -24,22 +18,9 @@ const getMakoLevel = (): number => {
     return Math.max(10, Math.min(99, level));
 };
 
-function getCachedItems(): NavItem[] {
-    try {
-        const raw = localStorage.getItem(NAV_CACHE_KEY);
-        if (raw) return JSON.parse(raw) as NavItem[];
-    } catch {
-        // cache corrupto — ignorar
-    }
-    return DEFAULT_SIDEBAR.items;
-}
-
 const SideNav = ({ isOpen, onClose }: SideNavProps) => {
     const { t } = useTranslation();
-
-    const cached = getCachedItems();
-    const hasCachedFromFirestore = !!localStorage.getItem(NAV_CACHE_KEY);
-    const [items, setItems] = useState<NavItem[]>(hasCachedFromFirestore ? cached : []);
+    const items = useNavItems();
 
     const [openItems, setOpenItems] = useState<Set<number>>(new Set());
     const [hoveredItem, setHoveredItem] = useState<number | null>(null);
@@ -49,17 +30,6 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
         const id = setInterval(() => setMakoLevel(getMakoLevel()), 60_000);
         return () => clearInterval(id);
     }, []);
-
-    useEffect(() => {
-        getSidebarConfig()
-            .then((config) => {
-                setItems(config.items);
-                localStorage.setItem(NAV_CACHE_KEY, JSON.stringify(config.items));
-            })
-            .catch(() => {
-                if (!hasCachedFromFirestore) setItems(DEFAULT_SIDEBAR.items);
-            });
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const toggle = (idx: number) =>
         setOpenItems((prev) => {
