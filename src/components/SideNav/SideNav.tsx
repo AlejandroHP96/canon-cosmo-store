@@ -79,7 +79,7 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                                 onClick={() => toggle(idx)}
                                 onMouseEnter={() => setHoveredItem(idx)}
                                 onMouseLeave={() => setHoveredItem(null)}
-                                className="relative w-full flex items-center py-3 px-6 text-[#bec2ff] hover:bg-[#2f336c] transition-all">
+                                className="relative w-full flex items-center py-3 px-6 text-[#bec2ff] hover:bg-[#2f336c] transition-all cursor-pointer">
                                 <span
                                     className="absolute left-1 text-xs transition-opacity duration-150"
                                     style={{
