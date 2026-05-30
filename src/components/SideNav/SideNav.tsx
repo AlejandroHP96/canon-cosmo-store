@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useNavItems } from '../../hooks/useNavItems';
@@ -9,27 +9,12 @@ type SideNavProps = {
     onClose: () => void;
 };
 
-// Sine wave: pico al mediodía (~90%), mínimo a medianoche (~10%)
-const getMakoLevel = (): number => {
-    const now = new Date();
-    const minutes = now.getHours() * 60 + now.getMinutes();
-    const normalized = minutes / (24 * 60);
-    const level = Math.round(50 + 40 * Math.sin(2 * Math.PI * (normalized - 0.25)));
-    return Math.max(10, Math.min(99, level));
-};
-
 const SideNav = ({ isOpen, onClose }: SideNavProps) => {
     const { t } = useTranslation();
     const items = useNavItems();
 
     const [openItems, setOpenItems] = useState<Set<number>>(new Set());
     const [hoveredItem, setHoveredItem] = useState<number | null>(null);
-    const [makoLevel, setMakoLevel] = useState(getMakoLevel);
-
-    useEffect(() => {
-        const id = setInterval(() => setMakoLevel(getMakoLevel()), 60_000);
-        return () => clearInterval(id);
-    }, []);
 
     const toggle = (idx: number) =>
         setOpenItems((prev) => {
@@ -133,50 +118,6 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                 )}
             </nav>
 
-            <div className="mt-auto tactical-frame overflow-hidden hidden md:block">
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-[#1a1f5e] border-b border-[#bec2ff]/20">
-                    <span className="material-symbols-outlined text-sm text-primary">terminal</span>
-                    <p className="text-[9px] text-primary tracking-[0.25em] font-headline uppercase">
-                        Shinra Inc. Terminal
-                    </p>
-                    <span className="ml-auto w-1.5 h-1.5 bg-green-400 animate-ping shrink-0" />
-                </div>
-                <div className="p-3 pb-8 flex flex-col gap-2">
-                    <div className="flex flex-col gap-0.5">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                                <span className="material-symbols-outlined text-sm text-yellow-400">bolt</span>
-                                <span className="text-[9px] font-headline text-[#bec2ff]/70 tracking-widest uppercase">Mako Lvl</span>
-                            </div>
-                            <span className="text-[9px] font-headline text-yellow-400">{makoLevel}%</span>
-                        </div>
-                        <div className="h-1 bg-[#bec2ff]/10 w-full">
-                            <div
-                                className="h-full bg-yellow-400/80 transition-all duration-2000 ease-in-out"
-                                style={{ width: `${makoLevel}%` }}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-1.5">
-                        <span className="material-symbols-outlined text-sm text-green-400">public</span>
-                        <span className="text-[9px] font-headline text-[#bec2ff]/70 tracking-widest uppercase flex-1">Planeta</span>
-                        <span className="text-[9px] font-headline text-green-400 tracking-widest">ESTABLE</span>
-                    </div>
-
-                    <div className="flex items-center gap-1.5">
-                        <span className="material-symbols-outlined text-sm text-red-400">warning</span>
-                        <span className="text-[9px] font-headline text-[#bec2ff]/70 tracking-widest uppercase flex-1">Avalancha</span>
-                        <span className="text-[9px] font-headline text-red-400 tracking-widest">DETECTADA</span>
-                    </div>
-
-                    <div className="flex items-center gap-1.5">
-                        <span className="material-symbols-outlined text-sm text-primary">wifi</span>
-                        <span className="text-[9px] font-headline text-[#bec2ff]/70 tracking-widest uppercase flex-1">Señal</span>
-                        <span className="text-[9px] font-headline text-primary tracking-widest">ACTIVA</span>
-                    </div>
-                </div>
-            </div>
         </aside>
     );
 };

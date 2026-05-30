@@ -26,7 +26,8 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
                 </button>
                 <Link
                     to="/"
-                    className="text-xl md:text-2xl font-bold text-[#e0e0ff] font-headline uppercase tracking-widest hover:text-primary transition-colors">
+                    className="flex items-center gap-2 text-xl md:text-2xl font-bold text-[#e0e0ff] font-headline uppercase tracking-widest hover:text-primary transition-colors">
+                    <img src="/logo.png" alt="Cañón Cosmo Store" className="h-8 w-8 object-contain" />
                     CAÑÓN COSMO STORE
                 </Link>
                 <Link
