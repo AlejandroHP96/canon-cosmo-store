@@ -1,0 +1,55 @@
+{
+  "header": {
+    "tournaments": "Tournaments",
+    "aboutUs": "About Us",
+    "admin": "Admin"
+  },
+  "sidenav": {
+    "command": "COMMAND",
+    "selectAction": "SELECT ACTION",
+    "currentStatus": "CURRENT STATUS",
+    "statusMessage": "Bugenhagen's archive is open. Planetary health: STABLE."
+  },
+  "footer": {
+    "copyright": "© 2023-2026 SHINRA ELECTRIC POWER CO.",
+    "whereWeAre": "Where we are",
+    "connection": "CONNECTION: SECURE"
+  },
+  "hero": {
+    "systemActive": "System active · Cañón Cosmo Store · Midgar District VII",
+    "description": "Specialised store for trading card games. Booster packs, decks, bundles and singles from the best TCGs on the market.",
+    "viewCatalog": "View catalog",
+    "tournaments": "Tournaments"
+  },
+  "tcgGrid": {
+    "title": "TCGs",
+    "sections": "sections",
+    "viewCatalog": "View catalog"
+  },
+  "tournamentBanner": {
+    "comingSoon": "Coming soon",
+    "title": "Tournaments & Events",
+    "description": "Check the tournament calendar and sign up for upcoming events."
+  },
+  "productGrid": {
+    "noProducts": "No products yet for",
+    "noResults": "No results for",
+    "noProductsInCategory": "No products in",
+    "fullCatalog": "Full catalog",
+    "soldOut": "Sold out"
+  },
+  "featuredProduct": {
+    "price": "PRICE",
+    "soldOut": "Sold out"
+  },
+  "aboutUs": {
+    "title": "About Us",
+    "description": "Hi, we are Cañon Cosmo and we're happy to have you here."
+  },
+  "tournaments": {
+    "subtitle": "Cañón Cosmo Store",
+    "title": "Tournaments",
+    "comingSoon": "Tournaments coming soon.",
+    "viewMore": "View more"
+  }
+}

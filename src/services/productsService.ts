@@ -21,6 +21,7 @@ export async function getProductsByTcg(tcg: TcgId): Promise<Product[]> {
     const snapshot = await getDocs(q);
     return snapshot.docs
         .map((d) => ({ id: d.id, ...d.data() }) as Product)
+        .filter((p) => p.visible !== false)
         .sort((a, b) => a.name.localeCompare(b.name));
 }
 

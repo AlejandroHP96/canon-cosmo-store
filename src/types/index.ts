@@ -15,9 +15,11 @@ export type Product = {
     category: string;
     badge?: string;
     badgeColor?: string;
+    salePrice?: string;
     inStock?: boolean;
     image?: string;
     featured?: boolean;
+    visible?: boolean;
 };
 
 export type Category = {

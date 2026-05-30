@@ -108,3 +108,41 @@ body {
     color: #bec2ff;
     animation: pulse-arrow 1s infinite;
 }
+
+/* FF7 PS1-style scrollbar — global */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #bec2ff transparent;
+}
+::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #bec2ff;
+    border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #e0e0ff;
+}
+::-webkit-scrollbar-button {
+    display: none;
+}
+
+/* keep the class for explicit use */
+.ff7-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #bec2ff transparent;
+}
+
+/* Featured products auto-page fade */
+@keyframes featured-fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.featured-page-enter {
+    animation: featured-fade-in 0.35s ease both;
+}
