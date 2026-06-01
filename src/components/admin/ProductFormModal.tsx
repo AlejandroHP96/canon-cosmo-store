@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { deleteField } from 'firebase/firestore';
 import { addProduct, updateProduct } from '../../services/productsService';
 import { getCategoriesByTcg } from '../../services/categoriesService';
@@ -28,13 +28,16 @@ type Props = {
     initial: Product | null;
     onClose: () => void;
     onSaved: () => void;
+    onSavedContinue?: () => void;
 };
 
-const ProductFormModal = ({ initial, onClose, onSaved }: Props) => {
+const ProductFormModal = ({ initial, onClose, onSaved, onSavedContinue }: Props) => {
     const isEdit = initial !== null;
     const [form, setForm] = useState<FormData>(initial ? { ...initial } : { ...EMPTY_FORM });
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [lastSaved, setLastSaved] = useState<string | null>(null);
+    const continueMode = useRef(false);
     const [categories, setCategories] = useState<string[]>([]);
 
     const [navItems, setNavItems] = useState<NavItem[]>([]);
@@ -102,7 +105,10 @@ const ProductFormModal = ({ initial, onClose, onSaved }: Props) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        const isContinue = continueMode.current;
+        continueMode.current = false;
         setError(null);
+        setLastSaved(null);
         setSaving(true);
         try {
             const raw: FormData = { ...form };
@@ -121,7 +127,13 @@ const ProductFormModal = ({ initial, onClose, onSaved }: Props) => {
                 ) as FormData;
                 await addProduct(addPayload);
             }
-            onSaved();
+            if (isContinue) {
+                setLastSaved(form.name);
+                set('name', '');
+                onSavedContinue?.();
+            } else {
+                onSaved();
+            }
         } catch {
             setError('Error al guardar. Inténtalo de nuevo.');
         } finally {
@@ -375,6 +387,12 @@ const ProductFormModal = ({ initial, onClose, onSaved }: Props) => {
                             {error}
                         </p>
                     )}
+                    {lastSaved && !error && (
+                        <p className="text-xs font-body text-primary flex items-center gap-1">
+                            <span className="material-symbols-outlined text-sm">check_circle</span>
+                            «{lastSaved}» guardado. Puedes añadir el siguiente.
+                        </p>
+                    )}
 
                     <div className="flex gap-3 mt-2">
                         <button
@@ -383,6 +401,15 @@ const ProductFormModal = ({ initial, onClose, onSaved }: Props) => {
                             className="flex-1 border border-outline-variant text-on-surface-variant font-headline text-xs uppercase tracking-widest py-2.5 hover:border-primary hover:text-primary transition-colors">
                             Cancelar
                         </button>
+                        {!isEdit && onSavedContinue && (
+                            <button
+                                type="submit"
+                                disabled={saving}
+                                onClick={() => { continueMode.current = true; }}
+                                className="flex-1 border border-primary/50 text-primary/70 font-headline text-xs uppercase tracking-widest py-2.5 hover:border-primary hover:text-primary transition-colors disabled:opacity-50">
+                                {saving ? 'Guardando...' : '+ Añadir otro'}
+                            </button>
+                        )}
                         <button
                             type="submit"
                             disabled={saving}
