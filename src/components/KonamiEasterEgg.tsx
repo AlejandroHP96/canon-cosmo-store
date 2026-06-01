@@ -18,6 +18,7 @@ const CHARS = [
     { char: 'Red XIII',  color: '#ff6030' },
     { char: 'Vincent',   color: '#cc4444' },
     { char: 'Cid',       color: '#87ceeb' },
+    { char: 'NPC Shinra', color: '#aaaaaa' },
 ];
 
 type Phase = 'idle' | 'flashing' | 'dialog';
