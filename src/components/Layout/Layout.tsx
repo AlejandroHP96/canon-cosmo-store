@@ -4,6 +4,7 @@ import Header from '../Header/Header';
 import SideNav from '../SideNav/SideNav';
 import Footer from '../Footer/Footer';
 import KonamiEasterEgg from '../KonamiEasterEgg';
+import GoldSaucerModal from '../GoldSaucerModal';
 
 const Layout = () => {
     const [sideNavOpen, setSideNavOpen] = useState(false);
@@ -26,6 +27,7 @@ const Layout = () => {
             </main>
             <Footer />
             <KonamiEasterEgg />
+            <GoldSaucerModal />
         </div>
     );
 };
