@@ -3,6 +3,7 @@ import Layout from './components/Layout/Layout';
 import Home from './pages/Home';
 import AboutUs from './pages/AboutUs';
 import Torneos from './pages/Torneos';
+import GoldSaucer from './pages/GoldSaucer';
 import TcgPage from './pages/tcgs/TcgPage';
 import { AuthProvider } from './contexts/AuthContext';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
@@ -18,6 +19,7 @@ const App = () => {
                     <Route path="/" element={<Home />} />
                     <Route path="/aboutus" element={<AboutUs />} />
                     <Route path="/torneos" element={<Torneos />} />
+                    <Route path="/gold-saucer" element={<GoldSaucer />} />
                     {/* Catch-all: cualquier ruta no explícita renderiza TcgPage dinámicamente */}
                     <Route path="*" element={<TcgPage />} />
                 </Route>
