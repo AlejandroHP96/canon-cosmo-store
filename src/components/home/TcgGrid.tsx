@@ -50,11 +50,11 @@ const TcgGrid = () => {
                             </div>
                         </div>
                         {tcg.image && (
-                            <div className="flex-1 overflow-hidden self-stretch">
+                            <div className="flex-1 self-stretch bg-surface-container flex items-center justify-center overflow-hidden">
                                 <img
                                     src={tcg.image}
                                     alt={tcg.label}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                                 />
                             </div>
                         )}
