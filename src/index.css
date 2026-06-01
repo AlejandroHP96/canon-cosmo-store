@@ -101,14 +101,6 @@ body {
     }
 }
 
-.finger-pointer::before {
-    content: '▶';
-    position: absolute;
-    left: 0;
-    color: #bec2ff;
-    animation: pulse-arrow 1s infinite;
-}
-
 /* FF7 PS1-style scrollbar — global */
 * {
     scrollbar-width: thin;

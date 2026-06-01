@@ -19,15 +19,6 @@ export function slugToTcgId(slug: string): string {
 }
 
 /**
- * Convierte un ID de Firestore al slug de la URL.
- * Para TCGs nuevos el ID ES el slug.
- */
-export function tcgIdToSlug(tcgId: string): string {
-    const entry = Object.entries(LEGACY_SLUG_MAP).find(([, id]) => id === tcgId);
-    return entry ? entry[0] : tcgId;
-}
-
-/**
  * Convierte texto libre en slug: "Funko Pop" → "funko-pop"
  */
 export function toSlug(text: string): string {
