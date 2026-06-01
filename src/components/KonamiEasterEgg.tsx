@@ -7,6 +7,7 @@ const QUOTES: { char: string; color: string; quote: string }[] = [
     { char: 'Cloud',             color: '#7ec8e3', quote: '¡Muy bien, allé voy!' },
     { char: 'Aeris',             color: '#ffb3cc', quote: 'Dicen que en Midgar no crecen ni la hierba ni las flores, pero por algún motivo, las flores sí.' },
     { char: 'Jessie',            color: '#ff9eb5', quote: '¡Ya esté!' },
+    { char: 'Recepcionista',     color: '#aaaaaa', quote: 'Sr.....Cloud? Su fiesta le espera en el piso 2.' },
 ];
 
 type Phase = 'idle' | 'flashing' | 'dialog';
