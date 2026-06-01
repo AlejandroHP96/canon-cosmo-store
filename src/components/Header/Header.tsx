@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import CaitSithSprite from './CaitSithSprite';
 
 type HeaderProps = {
     onMenuToggle: () => void;
@@ -37,10 +38,7 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
                 </Link>
             </div>
 
-            {/* Cait Sith walking sprite — only when nav links are visible */}
-            <div className="hidden sm:block flex-1 relative overflow-hidden mx-4 h-10">
-                <div className="caitsith-sprite" aria-hidden="true" />
-            </div>
+            <CaitSithSprite />
 
             <div className="flex items-center gap-4 shrink-0">
                 <Link
