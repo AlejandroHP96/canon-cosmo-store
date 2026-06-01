@@ -6,6 +6,7 @@ const QUOTES: { char: string; color: string; quote: string }[] = [
     { char: 'Presidente Shinra', color: '#d4af37', quote: "Mira a 'Rompe-aire', el soldado del tecno. Fue creado por nuestro departamento de Desarrollo de armas." },
     { char: 'Cloud',             color: '#7ec8e3', quote: '¡Muy bien, allé voy!' },
     { char: 'Aeris',             color: '#ffb3cc', quote: 'Dicen que en Midgar no crecen ni la hierba ni las flores, pero por algún motivo, las flores sí.' },
+    { char: 'Jessie',            color: '#ff9eb5', quote: '¡Ya esté!' },
 ];
 
 type Phase = 'idle' | 'flashing' | 'dialog';
@@ -48,7 +49,7 @@ const KonamiEasterEgg = () => {
     if (phase === 'idle') return null;
 
     return (
-        <div className="fixed inset-0 z-[200] pointer-events-none">
+        <div className="fixed inset-0 z-200 pointer-events-none">
             {phase === 'flashing' && (
                 <div className="absolute inset-0 konami-flash" />
             )}
