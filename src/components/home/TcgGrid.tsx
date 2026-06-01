@@ -34,30 +34,31 @@ const TcgGrid = () => {
                     <Link
                         key={tcg.path}
                         to={tcg.path}
-                        className="tactical-frame flex overflow-hidden group hover:bg-surface-bright transition-colors">
-                        <div
-                            className="w-1 shrink-0 transition-all group-hover:w-1.5"
-                            style={{ backgroundColor: colorMap[tcg.path] ?? '#bec2ff' }}
-                        />
-                        <div className="flex-1 p-5 flex flex-col gap-3">
-                            <div className="flex-1">
-                                <h3 className="font-headline font-bold text-base text-on-surface uppercase tracking-wider leading-tight">
-                                    {tcg.label}
-                                </h3>
-                            </div>
-                            <div className="text-[10px] font-headline text-on-surface-variant uppercase tracking-widest group-hover:text-primary transition-colors">
-                                <span>{t('tcgGrid.viewCatalog')}</span>
-                            </div>
-                        </div>
-                        {tcg.image && (
-                            <div className="w-24 shrink-0 overflow-hidden">
+                        className="tactical-frame overflow-hidden hover:border-primary transition-colors"
+                        style={{ borderLeftColor: colorMap[tcg.path] ?? '#bec2ff', borderLeftWidth: '3px' }}>
+                        <div className="relative h-40 overflow-hidden group">
+                            {tcg.image ? (
                                 <img
                                     src={tcg.image}
                                     alt={tcg.label}
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                 />
+                            ) : (
+                                <div className="w-full h-full bg-surface-container flex items-center justify-center">
+                                    <span className="material-symbols-outlined text-primary/20 text-7xl">playing_cards</span>
+                                </div>
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#010241] via-[#010241]/60 to-transparent" />
+                            <div className="absolute bottom-0 left-0 right-0 p-4 flex flex-col gap-1">
+                                <h3 className="font-headline font-bold text-base uppercase tracking-widest text-on-surface">
+                                    {tcg.label}
+                                </h3>
+                                <span className="flex items-center gap-1 text-[10px] font-headline uppercase tracking-widest text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                                    {t('tcgGrid.viewCatalog')}
+                                    <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                                </span>
                             </div>
-                        )}
+                        </div>
                     </Link>
                 ))}
             </div>
