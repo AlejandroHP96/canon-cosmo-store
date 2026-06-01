@@ -5,8 +5,8 @@
     "admin": "Admin"
   },
   "sidenav": {
-    "command": "COMMAND",
-    "selectAction": "SELECT ACTION",
+    "command": "COMANDO",
+    "selectAction": "SELECCIONAR ACCIÓN",
     "currentStatus": "CURRENT STATUS",
     "statusMessage": "El archivo de Bugenhagen está abierto. Salud planetaria: ESTABLE."
   },
