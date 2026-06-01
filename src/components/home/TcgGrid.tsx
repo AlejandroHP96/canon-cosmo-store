@@ -34,7 +34,7 @@ const TcgGrid = () => {
                     <Link
                         key={tcg.path}
                         to={tcg.path}
-                        className="tactical-frame flex overflow-hidden group hover:bg-surface-bright transition-colors">
+                        className="tactical-frame flex overflow-hidden group hover:bg-surface-bright transition-colors h-24">
                         <div
                             className="w-1 shrink-0 transition-all group-hover:w-1.5"
                             style={{ backgroundColor: colorMap[tcg.path] ?? '#bec2ff' }}
