@@ -3,21 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
 
 const QUOTES: { char: string; color: string; quote: string }[] = [
-    { char: 'Cloud',              color: '#7ec8e3', quote: '......' },
-    { char: 'Cloud',              color: '#7ec8e3', quote: 'No me interesa.' },
-    { char: 'Barret',             color: '#ffa040', quote: '¡De este tren no nos bajamos!' },
-    { char: 'Aerith',             color: '#ffb3cc', quote: 'Te estoy buscando.' },
-    { char: 'Aerith',             color: '#ffb3cc', quote: 'Me voy ahora. Volveré cuando todo haya terminado.' },
-    { char: 'Tifa',               color: '#ff6b6b', quote: 'Las palabras no son la única forma de decirle a alguien cómo te sientes.' },
-    { char: 'Sephiroth',          color: '#c8c8ff', quote: 'Yo... nunca seré un recuerdo.' },
-    { char: 'Sephiroth',          color: '#c8c8ff', quote: '¿Lo sientes? El pulso del Planeta.' },
-    { char: 'Cait Sith',          color: '#ffc0cb', quote: '¡Yo también quiero unirme al equipo!' },
-    { char: 'Yuffie',             color: '#90ee90', quote: '¡Entrégate esa materia!' },
-    { char: 'Red XIII',           color: '#ff6030', quote: 'Nanaki. Ese es mi verdadero nombre.' },
-    { char: 'Vincent',            color: '#cc4444', quote: '...... Nada.' },
-    { char: 'Cid',                color: '#87ceeb', quote: '¡Siéntate y tómate tu @#% té!' },
-    { char: 'Presidente Shinra',  color: '#d4af37', quote: "Mira a 'Rompe-aire', el soldado del tecno. Fue creado por nuestro departamento de Desarrollo de armas." },
-    { char: 'NPC Shinra',         color: '#aaaaaa', quote: 'Tu fiesta está arriba.' },
+    { char: 'Presidente Shinra', color: '#d4af37', quote: "Mira a 'Rompe-aire', el soldado del tecno. Fue creado por nuestro departamento de Desarrollo de armas." },
 ];
 
 type Phase = 'idle' | 'flashing' | 'dialog';
