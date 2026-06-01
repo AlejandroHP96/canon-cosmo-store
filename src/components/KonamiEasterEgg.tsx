@@ -4,6 +4,7 @@ const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRi
 
 const QUOTES: { char: string; color: string; quote: string }[] = [
     { char: 'Presidente Shinra', color: '#d4af37', quote: "Mira a 'Rompe-aire', el soldado del tecno. Fue creado por nuestro departamento de Desarrollo de armas." },
+    { char: 'Cloud',             color: '#7ec8e3', quote: '¡Muy bien, allé voy!' },
 ];
 
 type Phase = 'idle' | 'flashing' | 'dialog';
