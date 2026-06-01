@@ -39,7 +39,7 @@ const TcgGrid = () => {
                             className="w-1 shrink-0 transition-all group-hover:w-1.5"
                             style={{ backgroundColor: colorMap[tcg.path] ?? '#bec2ff' }}
                         />
-                        <div className="flex-1 p-5 flex flex-col gap-3">
+                        <div className="shrink-0 w-36 p-5 flex flex-col gap-3">
                             <div className="flex-1">
                                 <h3 className="font-headline font-bold text-base text-on-surface uppercase tracking-wider leading-tight">
                                     {tcg.label}
@@ -50,7 +50,7 @@ const TcgGrid = () => {
                             </div>
                         </div>
                         {tcg.image && (
-                            <div className="w-24 shrink-0 overflow-hidden">
+                            <div className="flex-1 overflow-hidden self-stretch">
                                 <img
                                     src={tcg.image}
                                     alt={tcg.label}
