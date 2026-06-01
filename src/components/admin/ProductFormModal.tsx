@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { deleteField } from 'firebase/firestore';
 import { addProduct, updateProduct } from '../../services/productsService';
 import { getCategoriesByTcg } from '../../services/categoriesService';
@@ -47,6 +47,15 @@ const ProductFormModal = ({ initial, onClose, onSaved, onSavedContinue }: Props)
 
     const set = <K extends keyof FormData>(key: K, value: FormData[K]) =>
         setForm((prev) => ({ ...prev, [key]: value }));
+
+    const handleEsc = useCallback((e: KeyboardEvent) => {
+        if (e.key === 'Escape' && !saving) onClose();
+    }, [onClose, saving]);
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleEsc);
+        return () => document.removeEventListener('keydown', handleEsc);
+    }, [handleEsc]);
 
     useEffect(() => {
         getSidebarConfig().then((cfg) => {
