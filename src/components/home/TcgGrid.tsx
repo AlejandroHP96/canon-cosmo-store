@@ -50,7 +50,7 @@ const TcgGrid = () => {
                             </div>
                         </div>
                         {tcg.image && (
-                            <div className="flex-1 self-stretch bg-surface-container flex items-center justify-center overflow-hidden">
+                            <div className="flex-1 self-stretch bg-surface-container flex items-center justify-center overflow-hidden pr-3">
                                 <img
                                     src={tcg.image}
                                     alt={tcg.label}
