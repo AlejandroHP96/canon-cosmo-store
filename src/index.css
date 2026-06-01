@@ -177,9 +177,9 @@ body {
     100% { left: 0; }
 }
 
-/* Direction flip: instantaneous snap at 50% via step-end on each keyframe */
+/* Direction flip: scaleX(1)=faces right (L→R), scaleX(-1)=faces left (R→L) */
 @keyframes caitsith-flip {
-    0%   { transform: scaleX(-1); animation-timing-function: step-end; }
-    50%  { transform: scaleX(1);  animation-timing-function: step-end; }
-    100% { transform: scaleX(-1); }
+    0%   { transform: scaleX(1);  animation-timing-function: step-end; }
+    50%  { transform: scaleX(-1); animation-timing-function: step-end; }
+    100% { transform: scaleX(1); }
 }
