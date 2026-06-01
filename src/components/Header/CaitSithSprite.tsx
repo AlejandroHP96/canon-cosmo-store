@@ -58,7 +58,7 @@ const CaitSithSprite = () => {
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: `${render.frame === 0 ? 0 : -SPRITE_WIDTH}px 0px`,
                     imageRendering: 'pixelated',
-                    transform: `scaleX(${render.dir})`,
+                    transform: `scaleX(${-render.dir})`,
                 }}
             />
         </div>
