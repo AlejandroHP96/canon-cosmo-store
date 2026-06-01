@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 const SPRITE_WIDTH = 48;
-const WALK_SPEED = 70;    // px/s
+const WALK_SPEED = 110;   // px/s
 const FRAME_MS = 300;     // ms per walk frame
 
 const CaitSithSprite = () => {
