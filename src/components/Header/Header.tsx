@@ -28,7 +28,7 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
                     to="/"
                     className="flex items-center gap-2 text-xl md:text-2xl font-bold text-[#e0e0ff] font-headline uppercase tracking-widest hover:text-primary transition-colors">
                     <img src="/logo.png" alt="Cañón Cosmo Store" className="h-8 w-8 object-contain" />
-                    CAÑÓN COSMO STORE
+                    <span className="hidden sm:inline">CAÑÓN COSMO STORE</span>
                 </Link>
                 <Link
                     to="/torneos"
@@ -39,7 +39,7 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
             <div className="flex items-center gap-4">
                 <Link
                     to="/aboutus"
-                    className="font-headline uppercase tracking-widest text-sm text-[#e0e0ff] opacity-70 hover:text-[#bec2ff] hover:opacity-100 transition-all">
+                    className="hidden sm:block font-headline uppercase tracking-widest text-sm text-[#e0e0ff] opacity-70 hover:text-[#bec2ff] hover:opacity-100 transition-all">
                     {t('header.aboutUs')}
                 </Link>
                 <button

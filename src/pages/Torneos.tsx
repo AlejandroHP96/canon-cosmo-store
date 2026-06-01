@@ -43,7 +43,7 @@ const Torneos = () => {
                         {t('tournaments.comingSoon')}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {juegos.map((juego) => {
                             const inner = (
                                 <div className="relative h-56 overflow-hidden group">
