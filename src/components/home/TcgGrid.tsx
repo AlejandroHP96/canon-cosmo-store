@@ -48,11 +48,12 @@ const TcgGrid = () => {
                                     <span className="material-symbols-outlined text-primary/20 text-7xl">playing_cards</span>
                                 </div>
                             )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#010241] via-[#010241]/60 to-transparent" />
                             <div className="absolute bottom-0 left-0 right-0 p-4 flex flex-col gap-1">
-                                <h3 className="font-headline font-bold text-base uppercase tracking-widest text-on-surface drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+                                <h3 className="font-headline font-bold text-base uppercase tracking-widest text-on-surface">
                                     {tcg.label}
                                 </h3>
-                                <span className="text-[10px] font-headline text-on-surface-variant uppercase tracking-widest group-hover:text-primary transition-colors drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+                                <span className="text-[10px] font-headline text-on-surface-variant uppercase tracking-widest group-hover:text-primary transition-colors">
                                     {t('tcgGrid.viewCatalog')}
                                 </span>
                             </div>
