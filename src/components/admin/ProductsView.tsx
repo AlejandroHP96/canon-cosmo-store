@@ -237,6 +237,7 @@ const ProductsView = () => {
                     initial={editingProduct}
                     onClose={() => setShowForm(false)}
                     onSaved={() => { setShowForm(false); refresh(); }}
+                    onSavedContinue={() => refresh()}
                 />
             )}
 
