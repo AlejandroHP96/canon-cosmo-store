@@ -139,3 +139,32 @@ body {
     animation: featured-fade-in 0.35s ease both;
 }
 
+/* Konami easter egg */
+@keyframes konami-flash {
+    0%          { background: transparent; opacity: 0; }
+    10%, 30%, 50% { background: white;       opacity: 0.85; }
+    20%, 40%    { background: black;        opacity: 0.7; }
+    65%         { background: black;        opacity: 0.5; }
+    100%        { background: transparent; opacity: 0; }
+}
+.konami-flash {
+    animation: konami-flash 0.65s ease-in-out forwards;
+}
+
+@keyframes konami-cursor-blink {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0; }
+}
+.konami-cursor {
+    color: #c8a800;
+    animation: konami-cursor-blink 0.75s step-end infinite;
+}
+
+@keyframes konami-dialog-enter {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.konami-dialog-enter {
+    animation: konami-dialog-enter 0.2s ease-out forwards;
+}
+
