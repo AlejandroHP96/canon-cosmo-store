@@ -51,5 +51,23 @@
     "title": "Torneos",
     "comingSoon": "Próximamente torneos disponibles.",
     "viewMore": "Ver más"
+  },
+  "konami": {
+    "pressAnyKey": "pulsa cualquier tecla",
+    "quotes": [
+      "......",
+      "No me interesa.",
+      "¡De este tren no nos bajamos!",
+      "Te estoy buscando.",
+      "Me voy ahora. Volveré cuando todo haya terminado.",
+      "Las palabras no son la única forma de decirle a alguien cómo te sientes.",
+      "Yo... nunca seré un recuerdo.",
+      "¿Lo sientes? El pulso del Planeta.",
+      "¡Yo también quiero unirme al equipo!",
+      "¡Entrégate esa materia!",
+      "Nanaki. Ese es mi verdadero nombre.",
+      "...... Nada.",
+      "¡Siéntate y tómate tu @#% té!"
+    ]
   }
 }

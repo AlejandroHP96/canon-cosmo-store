@@ -1,28 +1,32 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
 
-const QUOTES = [
-    { char: 'Cloud',     color: '#7ec8e3', quote: '......' },
-    { char: 'Cloud',     color: '#7ec8e3', quote: 'Not interested.' },
-    { char: 'Barret',    color: '#ffa040', quote: "There ain't no gettin' offa this train we on!" },
-    { char: 'Aerith',    color: '#ffb3cc', quote: "I'm searching for you." },
-    { char: 'Aerith',    color: '#ffb3cc', quote: "I'll be going now. I'll come back when it's all over." },
-    { char: 'Tifa',      color: '#ff6b6b', quote: "Words aren't the only way to tell someone how you feel." },
-    { char: 'Sephiroth', color: '#c8c8ff', quote: 'I will... never be a memory.' },
-    { char: 'Sephiroth', color: '#c8c8ff', quote: 'Can you sense it? The pulse of the Planet.' },
-    { char: 'Cait Sith', color: '#ffc0cb', quote: '¡Yo también quiero unirme al equipo!' },
-    { char: 'Yuffie',    color: '#90ee90', quote: '¡Entrégate esa materia!' },
-    { char: 'Red XIII',  color: '#ff6030', quote: 'Nanaki. That is my true name.' },
-    { char: 'Vincent',   color: '#cc4444', quote: '...... Nothing.' },
-    { char: 'Cid',       color: '#87ceeb', quote: 'Sit down and drink your *@#% tea!' },
+// Character names (proper nouns, not translated) + their color
+const CHARS = [
+    { char: 'Cloud',     color: '#7ec8e3' },
+    { char: 'Cloud',     color: '#7ec8e3' },
+    { char: 'Barret',    color: '#ffa040' },
+    { char: 'Aerith',    color: '#ffb3cc' },
+    { char: 'Aerith',    color: '#ffb3cc' },
+    { char: 'Tifa',      color: '#ff6b6b' },
+    { char: 'Sephiroth', color: '#c8c8ff' },
+    { char: 'Sephiroth', color: '#c8c8ff' },
+    { char: 'Cait Sith', color: '#ffc0cb' },
+    { char: 'Yuffie',    color: '#90ee90' },
+    { char: 'Red XIII',  color: '#ff6030' },
+    { char: 'Vincent',   color: '#cc4444' },
+    { char: 'Cid',       color: '#87ceeb' },
 ];
 
 type Phase = 'idle' | 'flashing' | 'dialog';
+type Entry = { char: string; color: string; quote: string };
 
 const KonamiEasterEgg = () => {
+    const { t } = useTranslation();
     const [phase, setPhase] = useState<Phase>('idle');
-    const [quote, setQuote] = useState(QUOTES[0]);
+    const [entry, setEntry] = useState<Entry>({ ...CHARS[0], quote: '' });
     const progress = useRef(0);
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -32,12 +36,12 @@ const KonamiEasterEgg = () => {
     }, []);
 
     const trigger = useCallback(() => {
-        const q = QUOTES[Math.floor(Math.random() * QUOTES.length)];
-        setQuote(q);
+        const idx = Math.floor(Math.random() * CHARS.length);
+        setEntry({ ...CHARS[idx], quote: t(`konami.quotes.${idx}`) });
         setPhase('flashing');
         setTimeout(() => setPhase('dialog'), 650);
         timerRef.current = setTimeout(dismiss, 5500);
-    }, [dismiss]);
+    }, [dismiss, t]);
 
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
@@ -78,19 +82,19 @@ const KonamiEasterEgg = () => {
                         <div className="px-4 py-2 border-b border-[#c8a800]/25">
                             <span
                                 className="text-[10px] font-headline tracking-[0.25em] uppercase"
-                                style={{ color: quote.color }}>
-                                {quote.char}
+                                style={{ color: entry.color }}>
+                                {entry.char}
                             </span>
                         </div>
                         <div className="px-5 py-4">
                             <p className="font-headline text-sm text-[#e0e0ff] leading-relaxed tracking-wide">
-                                {quote.quote}
+                                {entry.quote}
                                 <span className="konami-cursor ml-1">▮</span>
                             </p>
                         </div>
                         <div className="px-4 pb-2.5 text-right">
                             <span className="text-[9px] font-headline text-[#6a5800] tracking-widest uppercase">
-                                pulsa cualquier tecla
+                                {t('konami.pressAnyKey')}
                             </span>
                         </div>
                     </div>
