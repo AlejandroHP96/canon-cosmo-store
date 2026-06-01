@@ -4,7 +4,7 @@ const SPRITE_WIDTH = 48;
 const WALK_SPEED   = 200;  // px/s
 const WALK_FRAME_MS  = 300;  // ms per walk frame
 const REST_FRAME_MS  = 450;  // ms per rest frame
-const WALK_DURATION  = 5000; // ms walking before resting
+const WALK_DURATION  = 15000; // ms walking before resting
 const REST_DURATION  = 2500; // ms resting
 
 // Frame indices × SPRITE_WIDTH = background-position-x offset
