@@ -147,28 +147,30 @@ body {
     animation: featured-fade-in 0.35s ease both;
 }
 
-/* Cait Sith header sprite */
+/* Cait Sith header sprite — official FFRK sprite sheet (96x100px/frame, 6 frames row 1) */
 .caitsith-sprite {
     position: absolute;
-    top: -3px;
-    width: 32px;
-    height: 38px;
-    background-image: url('/caitsith.svg');
-    background-size: 64px 38px;
+    top: -4px;
+    width: 38px;
+    height: 40px;
+    background-image: url('/caitsith-walk.webp');
+    background-size: 228px 120px;   /* 576×300 scaled to 38px/frame */
     background-repeat: no-repeat;
+    background-position: 0 0;
     image-rendering: pixelated;
-    animation: caitsith-walk 0.4s steps(1) infinite, caitsith-move 12s linear infinite;
+    transform: scaleX(-1);          /* flip to face walk direction */
+    animation: caitsith-walk 0.25s steps(1) infinite, caitsith-move 12s linear infinite;
 }
 
 @keyframes caitsith-walk {
     0%  { background-position-x: 0px; }
-    50% { background-position-x: -32px; }
+    50% { background-position-x: -38px; }
 }
 
 @keyframes caitsith-move {
     0%        { left: 0;                    opacity: 1; }
-    82%       { left: calc(100% - 32px);   opacity: 1; }
-    88%       { left: calc(100% - 32px);   opacity: 0; }
+    82%       { left: calc(100% - 38px);   opacity: 1; }
+    88%       { left: calc(100% - 38px);   opacity: 0; }
     89%, 99%  { left: 0;                    opacity: 0; }
     100%      { left: 0;                    opacity: 1; }
 }

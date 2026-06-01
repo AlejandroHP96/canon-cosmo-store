@@ -38,7 +38,7 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
             </div>
 
             {/* Cait Sith walking sprite — only when nav links are visible */}
-            <div className="hidden sm:block flex-1 relative overflow-hidden mx-4 h-8">
+            <div className="hidden sm:block flex-1 relative overflow-hidden mx-4 h-10">
                 <div className="caitsith-sprite" aria-hidden="true" />
             </div>
 
