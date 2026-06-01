@@ -146,3 +146,29 @@ body {
 .featured-page-enter {
     animation: featured-fade-in 0.35s ease both;
 }
+
+/* Cait Sith header sprite */
+.caitsith-sprite {
+    position: absolute;
+    top: -3px;
+    width: 32px;
+    height: 38px;
+    background-image: url('/caitsith.svg');
+    background-size: 64px 38px;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+    animation: caitsith-walk 0.4s steps(1) infinite, caitsith-move 12s linear infinite;
+}
+
+@keyframes caitsith-walk {
+    0%  { background-position-x: 0px; }
+    50% { background-position-x: -32px; }
+}
+
+@keyframes caitsith-move {
+    0%        { left: 0;                    opacity: 1; }
+    82%       { left: calc(100% - 32px);   opacity: 1; }
+    88%       { left: calc(100% - 32px);   opacity: 0; }
+    89%, 99%  { left: 0;                    opacity: 0; }
+    100%      { left: 0;                    opacity: 1; }
+}

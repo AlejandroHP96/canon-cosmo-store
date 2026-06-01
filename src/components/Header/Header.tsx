@@ -17,8 +17,8 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
     };
 
     return (
-        <header className="fixed top-0 w-full z-50 flex justify-between items-center px-6 py-4 bg-linear-to-b from-[#000180] to-[#060946] border-b-2 border-[#e0e0ff] shadow-[inset_0_0_8px_rgba(0,1,172,1)]">
-            <div className="flex items-center gap-4">
+        <header className="fixed top-0 w-full z-50 flex items-center px-6 py-4 bg-linear-to-b from-[#000180] to-[#060946] border-b-2 border-[#e0e0ff] shadow-[inset_0_0_8px_rgba(0,1,172,1)]">
+            <div className="flex items-center gap-4 shrink-0">
                 <button
                     onClick={onMenuToggle}
                     className="md:hidden text-[#e0e0ff] hover:text-primary transition-colors">
@@ -36,7 +36,13 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
                     {t('header.tournaments')}
                 </Link>
             </div>
-            <div className="flex items-center gap-4">
+
+            {/* Cait Sith walking sprite — only when nav links are visible */}
+            <div className="hidden sm:block flex-1 relative overflow-hidden mx-4 h-8">
+                <div className="caitsith-sprite" aria-hidden="true" />
+            </div>
+
+            <div className="flex items-center gap-4 shrink-0">
                 <Link
                     to="/aboutus"
                     className="hidden sm:block font-headline uppercase tracking-widest text-sm text-[#e0e0ff] opacity-70 hover:text-[#bec2ff] hover:opacity-100 transition-all">
