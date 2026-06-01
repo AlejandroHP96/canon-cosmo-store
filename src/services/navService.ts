@@ -8,6 +8,7 @@ const DOC_ID = 'sidebar';
 export type SubNavItem = {
     label: string;
     path: string;
+    image?: string;
 };
 
 /** Entrada de navegación de primer nivel */

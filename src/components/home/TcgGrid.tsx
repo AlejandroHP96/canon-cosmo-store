@@ -49,6 +49,15 @@ const TcgGrid = () => {
                                 <span>{t('tcgGrid.viewCatalog')}</span>
                             </div>
                         </div>
+                        {tcg.image && (
+                            <div className="w-24 shrink-0 overflow-hidden">
+                                <img
+                                    src={tcg.image}
+                                    alt={tcg.label}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                />
+                            </div>
+                        )}
                     </Link>
                 ))}
             </div>

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { getSidebarConfig, updateSidebarConfig, type NavItem, type SidebarConfig } from '../../services/navService';
+import { getSidebarConfig, updateSidebarConfig, type NavItem, type SubNavItem, type SidebarConfig } from '../../services/navService';
 import { toSlug } from '../../lib/tcgUtils';
 import { inputClass } from './adminStyles';
 
-type SubForm = { label: string; path: string; pathAutoSync: boolean };
+type SubForm = { label: string; path: string; pathAutoSync: boolean; image: string };
 
 const NavManager = () => {
     const [config, setConfig] = useState<SidebarConfig | null>(null);
@@ -17,7 +17,7 @@ const NavManager = () => {
     const [newItem, setNewItem] = useState({ icon: '', label: '', path: '' });
 
     const [editSubKey, setEditSubKey] = useState<string | null>(null);
-    const [editSubForm, setEditSubForm] = useState({ label: '', path: '' });
+    const [editSubForm, setEditSubForm] = useState({ label: '', path: '', image: '' });
     const [newSubForms, setNewSubForms] = useState<Record<number, SubForm>>({});
 
     const [dragIdx, setDragIdx] = useState<number | null>(null);
@@ -119,7 +119,7 @@ const NavManager = () => {
         `/${toSlug(parentLabel)}/${toSlug(subLabel)}`;
 
     const getSubForm = (idx: number): SubForm =>
-        newSubForms[idx] ?? { label: '', path: '', pathAutoSync: true };
+        newSubForms[idx] ?? { label: '', path: '', pathAutoSync: true, image: '' };
 
     const patchSubForm = (idx: number, patch: Partial<SubForm>) =>
         setNewSubForms((prev) => ({ ...prev, [idx]: { ...getSubForm(idx), ...patch } }));
@@ -131,12 +131,14 @@ const NavManager = () => {
         const label = form.label.trim();
         const path = form.path.trim();
         if (!label || !path) return;
+        const sub: SubNavItem = { label, path };
+        if (form.image.trim()) sub.image = form.image.trim();
         const items = config.items.map((item, i): NavItem => {
             if (i !== itemIdx) return item;
-            return { ...item, submenu: [...(item.submenu ?? []), { label, path }] };
+            return { ...item, submenu: [...(item.submenu ?? []), sub] };
         });
         await saveConfig({ items });
-        patchSubForm(itemIdx, { label: '', path: '', pathAutoSync: true });
+        patchSubForm(itemIdx, { label: '', path: '', image: '', pathAutoSync: true });
     };
 
     const handleDeleteSub = async (itemIdx: number, subIdx: number) => {
@@ -149,19 +151,26 @@ const NavManager = () => {
     };
 
     const handleEditSubStart = (itemIdx: number, subIdx: number) => {
+        const sub = config.items[itemIdx].submenu![subIdx];
         setEditSubKey(subKey(itemIdx, subIdx));
-        setEditSubForm({ ...config.items[itemIdx].submenu![subIdx] });
+        setEditSubForm({ label: sub.label, path: sub.path, image: sub.image ?? '' });
     };
 
     const handleEditSubSave = async (itemIdx: number, subIdx: number) => {
         const label = editSubForm.label.trim();
         const path = editSubForm.path.trim();
         if (!label || !path) return;
+        const image = editSubForm.image.trim();
         const items = config.items.map((item, i): NavItem => {
             if (i !== itemIdx) return item;
             return {
                 ...item,
-                submenu: item.submenu?.map((sub, j) => (j === subIdx ? { label, path } : sub)),
+                submenu: item.submenu?.map((sub, j) => {
+                    if (j !== subIdx) return sub;
+                    const updated: SubNavItem = { label, path };
+                    if (image) updated.image = image;
+                    return updated;
+                }),
             };
         });
         await saveConfig({ items });
@@ -347,7 +356,8 @@ const NavManager = () => {
                                     editSubKey === subKey(idx, sIdx) ? (
                                         <div
                                             key={sIdx}
-                                            className="flex items-center gap-2 pl-3 border-l-2 border-primary/40">
+                                            className="flex flex-col gap-2 pl-3 border-l-2 border-primary/40">
+                                            <div className="flex items-center gap-2">
                                             <input
                                                 value={editSubForm.label}
                                                 onChange={(e) => setEditSubForm((f) => ({ ...f, label: e.target.value }))}
@@ -375,6 +385,14 @@ const NavManager = () => {
                                                 title="Cancelar">
                                                 <span className="material-symbols-outlined text-sm">close</span>
                                             </button>
+                                            </div>
+                                            <input
+                                                type="url"
+                                                value={editSubForm.image}
+                                                onChange={(e) => setEditSubForm((f) => ({ ...f, image: e.target.value }))}
+                                                placeholder="URL imagen (opcional)"
+                                                className={inputClass + ' w-full'}
+                                            />
                                         </div>
                                     ) : (
                                         <div
@@ -419,37 +437,46 @@ const NavManager = () => {
                                 )}
 
                                 {/* Añadir subitem */}
-                                <div className="flex gap-2 mt-1 pl-3 border-l-2 border-outline-variant/20">
+                                <div className="flex flex-col gap-2 mt-1 pl-3 border-l-2 border-outline-variant/20">
+                                    <div className="flex gap-2">
+                                        <input
+                                            value={getSubForm(idx).label}
+                                            onChange={(e) => {
+                                                const newLabel = e.target.value;
+                                                const form = getSubForm(idx);
+                                                patchSubForm(idx, {
+                                                    label: newLabel,
+                                                    ...(form.pathAutoSync && {
+                                                        path: deriveSubPath(item.label, newLabel),
+                                                    }),
+                                                });
+                                            }}
+                                            placeholder="Label subitem"
+                                            className={inputClass + ' flex-1'}
+                                        />
+                                        <input
+                                            value={getSubForm(idx).path}
+                                            onChange={(e) =>
+                                                patchSubForm(idx, { path: e.target.value, pathAutoSync: false })
+                                            }
+                                            placeholder="/ruta"
+                                            className={inputClass + ' flex-1 font-mono'}
+                                            onKeyDown={(e) => e.key === 'Enter' && handleAddSub(idx)}
+                                        />
+                                        <button
+                                            onClick={() => handleAddSub(idx)}
+                                            disabled={saving || !getSubForm(idx).label.trim() || !getSubForm(idx).path.trim()}
+                                            className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-3 hover:bg-primary hover:text-surface transition-colors disabled:opacity-40">
+                                            {saving ? '...' : 'Añadir'}
+                                        </button>
+                                    </div>
                                     <input
-                                        value={getSubForm(idx).label}
-                                        onChange={(e) => {
-                                            const newLabel = e.target.value;
-                                            const form = getSubForm(idx);
-                                            patchSubForm(idx, {
-                                                label: newLabel,
-                                                ...(form.pathAutoSync && {
-                                                    path: deriveSubPath(item.label, newLabel),
-                                                }),
-                                            });
-                                        }}
-                                        placeholder="Label subitem"
-                                        className={inputClass + ' flex-1'}
+                                        type="url"
+                                        value={getSubForm(idx).image}
+                                        onChange={(e) => patchSubForm(idx, { image: e.target.value })}
+                                        placeholder="URL imagen (opcional)"
+                                        className={inputClass + ' w-full'}
                                     />
-                                    <input
-                                        value={getSubForm(idx).path}
-                                        onChange={(e) =>
-                                            patchSubForm(idx, { path: e.target.value, pathAutoSync: false })
-                                        }
-                                        placeholder="/ruta"
-                                        className={inputClass + ' flex-1 font-mono'}
-                                        onKeyDown={(e) => e.key === 'Enter' && handleAddSub(idx)}
-                                    />
-                                    <button
-                                        onClick={() => handleAddSub(idx)}
-                                        disabled={saving || !getSubForm(idx).label.trim() || !getSubForm(idx).path.trim()}
-                                        className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-3 hover:bg-primary hover:text-surface transition-colors disabled:opacity-40">
-                                        {saving ? '...' : 'Añadir'}
-                                    </button>
                                 </div>
                             </div>
                         )}
