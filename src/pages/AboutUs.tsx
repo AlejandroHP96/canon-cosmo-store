@@ -29,7 +29,7 @@ const TEAM: TeamMember[] = [
     },
     {
         name: 'JONAY',
-        role: 'Co-Fundador',
+        role: 'Fundador',
         level: 4,
         dots: ['#aa33cc', '#33aa55', '#ccaa00', '#cc3333'],
         types: ['Store Owner', 'Lore Keeper'],
