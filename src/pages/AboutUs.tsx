@@ -93,6 +93,7 @@ const AboutUs = () => {
             stats: '3/5',
             initials: 'J',
             avatarBg: '#2a1870',
+            avatarImg: '/jonay.png',
             legendaryCreature: t('aboutUs.legendaryCreature'),
             abilityLabel: t('aboutUs.ability'),
             proxy: t('aboutUs.proxy'),
