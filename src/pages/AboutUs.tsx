@@ -10,6 +10,7 @@ type TeamMember = {
     stats: string;
     initials: string;
     avatarBg: string;
+    avatarImg?: string;
     legendaryCreature: string;
     abilityLabel: string;
     proxy: string;
@@ -28,7 +29,7 @@ const TeamCard = ({ member }: { member: TeamMember }) => (
         {/* Top: portrait + name/type */}
         <div className="flex gap-3 p-3 pb-0">
             <div
-                className="shrink-0 flex items-center justify-center text-4xl font-bold text-[#bec2ff]"
+                className="shrink-0 flex items-center justify-center text-4xl font-bold text-[#bec2ff] overflow-hidden"
                 style={{
                     width: 120,
                     height: 120,
@@ -36,7 +37,10 @@ const TeamCard = ({ member }: { member: TeamMember }) => (
                     border: '2px solid #5a5aaa',
                     boxShadow: 'inset 0 0 8px rgba(0,0,100,0.8)',
                 }}>
-                {member.initials}
+                {member.avatarImg
+                    ? <img src={member.avatarImg} alt={member.name} className="w-full h-full object-cover" />
+                    : member.initials
+                }
             </div>
             <div className="flex flex-col justify-center gap-1 pt-1 min-w-0">
                 <p className="text-white font-bold text-base leading-tight tracking-wide">
@@ -75,6 +79,7 @@ const AboutUs = () => {
             stats: '5/3',
             initials: 'T',
             avatarBg: '#1a2870',
+            avatarImg: '/toni.png',
             legendaryCreature: t('aboutUs.legendaryCreature'),
             abilityLabel: t('aboutUs.ability'),
             proxy: t('aboutUs.proxy'),
