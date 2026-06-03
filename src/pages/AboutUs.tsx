@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SEO from '../components/SEO';
 
@@ -16,23 +17,23 @@ type TeamMember = {
     proxy: string;
 };
 
-const TeamCard = ({ member }: { member: TeamMember }) => (
-    <div
-        className="w-[360px] shrink-0 select-none"
-        style={{
-            background: 'linear-gradient(160deg, #111a6a 0%, #0a1045 100%)',
-            border: '3px solid #5a5aaa',
-            boxShadow: '0 0 28px rgba(80,80,200,0.4), inset 0 0 16px rgba(0,0,80,0.6)',
-            fontFamily: 'monospace',
-        }}>
+const cardStyle = {
+    background: 'linear-gradient(160deg, #111a6a 0%, #0a1045 100%)',
+    border: '3px solid #5a5aaa',
+    boxShadow: '0 0 28px rgba(80,80,200,0.4), inset 0 0 16px rgba(0,0,80,0.6)',
+    fontFamily: 'monospace',
+};
 
+const CardInner = ({ member, large = false }: { member: TeamMember; large?: boolean }) => (
+    <>
         {/* Top: portrait + name/type */}
-        <div className="flex gap-3 p-3 pb-0">
+        <div className={`flex gap-3 ${large ? 'p-5 pb-0' : 'p-3 pb-0'}`}>
             <div
-                className="shrink-0 flex items-center justify-center text-4xl font-bold text-[#bec2ff] overflow-hidden"
+                className="shrink-0 flex items-center justify-center font-bold text-[#bec2ff] overflow-hidden"
                 style={{
-                    width: 120,
-                    height: 120,
+                    width: large ? 180 : 120,
+                    height: large ? 180 : 120,
+                    fontSize: large ? '3rem' : '2.25rem',
                     background: member.avatarBg,
                     border: '2px solid #5a5aaa',
                     boxShadow: 'inset 0 0 8px rgba(0,0,100,0.8)',
@@ -43,31 +44,63 @@ const TeamCard = ({ member }: { member: TeamMember }) => (
                 }
             </div>
             <div className="flex flex-col justify-center gap-1 pt-1 min-w-0">
-                <p className="text-white font-bold text-base leading-tight tracking-wide">
+                <p className={`text-white font-bold leading-tight tracking-wide ${large ? 'text-2xl' : 'text-base'}`}>
                     {member.name},<br />
-                    <span className="text-[#bec2ff] font-normal text-sm">{member.role}</span>
+                    <span className={`text-[#bec2ff] font-normal ${large ? 'text-lg' : 'text-sm'}`}>{member.role}</span>
                 </p>
-                <p className="text-[#00ccaa] text-[11px] tracking-wide leading-tight mt-0.5">{member.legendaryCreature}</p>
-                <p className="text-[#bec2ff]/70 text-[11px] leading-tight">{member.types.join(' / ')}</p>
+                <p className={`text-[#00ccaa] tracking-wide leading-tight mt-0.5 ${large ? 'text-sm' : 'text-[11px]'}`}>{member.legendaryCreature}</p>
+                <p className={`text-[#bec2ff]/70 leading-tight ${large ? 'text-sm' : 'text-[11px]'}`}>{member.types.join(' / ')}</p>
             </div>
         </div>
 
         {/* Separator */}
-        <div className="mx-3 mt-3 border-t border-[#5a5aaa]/40" />
+        <div className={`${large ? 'mx-5 mt-4' : 'mx-3 mt-3'} border-t border-[#5a5aaa]/40`} />
 
         {/* Bio text box */}
-        <div className="mx-3 my-3 p-4 min-h-[260px]" style={{ border: '1px solid #4a4aaa', background: '#060c38' }}>
+        <div
+            className={`${large ? 'mx-5 my-4 p-5' : 'mx-3 my-3 p-4'} ${large ? '' : 'min-h-[260px]'}`}
+            style={{ border: '1px solid #4a4aaa', background: '#060c38' }}>
             {member.bio.split('\n\n').map((paragraph, i) => (
-                <p key={i} className={`text-[11px] text-[#d0d4ff] leading-relaxed ${i > 0 ? 'mt-2' : ''}`}>
+                <p key={i} className={`text-[#d0d4ff] leading-relaxed ${i > 0 ? 'mt-3' : ''} ${large ? 'text-sm' : 'text-[11px]'}`}>
                     {paragraph}
                 </p>
             ))}
+        </div>
+    </>
+);
+
+const TeamCard = ({ member, onClick }: { member: TeamMember; onClick: () => void }) => (
+    <div
+        className="w-[360px] shrink-0 select-none cursor-pointer hover:scale-[1.02] hover:brightness-110 transition-all duration-200"
+        style={cardStyle}
+        onClick={onClick}>
+        <CardInner member={member} />
+    </div>
+);
+
+const TeamModal = ({ member, onClose }: { member: TeamMember; onClose: () => void }) => (
+    <div
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style={{ background: 'rgba(0,0,0,0.8)' }}
+        onClick={onClose}>
+        <div
+            className="w-full max-w-lg select-none relative"
+            style={cardStyle}
+            onClick={(e) => e.stopPropagation()}>
+            <button
+                onClick={onClose}
+                className="absolute top-3 right-3 text-[#bec2ff]/60 hover:text-white transition-colors z-10"
+                style={{ fontFamily: 'monospace', fontSize: 18 }}>
+                ✕
+            </button>
+            <CardInner member={member} large />
         </div>
     </div>
 );
 
 const AboutUs = () => {
     const { t } = useTranslation();
+    const [selected, setSelected] = useState<TeamMember | null>(null);
 
     const TEAM: TeamMember[] = [
         {
@@ -123,9 +156,11 @@ const AboutUs = () => {
 
             <div className="flex flex-wrap gap-16 justify-center">
                 {TEAM.map((member) => (
-                    <TeamCard key={member.name} member={member} />
+                    <TeamCard key={member.name} member={member} onClick={() => setSelected(member)} />
                 ))}
             </div>
+
+            {selected && <TeamModal member={selected} onClose={() => setSelected(null)} />}
         </section>
     );
 };
