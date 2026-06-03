@@ -118,22 +118,6 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                 )}
             </nav>
 
-            <div className="md:hidden mt-4 pt-4 border-t border-[#e0e0ff]/20 flex flex-col gap-1">
-                <Link
-                    to="/torneos"
-                    onClick={onClose}
-                    className="flex items-center py-3 pl-6 text-[#e0e0ff] opacity-70 hover:bg-[#2f336c] hover:opacity-100 transition-all">
-                    <span className="material-symbols-outlined mr-3">emoji_events</span>
-                    {t('header.tournaments')}
-                </Link>
-                <Link
-                    to="/aboutus"
-                    onClick={onClose}
-                    className="flex items-center py-3 pl-6 text-[#e0e0ff] opacity-70 hover:bg-[#2f336c] hover:opacity-100 transition-all">
-                    <span className="material-symbols-outlined mr-3">info</span>
-                    {t('header.aboutUs')}
-                </Link>
-            </div>
 
         </aside>
     );

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 const getMakoLevel = (): number => {
@@ -43,6 +44,12 @@ const Footer = () => {
                 <span className="text-red-400 font-headline tracking-widest text-[9px]">DETECTADA</span>
             </div>
             <div className="flex items-center gap-4">
+                <Link
+                    to="/aboutus"
+                    className="font-headline uppercase tracking-widest text-[9px] text-[#e0e0ff] opacity-50 hover:opacity-100 transition-opacity">
+                    {t('header.aboutUs')}
+                </Link>
+                <span className="text-[#bec2ff]/30">|</span>
                 <a
                     href="https://www.instagram.com/canon.cosmo.store"
                     target="_blank"
