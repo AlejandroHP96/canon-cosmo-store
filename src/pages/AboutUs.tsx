@@ -69,12 +69,6 @@ const TeamCard = ({ member }: { member: TeamMember }) => (
                     {member.name},<br />
                     <span className="text-[#bec2ff] font-normal text-sm">{member.role}</span>
                 </p>
-                <div className="flex items-center gap-1.5 mt-1">
-                    <span className="text-[#bec2ff] text-[11px]">Cmc. {member.level}</span>
-                    {member.dots.map((color, i) => (
-                        <span key={i} className="w-3.5 h-3.5 rounded-full shrink-0" style={{ background: color, border: '1px solid rgba(255,255,255,0.3)' }} />
-                    ))}
-                </div>
                 <p className="text-[#00ccaa] text-[11px] tracking-wide leading-tight mt-0.5">Legendary Creature</p>
                 <p className="text-[#bec2ff]/70 text-[11px] leading-tight">{member.types.join(' / ')}</p>
             </div>
