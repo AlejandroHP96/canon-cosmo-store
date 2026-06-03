@@ -21,7 +21,7 @@ const Footer = () => {
 
     return (
         <footer className="fixed bottom-0 w-full z-50 flex flex-wrap justify-between items-center px-4 md:px-8 py-2 gap-y-1 bg-[#010241] border-t-2 border-[#e0e0ff] font-body text-[10px] tracking-tight">
-            <div className="hidden md:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-3">
                 <span className="material-symbols-outlined text-sm text-primary">terminal</span>
                 <span className="text-primary tracking-[0.25em] font-headline uppercase text-[9px]">Shinra Inc. Terminal</span>
                 <span className="w-1.5 h-1.5 bg-green-400 animate-ping shrink-0" />
@@ -46,10 +46,10 @@ const Footer = () => {
             <div className="flex items-center gap-4">
                 <Link
                     to="/aboutus"
-                    className="font-headline uppercase tracking-widest text-[9px] text-[#e0e0ff] opacity-50 hover:opacity-100 transition-opacity">
+                    className="sm:hidden font-headline uppercase tracking-widest text-[9px] text-[#e0e0ff] opacity-50 hover:opacity-100 transition-opacity">
                     {t('header.aboutUs')}
                 </Link>
-                <span className="text-[#bec2ff]/30">|</span>
+                <span className="sm:hidden text-[#bec2ff]/30">|</span>
                 <a
                     href="https://www.instagram.com/canon.cosmo.store"
                     target="_blank"
