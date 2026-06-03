@@ -1,0 +1,7 @@
+services:
+  app:
+    image: canon-cosmo-store
+    container_name: canon-cosmo-store
+    ports:
+      - "8080:80"
+    restart: unless-stopped
