@@ -44,7 +44,31 @@
   },
   "aboutUs": {
     "title": "About Us",
-    "description": "Hi, we are Cañon Cosmo and we're happy to have you here."
+    "subtitle": "Party Members",
+    "description": "Hi, we are Cañon Cosmo and we're happy to have you here.",
+    "legendaryCreature": "Legendary Creature",
+    "ability": "ability",
+    "proxy": "Proxy by Cañón Cosmo Store",
+    "team": {
+      "toni": {
+        "role": "Founder",
+        "type1": "Store Owner",
+        "type2": "TCG Champion",
+        "ability1": "Pokémon",
+        "ability2": "Tournaments",
+        "ability3": "Collection",
+        "bio": "When Toni enters play: search your library for up to 3 TCG cards and add them to your hand.\n\nWhenever Toni declares an attack, you may reveal a Pokémon card from your hand. If you do, Toni gets +2/+0 until end of turn."
+      },
+      "jonay": {
+        "role": "Founder",
+        "type1": "Store Owner",
+        "type2": "Lore Keeper",
+        "ability1": "Funko Pop",
+        "ability2": "Rarity",
+        "ability3": "Community",
+        "bio": "Whenever Jonay enters play, search your library for the rarest collectible and add it to your showcase.\n\nIf you control 5 or more unique items, opponents cannot draw additional cards."
+      }
+    }
   },
   "tournaments": {
     "subtitle": "Cañón Cosmo Store",
