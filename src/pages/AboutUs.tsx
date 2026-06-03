@@ -121,14 +121,14 @@ const AboutUs = () => {
     const { t } = useTranslation();
 
     return (
-        <section className="max-w-5xl mx-auto px-6 py-10 pb-20">
+        <section className="max-w-5xl mx-auto px-6 py-10 pb-20 text-center">
             <SEO
                 title="Sobre Nosotros"
                 description="Conoce Cañón Cosmo Store, tu tienda especializada en trading cards, Funko Pop y coleccionables."
                 path="/aboutus"
             />
 
-            <div className="mb-10">
+            <div className="mb-12">
                 <p className="font-headline text-[10px] uppercase tracking-[0.3em] text-primary/60 mb-1">
                     {t('aboutUs.subtitle', 'Party Members')}
                 </p>
@@ -136,12 +136,12 @@ const AboutUs = () => {
                     {t('aboutUs.title')}
                 </h2>
                 <div className="h-px bg-primary/30 mt-4" />
-                <p className="text-on-surface-variant text-sm leading-relaxed font-body mt-4 max-w-2xl">
+                <p className="text-on-surface-variant text-sm leading-relaxed font-body mt-4 max-w-2xl mx-auto">
                     {t('aboutUs.description')}
                 </p>
             </div>
 
-            <div className="flex flex-wrap gap-8 justify-center md:justify-start">
+            <div className="flex flex-wrap gap-16 justify-center">
                 {TEAM.map((member) => (
                     <TeamCard key={member.name} member={member} />
                 ))}
