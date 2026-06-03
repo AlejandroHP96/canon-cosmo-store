@@ -32,7 +32,7 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
 
     return (
         <aside
-            className={`fixed left-0 top-16 h-[calc(100vh-64px)] w-64 p-4 bg-[#141851] border-r-2 border-[#e0e0ff] shadow-[inset_0_0_10px_rgba(0,1,172,0.5)] flex flex-col z-40 transition-transform duration-300 md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+            className={`fixed left-0 top-16 h-[calc(100vh-104px)] md:h-[calc(100vh-64px)] w-64 p-4 bg-[#141851] border-r-2 border-[#e0e0ff] shadow-[inset_0_0_10px_rgba(0,1,172,0.5)] flex flex-col z-40 transition-transform duration-300 md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
             <div className="mb-8 px-2 text-center">
                 <h2 className="text-[#e0e0ff] font-black font-headline text-xl">
                     {t('sidenav.command')}
