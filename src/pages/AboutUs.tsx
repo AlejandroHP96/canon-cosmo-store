@@ -52,7 +52,7 @@ const TeamCard = ({ member }: { member: TeamMember }) => (
         <div className="mx-3 mt-3 border-t border-[#5a5aaa]/40" />
 
         {/* Bio text box */}
-        <div className="mx-3 my-3 p-4 min-h-[180px]" style={{ border: '1px solid #4a4aaa', background: '#060c38' }}>
+        <div className="mx-3 my-3 p-4 min-h-[260px]" style={{ border: '1px solid #4a4aaa', background: '#060c38' }}>
             {member.bio.split('\n\n').map((paragraph, i) => (
                 <p key={i} className={`text-[11px] text-[#d0d4ff] leading-relaxed ${i > 0 ? 'mt-2' : ''}`}>
                     {paragraph}
