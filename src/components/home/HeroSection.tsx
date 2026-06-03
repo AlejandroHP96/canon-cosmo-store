@@ -17,30 +17,30 @@ const HeroSection = () => {
             </div>
 
             <div className="grid md:grid-cols-2 gap-0">
-                <div className="p-8 flex flex-col justify-center gap-4">
+                <div className="p-5 md:p-8 flex flex-col justify-center gap-4">
                     <div className="flex items-center gap-4">
                         <h1 className="font-headline font-bold uppercase leading-none tracking-widest">
                             <span className="block text-4xl md:text-5xl text-primary">Cañón</span>
                             <span className="block text-4xl md:text-5xl text-on-surface">Cosmo</span>
                             <span className="block text-lg md:text-xl text-on-surface-variant mt-1">Store</span>
                         </h1>
-                        <img src="/logo.png" alt="Cañón Cosmo Store" className="ml-10 w-28 h-28 md:w-36 md:h-36 object-contain shrink-0" />
+                        <img src="/logo.png" alt="Cañón Cosmo Store" className="ml-4 md:ml-10 w-24 h-24 md:w-36 md:h-36 object-contain shrink-0" />
                     </div>
                     <p className="text-sm text-on-surface-variant font-body leading-relaxed max-w-sm">
                         {t('hero.description')}
                     </p>
                 </div>
 
-                <div className="border-l border-outline-variant/30 p-8 bg-surface-container/40 flex flex-col gap-3 justify-center">
+                <div className="border-t md:border-t-0 md:border-l border-outline-variant/30 p-5 md:p-8 bg-surface-container/40 flex flex-col gap-3 justify-center">
                     <Link
                         to="/tcgs/pokemon"
-                        className="flex items-center justify-center gap-3 border border-primary bg-primary/10 text-primary font-headline text-sm uppercase tracking-widest px-6 py-4 hover:bg-primary hover:text-surface transition-all">
+                        className="flex items-center justify-center gap-2 border border-primary bg-primary/10 text-primary font-headline text-xs md:text-sm uppercase tracking-wider md:tracking-widest px-4 md:px-6 py-4 hover:bg-primary hover:text-surface transition-all">
                         <span className="material-symbols-outlined">playing_cards</span>
                         {t('hero.viewCatalog')}
                     </Link>
                     <Link
                         to="/torneos"
-                        className="flex items-center justify-center gap-3 border border-outline-variant text-on-surface-variant font-headline text-sm uppercase tracking-widest px-6 py-4 hover:border-primary hover:text-primary transition-all">
+                        className="flex items-center justify-center gap-2 border border-outline-variant text-on-surface-variant font-headline text-xs md:text-sm uppercase tracking-wider md:tracking-widest px-4 md:px-6 py-4 hover:border-primary hover:text-primary transition-all">
                         <span className="material-symbols-outlined">emoji_events</span>
                         {t('hero.tournaments')}
                     </Link>
