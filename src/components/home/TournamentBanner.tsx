@@ -7,19 +7,19 @@ const TournamentBanner = () => {
     return (
         <Link
             to="/torneos"
-            className="tactical-frame flex items-center gap-6 px-8 py-6 hover:bg-surface-bright transition-colors group overflow-hidden relative">
+            className="tactical-frame flex items-center gap-4 md:gap-6 px-4 py-3 md:px-8 md:py-6 hover:bg-surface-bright transition-colors group overflow-hidden relative">
             <div className="absolute inset-0 bg-linear-to-r from-primary/5 to-transparent pointer-events-none" />
-            <span className="material-symbols-outlined text-4xl text-primary shrink-0 group-hover:scale-110 transition-transform">
+            <span className="material-symbols-outlined text-2xl md:text-4xl text-primary shrink-0 group-hover:scale-110 transition-transform">
                 emoji_events
             </span>
             <div className="flex-1 min-w-0">
-                <p className="text-[9px] font-headline text-primary/60 tracking-[0.3em] uppercase mb-1">
+                <p className="text-[8px] md:text-[9px] font-headline text-primary/60 tracking-[0.2em] md:tracking-[0.3em] uppercase mb-0.5 md:mb-1">
                     {t('tournamentBanner.comingSoon')}
                 </p>
-                <h3 className="font-headline font-bold text-lg uppercase tracking-widest text-on-surface">
+                <h3 className="font-headline font-bold text-sm md:text-lg uppercase tracking-wide md:tracking-widest text-on-surface">
                     {t('tournamentBanner.title')}
                 </h3>
-                <p className="text-xs font-body text-on-surface-variant mt-0.5">
+                <p className="text-[11px] md:text-xs font-body text-on-surface-variant mt-0.5">
                     {t('tournamentBanner.description')}
                 </p>
             </div>

@@ -9,9 +9,17 @@ type SideNavProps = {
     onClose: () => void;
 };
 
+const LANGS = ['es', 'en'] as const;
+
 const SideNav = ({ isOpen, onClose }: SideNavProps) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const items = useNavItems();
+
+    const toggleLang = () => {
+        const next = i18n.language === 'es' ? 'en' : 'es';
+        i18n.changeLanguage(next);
+        localStorage.setItem('canon-cosmo-lang', next);
+    };
 
     const [openItems, setOpenItems] = useState<Set<number>>(new Set());
     const [hoveredItem, setHoveredItem] = useState<number | null>(null);
@@ -118,6 +126,14 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                 )}
             </nav>
 
+            <div className="md:hidden mt-4 pt-4 border-t border-[#e0e0ff]/20">
+                <button
+                    onClick={toggleLang}
+                    className="w-full flex items-center py-3 pl-6 text-[#e0e0ff] opacity-70 hover:bg-[#2f336c] hover:opacity-100 transition-all font-headline font-bold text-lg">
+                    <span className="material-symbols-outlined mr-3">language</span>
+                    {LANGS.find((l) => l !== i18n.language)?.toUpperCase()}
+                </button>
+            </div>
 
         </aside>
     );
