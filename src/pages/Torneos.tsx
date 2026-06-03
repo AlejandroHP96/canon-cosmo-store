@@ -46,7 +46,7 @@ const Torneos = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {juegos.map((juego) => {
                             const inner = (
-                                <div className="relative h-56 overflow-hidden group">
+                                <div className="relative h-36 sm:h-56 overflow-hidden group">
                                     {juego.imagen ? (
                                         <img src={juego.imagen} alt={juego.nombre} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                     ) : (
