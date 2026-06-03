@@ -51,27 +51,6 @@ const TeamCard = ({ member }: { member: TeamMember }) => (
         {/* Separator */}
         <div className="mx-3 mt-3 border-t border-[#5a5aaa]/40" />
 
-        {/* Abilities — FF7 menu style */}
-        <div className="flex items-start gap-2 px-3 py-3">
-            <span className="text-[11px] text-[#bec2ff]/60 italic mt-1.5 shrink-0 whitespace-nowrap">
-                {member.name.charAt(0) + member.name.slice(1).toLowerCase()}'s {member.abilityLabel} ──►
-            </span>
-            <div style={{ border: '1px solid #5a5aaa', background: '#0e1660' }} className="flex flex-col min-w-[120px]">
-                {member.abilities.map((ab, i) => (
-                    <span
-                        key={i}
-                        className="text-[13px] px-4 py-1 tracking-wide"
-                        style={{
-                            background: i === 0 ? '#2a3a9a' : 'transparent',
-                            color: i === 0 ? '#ffffff' : 'rgba(190,194,255,0.6)',
-                            borderBottom: i < member.abilities.length - 1 ? '1px solid rgba(90,90,170,0.3)' : 'none',
-                        }}>
-                        {ab}
-                    </span>
-                ))}
-            </div>
-        </div>
-
         {/* Bio text box */}
         <div className="mx-3 mb-3 p-3" style={{ border: '1px solid #4a4aaa', background: '#060c38' }}>
             {member.bio.split('\n\n').map((paragraph, i) => (
