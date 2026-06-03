@@ -52,20 +52,12 @@ const TeamCard = ({ member }: { member: TeamMember }) => (
         <div className="mx-3 mt-3 border-t border-[#5a5aaa]/40" />
 
         {/* Bio text box */}
-        <div className="mx-3 mb-3 p-3" style={{ border: '1px solid #4a4aaa', background: '#060c38' }}>
+        <div className="mx-3 my-3 p-3" style={{ border: '1px solid #4a4aaa', background: '#060c38' }}>
             {member.bio.split('\n\n').map((paragraph, i) => (
                 <p key={i} className={`text-[11px] text-[#d0d4ff] leading-relaxed ${i > 0 ? 'mt-2' : ''}`}>
                     {paragraph}
                 </p>
             ))}
-        </div>
-
-        {/* Footer: credit + stats */}
-        <div className="flex justify-between items-center px-3 pb-3">
-            <span className="text-[9px] text-[#5a5aaa]">{member.proxy}</span>
-            <div style={{ border: '1px solid #5a5aaa', background: '#0e1660' }} className="px-3 py-1">
-                <span className="text-white font-bold text-sm">{member.stats}</span>
-            </div>
         </div>
     </div>
 );
