@@ -9,9 +9,10 @@ type Props = {
     search: string;
     selectedCategory: string;
     sectionLabel: string;
+    onSelect?: (product: Product) => void;
 };
 
-const ProductGrid = ({ products, totalCount, search, selectedCategory, sectionLabel }: Props) => {
+const ProductGrid = ({ products, totalCount, search, selectedCategory, sectionLabel, onSelect }: Props) => {
     const { t } = useTranslation();
 
     if (products.length === 0) {
@@ -52,6 +53,7 @@ const ProductGrid = ({ products, totalCount, search, selectedCategory, sectionLa
                 {products.map((product) => (
                     <div
                         key={product.id}
+                        onClick={() => onSelect?.(product)}
                         className="tactical-frame p-4 hover:bg-surface-bright transition-colors cursor-pointer flex flex-col gap-3 group">
                         <ProductImage src={product.image} inStock={product.inStock} />
                         <div className="flex items-start justify-between gap-2">
@@ -69,13 +71,25 @@ const ProductGrid = ({ products, totalCount, search, selectedCategory, sectionLa
                                 </span>
                             )}
                         </div>
+                        {product.description && (
+                            <p className="text-xs text-on-surface-variant font-body line-clamp-1">
+                                {product.description}
+                            </p>
+                        )}
                         <div className="flex items-center justify-between mt-auto pt-2 border-t border-outline-variant/30">
                             <PriceTag price={product.price} salePrice={product.salePrice} badge={product.badge} size="sm" />
-                            {product.inStock === false && (
-                                <span className="text-[8px] font-headline uppercase tracking-widest text-error border border-error px-1.5 py-0.5">
-                                    {t('productGrid.soldOut')}
-                                </span>
-                            )}
+                            <div className="flex items-center gap-1.5">
+                                {product.badgeText && (
+                                    <span className="text-xs font-body text-on-surface-variant line-clamp-1">
+                                        {product.badgeText}
+                                    </span>
+                                )}
+                                {product.inStock === false && (
+                                    <span className="text-[8px] font-headline uppercase tracking-widest text-error border border-error px-1.5 py-0.5">
+                                        {t('productGrid.soldOut')}
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     </div>
                 ))}

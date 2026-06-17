@@ -4,7 +4,7 @@ import ProductImage from '../ProductImage';
 import PriceTag from './PriceTag';
 import type { Product } from '../../types';
 
-type Props = { products: Product[] };
+type Props = { products: Product[]; onSelect?: (product: Product) => void };
 
 const GRID_COLS: Record<number, string> = {
     1: 'grid-cols-1',
@@ -21,11 +21,13 @@ const PER_PAGE = 3;
 const AUTO_INTERVAL = 4000;
 
 
-const CompactCard = ({ product, count }: { product: Product; count: 2 | 3 }) => {
+const CompactCard = ({ product, count, onSelect }: { product: Product; count: 2 | 3; onSelect?: (product: Product) => void }) => {
     const { t } = useTranslation();
     const s = SIZE[count];
     return (
-        <div className="tactical-frame flex flex-col group cursor-pointer hover:bg-surface-bright transition-colors overflow-hidden">
+        <div
+            onClick={() => onSelect?.(product)}
+            className="tactical-frame flex flex-col group cursor-pointer hover:bg-surface-bright transition-colors overflow-hidden">
             <div className={`flex flex-row ${s.gap} ${s.padding} pb-3`}>
                 <div className={`${s.img} shrink-0`}>
                     <ProductImage src={product.image} featured inStock={product.inStock} />
@@ -46,17 +48,24 @@ const CompactCard = ({ product, count }: { product: Product; count: 2 | 3 }) => 
             </div>
             <div className={`flex items-center justify-between ${s.pricePad} border-t border-outline-variant/30`}>
                 <PriceTag price={product.price} salePrice={product.salePrice} badge={product.badge} size="md" />
-                {product.inStock === false && (
-                    <span className="text-[9px] font-headline uppercase tracking-widest text-error border border-error px-2 py-0.5">
-                        {t('featuredProduct.soldOut')}
-                    </span>
-                )}
+                <div className="flex items-center gap-2">
+                    {product.badgeText && (
+                        <span className="text-xs font-body text-on-surface-variant">
+                            {product.badgeText}
+                        </span>
+                    )}
+                    {product.inStock === false && (
+                        <span className="text-[9px] font-headline uppercase tracking-widest text-error border border-error px-2 py-0.5">
+                            {t('featuredProduct.soldOut')}
+                        </span>
+                    )}
+                </div>
             </div>
         </div>
     );
 };
 
-const FeaturedSection = ({ products }: Props) => {
+const FeaturedSection = ({ products, onSelect }: Props) => {
     const [page, setPage] = useState(0);
     const hovered = useRef(false);
 
@@ -79,7 +88,7 @@ const FeaturedSection = ({ products }: Props) => {
         return (
             <div className={`grid ${GRID_COLS[count]} gap-4 mb-6`}>
                 {products.map((p) => (
-                    <CompactCard key={p.id} product={p} count={count} />
+                    <CompactCard key={p.id} product={p} count={count} onSelect={onSelect} />
                 ))}
             </div>
         );
@@ -95,7 +104,7 @@ const FeaturedSection = ({ products }: Props) => {
         >
             <div key={page} className="featured-page-enter grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {visible.map((p) => (
-                    <CompactCard key={p.id} product={p} count={3} />
+                    <CompactCard key={p.id} product={p} count={3} onSelect={onSelect} />
                 ))}
                 {visible.length < PER_PAGE &&
                     [...Array(PER_PAGE - visible.length)].map((_, i) => (

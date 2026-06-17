@@ -3,13 +3,15 @@ import ProductImage from '../ProductImage';
 import PriceTag from './PriceTag';
 import type { Product } from '../../types';
 
-type Props = { product: Product };
+type Props = { product: Product; onSelect?: (product: Product) => void };
 
-const FeaturedProductCard = ({ product }: Props) => {
+const FeaturedProductCard = ({ product, onSelect }: Props) => {
     const { t } = useTranslation();
 
     return (
-        <div className="tactical-frame mb-6 flex flex-col group cursor-pointer hover:bg-surface-bright transition-colors overflow-hidden">
+        <div
+            onClick={() => onSelect?.(product)}
+            className="tactical-frame mb-6 flex flex-col group cursor-pointer hover:bg-surface-bright transition-colors overflow-hidden">
 
             {/* Top: imagen izquierda, info derecha */}
             <div className="flex flex-row gap-6 p-6 pb-4">
@@ -28,17 +30,29 @@ const FeaturedProductCard = ({ product }: Props) => {
                             {product.badge}
                         </span>
                     )}
+                    {product.description && (
+                        <p className="text-sm text-on-surface-variant font-body line-clamp-1">
+                            {product.description}
+                        </p>
+                    )}
                 </div>
             </div>
 
             {/* Bottom: precio */}
             <div className="flex items-center justify-between px-6 py-4 border-t border-outline-variant/30">
                 <PriceTag price={product.price} salePrice={product.salePrice} badge={product.badge} size="lg" />
-                {product.inStock === false && (
-                    <span className="text-[10px] font-headline uppercase tracking-widest text-error border border-error px-2 py-1">
-                        {t('featuredProduct.soldOut')}
-                    </span>
-                )}
+                <div className="flex items-center gap-2">
+                    {product.badgeText && (
+                        <span className="text-sm font-body text-on-surface-variant">
+                            {product.badgeText}
+                        </span>
+                    )}
+                    {product.inStock === false && (
+                        <span className="text-[10px] font-headline uppercase tracking-widest text-error border border-error px-2 py-1">
+                            {t('featuredProduct.soldOut')}
+                        </span>
+                    )}
+                </div>
             </div>
 
         </div>

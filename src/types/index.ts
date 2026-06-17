@@ -13,8 +13,10 @@ export type Product = {
     set: string;
     price: string;
     category: string;
+    description?: string;
     badge?: string;
     badgeColor?: string;
+    badgeText?: string; // Texto personalizado a mostrar cuando badge === 'PRÓXIMAMENTE'
     salePrice?: string;
     inStock?: boolean;
     image?: string;
