@@ -22,6 +22,7 @@ const ProductsView = () => {
 
     const [showForm, setShowForm] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [duplicating, setDuplicating] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
 
     const [search, setSearch] = useState('');
@@ -109,7 +110,7 @@ const ProductsView = () => {
                     onSectionChange={(id) => { setFilterSectionId(id); resetPage(); }}
                 />
                 <button
-                    onClick={() => { setEditingProduct(null); setShowForm(true); }}
+                    onClick={() => { setEditingProduct(null); setDuplicating(false); setShowForm(true); }}
                     className="flex items-center gap-2 border border-primary text-primary font-headline text-xs uppercase tracking-widest px-4 py-2 hover:bg-primary hover:text-surface transition-colors">
                     <span className="material-symbols-outlined text-sm">add</span>
                     Nuevo producto
@@ -164,7 +165,12 @@ const ProductsView = () => {
                                 product={product}
                                 isSelected={selectedIds.has(product.id)}
                                 onToggleSelect={() => toggleSelect(product.id)}
-                                onEdit={() => { setEditingProduct(product); setShowForm(true); }}
+                                onEdit={() => { setEditingProduct(product); setDuplicating(false); setShowForm(true); }}
+                                onDuplicate={() => {
+                                    setEditingProduct({ ...product, name: `${product.name} (copia)` });
+                                    setDuplicating(true);
+                                    setShowForm(true);
+                                }}
                                 onDelete={() => setDeleteTarget(product)}
                                 onToggleVisible={async () => {
                                     await updateProduct(product.id, { visible: product.visible === false });
@@ -235,6 +241,7 @@ const ProductsView = () => {
             {showForm && (
                 <ProductFormModal
                     initial={editingProduct}
+                    forceCreate={duplicating}
                     onClose={() => setShowForm(false)}
                     onSaved={() => { setShowForm(false); refresh(); }}
                     onSavedContinue={() => refresh()}

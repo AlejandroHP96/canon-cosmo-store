@@ -6,11 +6,12 @@ type Props = {
     isSelected: boolean;
     onToggleSelect: () => void;
     onEdit: () => void;
+    onDuplicate: () => void;
     onDelete: () => void;
     onToggleVisible: () => void;
 };
 
-const ProductRow = ({ product, isSelected, onToggleSelect, onEdit, onDelete, onToggleVisible }: Props) => {
+const ProductRow = ({ product, isSelected, onToggleSelect, onEdit, onDuplicate, onDelete, onToggleVisible }: Props) => {
     const isVisible = product.visible !== false;
     return (
         <div
@@ -69,6 +70,12 @@ const ProductRow = ({ product, isSelected, onToggleSelect, onEdit, onDelete, onT
                     className="border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary p-1.5 transition-colors"
                     title="Editar">
                     <span className="material-symbols-outlined text-sm">edit</span>
+                </button>
+                <button
+                    onClick={onDuplicate}
+                    className="border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary p-1.5 transition-colors"
+                    title="Duplicar">
+                    <span className="material-symbols-outlined text-sm">content_copy</span>
                 </button>
                 <button
                     onClick={onDelete}
