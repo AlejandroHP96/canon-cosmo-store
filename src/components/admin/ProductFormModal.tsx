@@ -28,13 +28,14 @@ const EMPTY_FORM: FormData = {
 
 type Props = {
     initial: Product | null;
+    forceCreate?: boolean;
     onClose: () => void;
     onSaved: () => void;
     onSavedContinue?: () => void;
 };
 
-const ProductFormModal = ({ initial, onClose, onSaved, onSavedContinue }: Props) => {
-    const isEdit = initial !== null;
+const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedContinue }: Props) => {
+    const isEdit = initial !== null && !forceCreate;
     const [form, setForm] = useState<FormData>(initial ? { ...initial } : { ...EMPTY_FORM });
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
