@@ -15,8 +15,10 @@ const EMPTY_FORM: FormData = {
     set: '',
     price: '',
     category: '',
+    description: '',
     badge: '',
     badgeColor: '',
+    badgeText: '',
     salePrice: '',
     inStock: true,
     image: '',
@@ -124,8 +126,11 @@ const ProductFormModal = ({ initial, onClose, onSaved, onSavedContinue }: Props)
             if (isEdit) {
                 const updatePayload: Record<string, string | number | boolean | ReturnType<typeof deleteField> | undefined> = {
                     ...Object.fromEntries(Object.entries(raw).filter(([, v]) => v !== undefined && v !== '')),
+                    set: raw.set || deleteField(),
+                    description: raw.description || deleteField(),
                     badge: raw.badge || deleteField(),
                     badgeColor: raw.badgeColor || deleteField(),
+                    badgeText: raw.badge === 'PRÓXIMAMENTE' && raw.badgeText ? raw.badgeText : deleteField(),
                     salePrice: raw.badge === 'OFERTA' && raw.salePrice ? raw.salePrice : deleteField(),
                     image: raw.image || deleteField(),
                 };
@@ -151,11 +156,8 @@ const ProductFormModal = ({ initial, onClose, onSaved, onSavedContinue }: Props)
     };
 
     const subOptions = navItems[menuIdx]?.submenu ?? [];
-    const selectedPath = subOptions.length > 0
-        ? subOptions[Math.min(subIdx, subOptions.length - 1)]?.path ?? ''
-        : navItems[menuIdx]?.path ?? '';
-    const isTcgSection = selectedPath.startsWith('/tcgs/');
-    const selectedBadge = BADGE_OPTIONS.find((o) => o.badge === (form.badge ?? ''));
+    const selectedOption = BADGE_OPTIONS.find((o) => o.badgeColor === (form.badgeColor ?? '')) ?? BADGE_OPTIONS[0];
+    const isCustomBadge = selectedOption.badge === 'PRÓXIMAMENTE';
 
     return (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-2">
@@ -216,17 +218,15 @@ const ProductFormModal = ({ initial, onClose, onSaved, onSavedContinue }: Props)
                     </div>
 
                     {/* Set + Categoría */}
-                    <div className={`grid gap-3 ${isTcgSection ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                        {isTcgSection && (
-                            <div>
-                                <label className={labelClass}>Set / Expansión</label>
-                                <input
-                                    value={form.set}
-                                    onChange={(e) => set('set', e.target.value)}
-                                    className={inputClass}
-                                />
-                            </div>
-                        )}
+                    <div className="grid grid-cols-2 gap-3">
+                        <div>
+                            <label className={labelClass}>Set / Expansión</label>
+                            <input
+                                value={form.set ?? ''}
+                                onChange={(e) => set('set', e.target.value)}
+                                className={inputClass}
+                            />
+                        </div>
                         <div>
                             <label className={labelClass}>Categoría</label>
                             <select
@@ -241,6 +241,17 @@ const ProductFormModal = ({ initial, onClose, onSaved, onSavedContinue }: Props)
                                 ))}
                             </select>
                         </div>
+                    </div>
+
+                    {/* Descripción */}
+                    <div>
+                        <label className={labelClass}>Descripción</label>
+                        <textarea
+                            value={form.description ?? ''}
+                            onChange={(e) => set('description', e.target.value)}
+                            rows={3}
+                            className={inputClass + ' resize-none'}
+                        />
                     </div>
 
                     {/* Precio + Disponibilidad */}
@@ -308,25 +319,39 @@ const ProductFormModal = ({ initial, onClose, onSaved, onSavedContinue }: Props)
                         <div className="flex-1">
                             <label className={labelClass}>Badge</label>
                             <select
-                                value={form.badge ?? ''}
+                                value={selectedOption.badgeColor}
                                 onChange={(e) => {
-                                    const opt = BADGE_OPTIONS.find((o) => o.badge === e.target.value)!;
+                                    const opt = BADGE_OPTIONS.find((o) => o.badgeColor === e.target.value)!;
                                     set('badge', opt.badge);
                                     set('badgeColor', opt.badgeColor);
                                     if (opt.badge !== 'OFERTA') set('salePrice', '');
+                                    if (opt.badge !== 'PRÓXIMAMENTE') set('badgeText', '');
                                 }}
                                 className={inputClass}>
                                 {BADGE_OPTIONS.map((o) => (
-                                    <option key={o.label} value={o.badge}>{o.label}</option>
+                                    <option key={o.label} value={o.badgeColor}>{o.label}</option>
                                 ))}
                             </select>
                         </div>
-                        {selectedBadge?.badge && (
-                            <span className={`mb-0.5 px-2 py-1 text-[9px] font-headline border ${selectedBadge.badgeColor} text-[#e0e0ff] shrink-0`}>
-                                {selectedBadge.badge}
+                        {form.badge && (
+                            <span className={`mb-0.5 px-2 py-1 text-[9px] font-headline border ${selectedOption.badgeColor} text-[#e0e0ff] shrink-0`}>
+                                {form.badge}
                             </span>
                         )}
                     </div>
+
+                    {/* Texto personalizado del badge */}
+                    {isCustomBadge && (
+                        <div>
+                            <label className={labelClass}>Texto a mostrar en el producto</label>
+                            <input
+                                value={form.badgeText ?? ''}
+                                onChange={(e) => set('badgeText', e.target.value)}
+                                placeholder="Ej: Disponible en julio"
+                                className={inputClass}
+                            />
+                        </div>
+                    )}
 
                     {/* Precio de oferta */}
                     {form.badge === 'OFERTA' && (

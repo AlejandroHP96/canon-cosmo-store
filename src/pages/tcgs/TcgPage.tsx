@@ -13,6 +13,7 @@ import TcgCategoryFilter from '../../components/tcg/TcgCategoryFilter';
 import FeaturedProductCard from '../../components/tcg/FeaturedProductCard';
 import FeaturedSection from '../../components/tcg/FeaturedSection';
 import ProductGrid from '../../components/tcg/ProductGrid';
+import ProductModal from '../../components/tcg/ProductModal';
 import SEO from '../../components/SEO';
 
 const TcgPage = () => {
@@ -25,6 +26,7 @@ const TcgPage = () => {
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState('Todo');
     const [search, setSearch] = useState('');
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
     const lastSegment = pathname.split('/').filter(Boolean).at(-1) ?? '';
     const sectionLabel =
@@ -74,8 +76,8 @@ const TcgPage = () => {
                 onSelect={setSelectedCategory}
             />
             {featuredProducts.length === 1
-                ? <FeaturedProductCard product={featuredProducts[0]} />
-                : <FeaturedSection products={featuredProducts} />
+                ? <FeaturedProductCard product={featuredProducts[0]} onSelect={setSelectedProduct} />
+                : <FeaturedSection products={featuredProducts} onSelect={setSelectedProduct} />
             }
             <ProductGrid
                 products={gridProducts}
@@ -83,7 +85,11 @@ const TcgPage = () => {
                 search={search}
                 selectedCategory={selectedCategory}
                 sectionLabel={sectionLabel}
+                onSelect={setSelectedProduct}
             />
+            {selectedProduct && (
+                <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
+            )}
         </>
     );
 };

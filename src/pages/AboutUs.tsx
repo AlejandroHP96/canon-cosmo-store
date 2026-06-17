@@ -71,7 +71,7 @@ const CardInner = ({ member, large = false }: { member: TeamMember; large?: bool
 
 const TeamCard = ({ member, onClick }: { member: TeamMember; onClick: () => void }) => (
     <div
-        className="w-[360px] shrink-0 select-none cursor-pointer hover:scale-[1.02] hover:brightness-110 transition-all duration-200"
+        className="w-full max-w-[360px] shrink-0 select-none cursor-pointer hover:scale-[1.02] hover:brightness-110 transition-all duration-200"
         style={cardStyle}
         onClick={onClick}>
         <CardInner member={member} />
@@ -134,7 +134,7 @@ const AboutUs = () => {
     ];
 
     return (
-        <section className="max-w-5xl mx-auto px-6 py-10 pb-20 text-center">
+        <section className="max-w-5xl mx-auto px-3 sm:px-6 py-10 pb-20 text-center">
             <SEO
                 title={t('aboutUs.title')}
                 description="Conoce Cañón Cosmo Store, tu tienda especializada en trading cards, Funko Pop y coleccionables."
@@ -154,7 +154,7 @@ const AboutUs = () => {
                 </p>
             </div>
 
-            <div className="flex flex-wrap gap-16 justify-center">
+            <div className="flex flex-wrap gap-10 justify-center">
                 {TEAM.map((member) => (
                     <TeamCard key={member.name} member={member} onClick={() => setSelected(member)} />
                 ))}
