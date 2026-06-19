@@ -22,7 +22,7 @@ const Layout = () => {
                     onClick={() => setSideNavOpen(false)}
                 />
             )}
-            <main className="md:ml-64 mt-16 p-8 h-[calc(100vh-100px)] overflow-y-auto bg-surface-dim">
+            <main className="md:ml-64 mt-16 p-4 md:p-8 h-[calc(100vh-100px)] overflow-y-auto bg-surface-dim">
                 <Outlet />
             </main>
             <Footer />

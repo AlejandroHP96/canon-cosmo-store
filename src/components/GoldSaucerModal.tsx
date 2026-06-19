@@ -114,7 +114,7 @@ const GoldSaucerModal = () => {
             className="fixed inset-0 z-200 bg-black/70 flex items-center justify-center p-4"
             onClick={close}>
             <div
-                className="tactical-frame p-8 w-full max-w-sm"
+                className="tactical-frame p-4 sm:p-8 w-full max-w-sm"
                 onClick={e => e.stopPropagation()}>
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
@@ -134,11 +134,11 @@ const GoldSaucerModal = () => {
                 </div>
 
                 {/* Ruletas */}
-                <div className="flex gap-4 justify-center mb-8">
+                <div className="flex gap-2 sm:gap-4 justify-center mb-8">
                     {reels.map((symIdx, i) => (
                         <div
                             key={i}
-                            className={`w-20 h-20 flex items-center justify-center border-2 bg-[#000120] transition-all duration-200 ${
+                            className={`w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center border-2 bg-[#000120] transition-all duration-200 ${
                                 stopped[i] && !spinning ? 'border-[#c8a800]' : 'border-[#c8a800]/30'
                             }`}>
                             <span
