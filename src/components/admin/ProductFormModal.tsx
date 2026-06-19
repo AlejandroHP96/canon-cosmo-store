@@ -162,7 +162,7 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
 
     return (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-2">
-            <div className="tactical-frame p-6 w-full max-w-2xl max-h-[96vh] overflow-y-auto">
+            <div className="tactical-frame p-4 sm:p-6 w-full max-w-2xl max-h-[96vh] overflow-y-auto">
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="font-headline font-bold text-lg text-on-surface uppercase tracking-widest">
                         {isEdit ? 'Editar Producto' : 'Nuevo Producto'}
@@ -176,7 +176,7 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
                     {/* Sección del catálogo */}
                     <div className="border border-outline-variant/50 p-3 flex flex-col gap-2">
                         <p className={labelClass}>Sección del catálogo</p>
-                        <div className={`grid gap-2 items-center ${subOptions.length > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                        <div className={`grid gap-2 items-center ${subOptions.length > 0 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
                             <div className="flex items-center gap-2">
                                 {navItems[menuIdx] && (
                                     <span className="material-symbols-outlined text-primary text-base shrink-0">
@@ -219,7 +219,7 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
                     </div>
 
                     {/* Set + Categoría */}
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label className={labelClass}>Set / Expansión</label>
                             <input
@@ -256,7 +256,7 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
                     </div>
 
                     {/* Precio + Disponibilidad */}
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label className={labelClass}>Precio</label>
                             <div className="flex items-center">

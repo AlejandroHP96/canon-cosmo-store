@@ -23,7 +23,7 @@ const ProductModal = ({ product, onClose }: Props) => {
             className="modal-overlay-enter fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4"
             onClick={onClose}>
             <div
-                className="modal-panel-enter tactical-frame p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto"
+                className="modal-panel-enter tactical-frame p-4 sm:p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto"
                 onClick={(e) => e.stopPropagation()}>
                 <div className="flex justify-end mb-2">
                     <button onClick={onClose} className="text-on-surface-variant hover:text-primary transition-colors">
@@ -38,7 +38,7 @@ const ProductModal = ({ product, onClose }: Props) => {
                 <p className="text-[10px] font-headline text-primary tracking-[0.2em] uppercase mb-1">
                     {[product.set, product.category].filter(Boolean).join(' · ')}
                 </p>
-                <h2 className="font-headline font-bold text-3xl text-on-surface uppercase leading-tight mb-2">
+                <h2 className="font-headline font-bold text-2xl sm:text-3xl text-on-surface uppercase leading-tight mb-2">
                     {product.name}
                 </h2>
                 {product.badge && (

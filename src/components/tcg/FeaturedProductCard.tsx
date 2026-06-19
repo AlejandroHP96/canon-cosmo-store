@@ -13,16 +13,16 @@ const FeaturedProductCard = ({ product, onSelect }: Props) => {
             onClick={() => onSelect?.(product)}
             className="tactical-frame mb-6 flex flex-col group cursor-pointer hover:bg-surface-bright transition-colors overflow-hidden">
 
-            {/* Top: imagen izquierda, info derecha */}
-            <div className="flex flex-row gap-6 p-6 pb-4">
-                <div className="w-48 shrink-0">
+            {/* Top: imagen izquierda, info derecha (stack en mobile) */}
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 p-4 sm:p-6 pb-4">
+                <div className="w-full sm:w-48 shrink-0">
                     <ProductImage src={product.image} featured inStock={product.inStock} />
                 </div>
                 <div className="flex flex-col justify-center flex-1 gap-2">
                     <p className="text-[10px] font-headline text-primary tracking-[0.2em] uppercase">
                         {[product.set, product.category].filter(Boolean).join(' · ')}
                     </p>
-                    <h3 className="font-headline font-bold text-3xl text-on-surface uppercase leading-tight">
+                    <h3 className="font-headline font-bold text-2xl sm:text-3xl text-on-surface uppercase leading-tight">
                         {product.name}
                     </h3>
                     {product.badge && (
@@ -39,7 +39,7 @@ const FeaturedProductCard = ({ product, onSelect }: Props) => {
             </div>
 
             {/* Bottom: precio */}
-            <div className="flex items-center justify-between px-6 py-4 border-t border-outline-variant/30">
+            <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-6 py-4 border-t border-outline-variant/30">
                 <PriceTag price={product.price} salePrice={product.salePrice} badge={product.badge} size="lg" />
                 <div className="flex items-center gap-2">
                     {product.badgeText && (
