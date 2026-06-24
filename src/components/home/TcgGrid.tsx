@@ -37,7 +37,7 @@ const TcgGrid = () => {
                         className="tactical-frame flex overflow-hidden group hover:bg-surface-bright transition-colors h-24">
                         <div
                             className="w-1 shrink-0 transition-all group-hover:w-1.5"
-                            style={{ backgroundColor: colorMap[tcg.path] ?? '#bec2ff' }}
+                            style={{ backgroundColor: tcg.color ?? colorMap[tcg.path] ?? '#bec2ff' }}
                         />
                         <div className="shrink-0 w-36 p-5 flex flex-col gap-3">
                             <div className="flex-1">

@@ -9,6 +9,7 @@ export type SubNavItem = {
     label: string;
     path: string;
     image?: string;
+    color?: string;
 };
 
 /** Entrada de navegación de primer nivel */
