@@ -2,8 +2,11 @@ import { useEffect, useState } from 'react';
 import { getSidebarConfig, updateSidebarConfig, type NavItem, type SubNavItem, type SidebarConfig } from '../../services/navService';
 import { toSlug } from '../../lib/tcgUtils';
 import { inputClass } from './adminStyles';
+import ColorPickerPopover from './ColorPickerPopover';
 
-type SubForm = { label: string; path: string; pathAutoSync: boolean; image: string };
+const DEFAULT_COLOR = '#bec2ff';
+
+type SubForm = { label: string; path: string; pathAutoSync: boolean; image: string; color: string };
 
 const NavManager = () => {
     const [config, setConfig] = useState<SidebarConfig | null>(null);
@@ -17,8 +20,9 @@ const NavManager = () => {
     const [newItem, setNewItem] = useState({ icon: '', label: '', path: '' });
 
     const [editSubKey, setEditSubKey] = useState<string | null>(null);
-    const [editSubForm, setEditSubForm] = useState({ label: '', path: '', image: '' });
+    const [editSubForm, setEditSubForm] = useState({ label: '', path: '', image: '', color: '' });
     const [newSubForms, setNewSubForms] = useState<Record<number, SubForm>>({});
+    const [colorPickerKey, setColorPickerKey] = useState<string | null>(null);
 
     const [dragIdx, setDragIdx] = useState<number | null>(null);
     const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
@@ -119,7 +123,7 @@ const NavManager = () => {
         `/${toSlug(parentLabel)}/${toSlug(subLabel)}`;
 
     const getSubForm = (idx: number): SubForm =>
-        newSubForms[idx] ?? { label: '', path: '', pathAutoSync: true, image: '' };
+        newSubForms[idx] ?? { label: '', path: '', pathAutoSync: true, image: '', color: '' };
 
     const patchSubForm = (idx: number, patch: Partial<SubForm>) =>
         setNewSubForms((prev) => ({ ...prev, [idx]: { ...getSubForm(idx), ...patch } }));
@@ -133,12 +137,13 @@ const NavManager = () => {
         if (!label || !path) return;
         const sub: SubNavItem = { label, path };
         if (form.image.trim()) sub.image = form.image.trim();
+        if (form.color.trim()) sub.color = form.color.trim();
         const items = config.items.map((item, i): NavItem => {
             if (i !== itemIdx) return item;
             return { ...item, submenu: [...(item.submenu ?? []), sub] };
         });
         await saveConfig({ items });
-        patchSubForm(itemIdx, { label: '', path: '', image: '', pathAutoSync: true });
+        patchSubForm(itemIdx, { label: '', path: '', image: '', color: '', pathAutoSync: true });
     };
 
     const handleDeleteSub = async (itemIdx: number, subIdx: number) => {
@@ -153,7 +158,7 @@ const NavManager = () => {
     const handleEditSubStart = (itemIdx: number, subIdx: number) => {
         const sub = config.items[itemIdx].submenu![subIdx];
         setEditSubKey(subKey(itemIdx, subIdx));
-        setEditSubForm({ label: sub.label, path: sub.path, image: sub.image ?? '' });
+        setEditSubForm({ label: sub.label, path: sub.path, image: sub.image ?? '', color: sub.color ?? '' });
     };
 
     const handleEditSubSave = async (itemIdx: number, subIdx: number) => {
@@ -161,6 +166,7 @@ const NavManager = () => {
         const path = editSubForm.path.trim();
         if (!label || !path) return;
         const image = editSubForm.image.trim();
+        const color = editSubForm.color.trim();
         const items = config.items.map((item, i): NavItem => {
             if (i !== itemIdx) return item;
             return {
@@ -169,12 +175,25 @@ const NavManager = () => {
                     if (j !== subIdx) return sub;
                     const updated: SubNavItem = { label, path };
                     if (image) updated.image = image;
+                    if (color) updated.color = color;
                     return updated;
                 }),
             };
         });
         await saveConfig({ items });
         setEditSubKey(null);
+    };
+
+    /** Aplica un nuevo color a un subitem existente sin necesidad de entrar en modo edición. */
+    const handleSetSubColor = async (itemIdx: number, subIdx: number, color: string) => {
+        const items = config.items.map((item, i): NavItem => {
+            if (i !== itemIdx) return item;
+            return {
+                ...item,
+                submenu: item.submenu?.map((sub, j) => (j === subIdx ? { ...sub, color } : sub)),
+            };
+        });
+        await saveConfig({ items });
     };
 
     // ── Drag primer nivel ─────────────────────────────────────────────────────
@@ -393,6 +412,24 @@ const NavManager = () => {
                                                 placeholder="URL imagen (opcional)"
                                                 className={inputClass + ' w-full'}
                                             />
+                                            <div className="relative flex items-center gap-2">
+                                                <span className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant">
+                                                    Color
+                                                </span>
+                                                <button
+                                                    onClick={() => setColorPickerKey(subKey(idx, sIdx))}
+                                                    title="Elegir color"
+                                                    className="w-5 h-5 rounded-full border border-outline-variant/60"
+                                                    style={{ backgroundColor: editSubForm.color || DEFAULT_COLOR }}
+                                                />
+                                                {colorPickerKey === subKey(idx, sIdx) && (
+                                                    <ColorPickerPopover
+                                                        value={editSubForm.color || DEFAULT_COLOR}
+                                                        onChange={(color) => setEditSubForm((f) => ({ ...f, color }))}
+                                                        onClose={() => setColorPickerKey(null)}
+                                                    />
+                                                )}
+                                            </div>
                                         </div>
                                     ) : (
                                         <div
@@ -418,6 +455,24 @@ const NavManager = () => {
                                             <span className="font-mono text-xs text-on-surface-variant hidden sm:block">
                                                 {sub.path}
                                             </span>
+                                            <div className="relative">
+                                                <button
+                                                    onClick={() => setColorPickerKey(subKey(idx, sIdx))}
+                                                    disabled={saving}
+                                                    title="Color"
+                                                    className="w-5 h-5 rounded-full border border-outline-variant/60 disabled:opacity-40"
+                                                    style={{ backgroundColor: sub.color || DEFAULT_COLOR }}
+                                                />
+                                                {colorPickerKey === subKey(idx, sIdx) && (
+                                                    <ColorPickerPopover
+                                                        value={sub.color || DEFAULT_COLOR}
+                                                        onChange={(color) => {
+                                                            handleSetSubColor(idx, sIdx, color);
+                                                        }}
+                                                        onClose={() => setColorPickerKey(null)}
+                                                    />
+                                                )}
+                                            </div>
                                             <button
                                                 onClick={() => handleEditSubStart(idx, sIdx)}
                                                 disabled={saving}
@@ -477,6 +532,24 @@ const NavManager = () => {
                                         placeholder="URL imagen (opcional)"
                                         className={inputClass + ' w-full'}
                                     />
+                                    <div className="relative flex items-center gap-2">
+                                        <span className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant">
+                                            Color
+                                        </span>
+                                        <button
+                                            onClick={() => setColorPickerKey(`new-${idx}`)}
+                                            title="Elegir color"
+                                            className="w-5 h-5 rounded-full border border-outline-variant/60"
+                                            style={{ backgroundColor: getSubForm(idx).color || DEFAULT_COLOR }}
+                                        />
+                                        {colorPickerKey === `new-${idx}` && (
+                                            <ColorPickerPopover
+                                                value={getSubForm(idx).color || DEFAULT_COLOR}
+                                                onChange={(color) => patchSubForm(idx, { color })}
+                                                onClose={() => setColorPickerKey(null)}
+                                            />
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         )}
