@@ -107,8 +107,10 @@ const NavManager = () => {
         if (!icon || !label) return;
         const items = config.items.map((item, i): NavItem => {
             if (i !== editItemIdx) return item;
+            // La ruta no se puede editar: se conserva la original para no
+            // desvincular productos y categorías ya asociados a este path.
             const next: NavItem = { icon, label, submenu: item.submenu };
-            if (editItemForm.path.trim()) next.path = editItemForm.path.trim();
+            if (item.path) next.path = item.path;
             return next;
         });
         await saveConfig({ items });
@@ -163,8 +165,7 @@ const NavManager = () => {
 
     const handleEditSubSave = async (itemIdx: number, subIdx: number) => {
         const label = editSubForm.label.trim();
-        const path = editSubForm.path.trim();
-        if (!label || !path) return;
+        if (!label) return;
         const image = editSubForm.image.trim();
         const color = editSubForm.color.trim();
         const items = config.items.map((item, i): NavItem => {
@@ -173,7 +174,9 @@ const NavManager = () => {
                 ...item,
                 submenu: item.submenu?.map((sub, j) => {
                     if (j !== subIdx) return sub;
-                    const updated: SubNavItem = { label, path };
+                    // La ruta no se puede editar: se conserva la original para no
+                    // desvincular productos y categorías ya asociados a este path.
+                    const updated: SubNavItem = { label, path: sub.path };
                     if (image) updated.image = image;
                     if (color) updated.color = color;
                     return updated;
@@ -276,42 +279,51 @@ const NavManager = () => {
                         }`}>
                         {/* Fila primer nivel */}
                         {editItemIdx === idx ? (
-                            <div className="px-4 py-3 flex items-center gap-2 flex-wrap">
-                                <span className="material-symbols-outlined text-primary text-base shrink-0">
-                                    {editItemForm.icon || 'category'}
-                                </span>
-                                <input
-                                    value={editItemForm.icon}
-                                    onChange={(e) => setEditItemForm((f) => ({ ...f, icon: e.target.value }))}
-                                    placeholder="Icono"
-                                    className={inputClass + ' w-32 font-mono'}
-                                />
-                                <input
-                                    value={editItemForm.label}
-                                    onChange={(e) => setEditItemForm((f) => ({ ...f, label: e.target.value }))}
-                                    placeholder="Label"
-                                    className={inputClass + ' flex-1 min-w-28'}
-                                />
-                                <input
-                                    value={editItemForm.path}
-                                    onChange={(e) => setEditItemForm((f) => ({ ...f, path: e.target.value }))}
-                                    placeholder="/ruta (opcional)"
-                                    className={inputClass + ' flex-1 min-w-28 font-mono'}
-                                    onKeyDown={(e) => e.key === 'Enter' && handleEditItemSave()}
-                                />
-                                <button
-                                    onClick={handleEditItemSave}
-                                    disabled={saving}
-                                    className="text-primary hover:text-on-surface transition-colors disabled:opacity-40"
-                                    title="Guardar">
-                                    <span className="material-symbols-outlined text-sm">check</span>
-                                </button>
-                                <button
-                                    onClick={() => setEditItemIdx(null)}
-                                    className="text-on-surface-variant hover:text-on-surface transition-colors"
-                                    title="Cancelar">
-                                    <span className="material-symbols-outlined text-sm">close</span>
-                                </button>
+                            <div className="px-4 py-3 flex flex-col gap-2">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="material-symbols-outlined text-primary text-base shrink-0">
+                                        {editItemForm.icon || 'category'}
+                                    </span>
+                                    <input
+                                        value={editItemForm.icon}
+                                        onChange={(e) => setEditItemForm((f) => ({ ...f, icon: e.target.value }))}
+                                        placeholder="Icono"
+                                        className={inputClass + ' w-32 font-mono'}
+                                    />
+                                    <input
+                                        value={editItemForm.label}
+                                        onChange={(e) => setEditItemForm((f) => ({ ...f, label: e.target.value }))}
+                                        placeholder="Label"
+                                        className={inputClass + ' flex-1 min-w-28'}
+                                        onKeyDown={(e) => e.key === 'Enter' && handleEditItemSave()}
+                                    />
+                                    {editItemForm.path && (
+                                        <span
+                                            title="La ruta no se puede cambiar para no desvincular productos y categorías."
+                                            className="flex-1 min-w-28 flex items-center gap-1.5 border border-outline-variant/40 bg-surface-container px-3 py-2 font-mono text-sm text-on-surface-variant truncate">
+                                            <span className="material-symbols-outlined text-sm shrink-0">lock</span>
+                                            {editItemForm.path}
+                                        </span>
+                                    )}
+                                    <button
+                                        onClick={handleEditItemSave}
+                                        disabled={saving}
+                                        className="text-primary hover:text-on-surface transition-colors disabled:opacity-40"
+                                        title="Guardar">
+                                        <span className="material-symbols-outlined text-sm">check</span>
+                                    </button>
+                                    <button
+                                        onClick={() => setEditItemIdx(null)}
+                                        className="text-on-surface-variant hover:text-on-surface transition-colors"
+                                        title="Cancelar">
+                                        <span className="material-symbols-outlined text-sm">close</span>
+                                    </button>
+                                </div>
+                                {editItemForm.path && (
+                                    <p className="text-[10px] font-body text-on-surface-variant pl-0.5">
+                                        La ruta no se puede cambiar para no desvincular productos y categorías.
+                                    </p>
+                                )}
                             </div>
                         ) : (
                             <div className="px-4 py-3 flex items-center gap-3">
@@ -384,13 +396,12 @@ const NavManager = () => {
                                                 className={inputClass + ' flex-1'}
                                                 onKeyDown={(e) => e.key === 'Enter' && handleEditSubSave(idx, sIdx)}
                                             />
-                                            <input
-                                                value={editSubForm.path}
-                                                onChange={(e) => setEditSubForm((f) => ({ ...f, path: e.target.value }))}
-                                                placeholder="/ruta"
-                                                className={inputClass + ' flex-1 font-mono'}
-                                                onKeyDown={(e) => e.key === 'Enter' && handleEditSubSave(idx, sIdx)}
-                                            />
+                                            <span
+                                                title="La ruta no se puede cambiar para no desvincular productos y categorías."
+                                                className="flex-1 flex items-center gap-1.5 border border-outline-variant/40 bg-surface-container px-3 py-2 font-mono text-sm text-on-surface-variant truncate">
+                                                <span className="material-symbols-outlined text-sm shrink-0">lock</span>
+                                                {editSubForm.path}
+                                            </span>
                                             <button
                                                 onClick={() => handleEditSubSave(idx, sIdx)}
                                                 disabled={saving}
@@ -405,6 +416,9 @@ const NavManager = () => {
                                                 <span className="material-symbols-outlined text-sm">close</span>
                                             </button>
                                             </div>
+                                            <p className="text-[10px] font-body text-on-surface-variant pl-0.5 -mt-1">
+                                                La ruta no se puede cambiar para no desvincular productos y categorías.
+                                            </p>
                                             <input
                                                 type="url"
                                                 value={editSubForm.image}
