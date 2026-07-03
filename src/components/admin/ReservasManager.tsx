@@ -57,7 +57,7 @@ const ReservasManager = () => {
             return (
                 r.cliente.toLowerCase().includes(q) ||
                 r.productoNombre.toLowerCase().includes(q) ||
-                r.email.toLowerCase().includes(q)
+                (r.email ?? '').toLowerCase().includes(q)
             );
         });
     }, [reservas, search, seccionFiltro, productoFiltro]);
@@ -219,7 +219,7 @@ const ReservasManager = () => {
                                     </span>
                                 </div>
                                 <span className="text-[10px] font-body text-on-surface-variant truncate hidden sm:block w-36 shrink-0">
-                                    {reserva.email}
+                                    {reserva.email || '—'}
                                 </span>
                                 <span className="text-[10px] font-body text-on-surface-variant truncate hidden md:block w-24 shrink-0">
                                     {reserva.telefono || '—'}

@@ -11,8 +11,6 @@ type FormData = {
     productoNombre: string;
     seccion: string;
     cliente: string;
-    email: string;
-    telefono: string;
     cantidad: number;
     notas: string;
 };
@@ -22,11 +20,12 @@ const EMPTY_FORM: FormData = {
     productoNombre: '',
     seccion: '',
     cliente: '',
-    email: '',
-    telefono: '',
     cantidad: 1,
     notas: '',
 };
+
+/** Exige nombre y al menos un apellido (dos palabras separadas por espacio) */
+const NOMBRE_COMPLETO_PATTERN = '\\S+(\\s+\\S+)+';
 
 const Reservas = () => {
     const { t } = useTranslation();
@@ -82,7 +81,8 @@ const Reservas = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!form.productoId || !form.cliente.trim() || !form.email.trim()) return;
+        const nombreCompleto = form.cliente.trim();
+        if (!form.productoId || !/^\S+(\s+\S+)+$/.test(nombreCompleto)) return;
         setSaving(true);
         setError(null);
         try {
@@ -90,9 +90,7 @@ const Reservas = () => {
                 productoId: form.productoId,
                 productoNombre: form.productoNombre,
                 seccion: form.seccion,
-                cliente: form.cliente.trim(),
-                email: form.email.trim(),
-                telefono: form.telefono.trim(),
+                cliente: nombreCompleto,
                 cantidad: form.cantidad,
                 notas: form.notas.trim(),
             });
@@ -264,58 +262,31 @@ const Reservas = () => {
                                     </button>
                                 </div>
                                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block font-headline text-[10px] uppercase tracking-widest text-primary/60 mb-1">
-                                                Nombre completo *
-                                            </label>
-                                            <input
-                                                required
-                                                value={form.cliente}
-                                                onChange={(e) => setField('cliente', e.target.value)}
-                                                placeholder="Tu nombre"
-                                                className="w-full bg-surface border border-outline-variant/60 px-3 py-2 text-sm font-body text-on-surface outline-none focus:border-primary transition-colors"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block font-headline text-[10px] uppercase tracking-widest text-primary/60 mb-1">
-                                                Email *
-                                            </label>
-                                            <input
-                                                required
-                                                type="email"
-                                                value={form.email}
-                                                onChange={(e) => setField('email', e.target.value)}
-                                                placeholder="tu@email.com"
-                                                className="w-full bg-surface border border-outline-variant/60 px-3 py-2 text-sm font-body text-on-surface outline-none focus:border-primary transition-colors"
-                                            />
-                                        </div>
+                                    <div>
+                                        <label className="block font-headline text-[10px] uppercase tracking-widest text-primary/60 mb-1">
+                                            Nombre completo *
+                                        </label>
+                                        <input
+                                            required
+                                            pattern={NOMBRE_COMPLETO_PATTERN}
+                                            title="Introduce nombre y apellidos"
+                                            value={form.cliente}
+                                            onChange={(e) => setField('cliente', e.target.value)}
+                                            placeholder="Nombre y apellidos"
+                                            className="w-full bg-surface border border-outline-variant/60 px-3 py-2 text-sm font-body text-on-surface outline-none focus:border-primary transition-colors"
+                                        />
                                     </div>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block font-headline text-[10px] uppercase tracking-widest text-primary/60 mb-1">
-                                                Teléfono
-                                            </label>
-                                            <input
-                                                type="tel"
-                                                value={form.telefono}
-                                                onChange={(e) => setField('telefono', e.target.value)}
-                                                placeholder="+34 600 000 000"
-                                                className="w-full bg-surface border border-outline-variant/60 px-3 py-2 text-sm font-body text-on-surface outline-none focus:border-primary transition-colors"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block font-headline text-[10px] uppercase tracking-widest text-primary/60 mb-1">
-                                                Cantidad
-                                            </label>
-                                            <input
-                                                type="number"
-                                                min={1}
-                                                value={form.cantidad}
-                                                onChange={(e) => setField('cantidad', Math.max(1, parseInt(e.target.value) || 1))}
-                                                className="w-full bg-surface border border-outline-variant/60 px-3 py-2 text-sm font-body text-on-surface outline-none focus:border-primary transition-colors"
-                                            />
-                                        </div>
+                                    <div>
+                                        <label className="block font-headline text-[10px] uppercase tracking-widest text-primary/60 mb-1">
+                                            Cantidad
+                                        </label>
+                                        <input
+                                            type="number"
+                                            min={1}
+                                            value={form.cantidad}
+                                            onChange={(e) => setField('cantidad', Math.max(1, parseInt(e.target.value) || 1))}
+                                            className="w-full bg-surface border border-outline-variant/60 px-3 py-2 text-sm font-body text-on-surface outline-none focus:border-primary transition-colors"
+                                        />
                                     </div>
                                     <div>
                                         <label className="block font-headline text-[10px] uppercase tracking-widest text-primary/60 mb-1">

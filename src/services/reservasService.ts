@@ -19,8 +19,8 @@ export type SolicitudReserva = {
     productoNombre: string;
     seccion: string;
     cliente: string;
-    email: string;
-    telefono: string;
+    email?: string;
+    telefono?: string;
     cantidad: number;
     notas: string;
     fecha: string;
