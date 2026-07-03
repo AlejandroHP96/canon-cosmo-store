@@ -22,6 +22,7 @@ export type Product = {
     image?: string;
     featured?: boolean;
     visible?: boolean;
+    reservable?: boolean;
 };
 
 export type Category = {

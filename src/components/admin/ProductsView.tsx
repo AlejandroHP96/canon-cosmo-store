@@ -26,6 +26,8 @@ const ProductsView = () => {
     const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
 
     const [search, setSearch] = useState('');
+    const [reservableOnly, setReservableOnly] = useState(false);
+    const [filterCategoria, setFilterCategoria] = useState<string | null>(null);
     const [page, setPage] = useState(0);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [bulkDeleting, setBulkDeleting] = useState(false);
@@ -53,21 +55,31 @@ const ProductsView = () => {
               : [toSlug(selectedMenu.label)]
         : [];
 
+    const matchesMenu = (p: Product) =>
+        filterMenuIdx === null
+            ? true
+            : filterSectionId !== 'all'
+              ? p.tcg === filterSectionId
+              : menuSectionIds.includes(p.tcg);
+
+    const categoriasDisponibles = useMemo(
+        () => [...new Set(products.filter(matchesMenu).map((p) => p.category).filter(Boolean))].sort(),
+        [products, filterMenuIdx, filterSectionId, menuSectionIds], // eslint-disable-line react-hooks/exhaustive-deps
+    );
+
     const visible = useMemo(() => {
         const needle = search.trim().toLowerCase();
         return products.filter((p) => {
-            const matchMenu = filterMenuIdx === null
-                ? true
-                : filterSectionId !== 'all'
-                  ? p.tcg === filterSectionId
-                  : menuSectionIds.includes(p.tcg);
+            const matchMenu = matchesMenu(p);
             const matchSearch = !needle ||
                 p.name.toLowerCase().includes(needle) ||
                 p.set?.toLowerCase().includes(needle) ||
                 p.category?.toLowerCase().includes(needle);
-            return matchMenu && matchSearch;
+            const matchReservable = !reservableOnly || p.reservable === true;
+            const matchCategoria = !filterCategoria || p.category === filterCategoria;
+            return matchMenu && matchSearch && matchReservable && matchCategoria;
         });
-    }, [products, filterMenuIdx, filterSectionId, menuSectionIds, search]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [products, filterMenuIdx, filterSectionId, menuSectionIds, search, reservableOnly, filterCategoria]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const totalPages = Math.ceil(visible.length / PAGE_SIZE);
     const paginated = visible.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
@@ -106,8 +118,8 @@ const ProductsView = () => {
                     filterMenuIdx={filterMenuIdx}
                     filterSectionId={filterSectionId}
                     selectedMenu={selectedMenu}
-                    onMenuChange={(idx) => { setFilterMenuIdx(idx); setFilterSectionId('all'); resetPage(); }}
-                    onSectionChange={(id) => { setFilterSectionId(id); resetPage(); }}
+                    onMenuChange={(idx) => { setFilterMenuIdx(idx); setFilterSectionId('all'); setFilterCategoria(null); resetPage(); }}
+                    onSectionChange={(id) => { setFilterSectionId(id); setFilterCategoria(null); resetPage(); }}
                 />
                 <button
                     onClick={() => { setEditingProduct(null); setDuplicating(false); setShowForm(true); }}
@@ -117,25 +129,63 @@ const ProductsView = () => {
                 </button>
             </div>
 
-            <div className="relative mb-6">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm pointer-events-none">
-                    search
-                </span>
-                <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => { setSearch(e.target.value); resetPage(); }}
-                    placeholder="Buscar por nombre, set o categoría..."
-                    className="w-full bg-surface-container border border-outline-variant text-on-surface font-body text-sm pl-9 pr-4 py-2 placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary transition-colors"
-                />
-                {search && (
-                    <button
-                        onClick={() => { setSearch(''); resetPage(); }}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors">
-                        <span className="material-symbols-outlined text-sm">close</span>
-                    </button>
-                )}
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+                <div className="relative flex-1 min-w-[200px]">
+                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm pointer-events-none">
+                        search
+                    </span>
+                    <input
+                        type="text"
+                        value={search}
+                        onChange={(e) => { setSearch(e.target.value); resetPage(); }}
+                        placeholder="Buscar por nombre, set o categoría..."
+                        className="w-full bg-surface-container border border-outline-variant text-on-surface font-body text-sm pl-9 pr-4 py-2 placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary transition-colors"
+                    />
+                    {search && (
+                        <button
+                            onClick={() => { setSearch(''); resetPage(); }}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors">
+                            <span className="material-symbols-outlined text-sm">close</span>
+                        </button>
+                    )}
+                </div>
+                <button
+                    onClick={() => { setReservableOnly((v) => !v); resetPage(); }}
+                    className={`flex items-center gap-1.5 px-3 py-2 font-headline text-xs uppercase tracking-wider border transition-all shrink-0 ${
+                        reservableOnly
+                            ? 'border-primary text-primary bg-surface-container'
+                            : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
+                    }`}>
+                    <span className="material-symbols-outlined text-sm">event_upcoming</span>
+                    Reservables
+                </button>
             </div>
+
+            {categoriasDisponibles.length > 1 && (
+                <div className="flex flex-wrap gap-1.5 mb-6">
+                    <button
+                        onClick={() => { setFilterCategoria(null); resetPage(); }}
+                        className={`px-3 py-1.5 font-headline text-[11px] uppercase tracking-wider border transition-all ${
+                            filterCategoria === null
+                                ? 'border-primary text-primary bg-surface-container'
+                                : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
+                        }`}>
+                        Todas las categorías
+                    </button>
+                    {categoriasDisponibles.map((cat) => (
+                        <button
+                            key={cat}
+                            onClick={() => { setFilterCategoria(cat); resetPage(); }}
+                            className={`px-3 py-1.5 font-headline text-[11px] uppercase tracking-wider border transition-all ${
+                                filterCategoria === cat
+                                    ? 'border-primary text-primary bg-surface-container'
+                                    : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
+                            }`}>
+                            {cat}
+                        </button>
+                    ))}
+                </div>
+            )}
 
             <ProductSelectionBar
                 visibleCount={visible.length}

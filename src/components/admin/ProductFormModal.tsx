@@ -24,6 +24,7 @@ const EMPTY_FORM: FormData = {
     image: '',
     featured: false,
     visible: true,
+    reservable: false,
 };
 
 type Props = {
@@ -36,7 +37,7 @@ type Props = {
 
 const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedContinue }: Props) => {
     const isEdit = initial !== null && !forceCreate;
-    const [form, setForm] = useState<FormData>(initial ? { ...initial } : { ...EMPTY_FORM });
+    const [form, setForm] = useState<FormData>(initial ? { ...EMPTY_FORM, ...initial } : { ...EMPTY_FORM });
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [lastSaved, setLastSaved] = useState<string | null>(null);
@@ -258,10 +259,12 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
                     {/* Precio + Disponibilidad */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label className={labelClass}>Precio</label>
+                            <label className={labelClass}>
+                                Precio{form.reservable && ' (opcional si aún no lo sabes)'}
+                            </label>
                             <div className="flex items-center">
                                 <input
-                                    required
+                                    required={!form.reservable}
                                     placeholder="4,99"
                                     value={form.price.replace(/ ?€$/, '')}
                                     onChange={(e) =>
@@ -414,6 +417,24 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
                         <span className="font-headline text-xs uppercase tracking-widest text-on-surface-variant">
                             Producto destacado
                         </span>
+                    </label>
+
+                    {/* Reservable */}
+                    <label className="flex items-center gap-3 cursor-pointer border border-dashed border-outline-variant/40 p-3">
+                        <input
+                            type="checkbox"
+                            checked={form.reservable ?? false}
+                            onChange={(e) => set('reservable', e.target.checked)}
+                            className="w-4 h-4 accent-primary"
+                        />
+                        <div className="flex flex-col">
+                            <span className="font-headline text-xs uppercase tracking-widest text-on-surface-variant">
+                                Producto reservable
+                            </span>
+                            <span className="font-body text-[10px] text-on-surface-variant/60">
+                                Aparecerá en la sección de reservas pública
+                            </span>
+                        </div>
                     </label>
 
                     {error && (

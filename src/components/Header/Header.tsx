@@ -36,6 +36,11 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
                     className="hidden sm:block font-headline uppercase tracking-widest text-sm text-[#e0e0ff] opacity-70 hover:text-[#bec2ff] hover:opacity-100 transition-all">
                     {t('header.tournaments')}
                 </Link>
+                <Link
+                    to="/reservas"
+                    className="hidden sm:block font-headline uppercase tracking-widest text-sm text-[#e0e0ff] opacity-70 hover:text-[#bec2ff] hover:opacity-100 transition-all">
+                    {t('header.reservas')}
+                </Link>
             </div>
 
             <CaitSithSprite />
