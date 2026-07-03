@@ -15,12 +15,22 @@ import type { Product, TcgId } from '../types';
 
 const COLLECTION = 'products';
 
+/** Devuelve productos marcados como reservables */
+export async function getReservableProducts(): Promise<Product[]> {
+    const q = query(collection(db, COLLECTION), where('reservable', '==', true));
+    const snapshot = await getDocs(q);
+    return snapshot.docs
+        .map((d) => ({ ...d.data(), id: d.id }) as Product)
+        .filter((p) => p.visible !== false)
+        .sort((a, b) => a.name.localeCompare(b.name));
+}
+
 /** Devuelve todos los productos de un TCG concreto */
 export async function getProductsByTcg(tcg: TcgId): Promise<Product[]> {
     const q = query(collection(db, COLLECTION), where('tcg', '==', tcg));
     const snapshot = await getDocs(q);
     return snapshot.docs
-        .map((d) => ({ id: d.id, ...d.data() }) as Product)
+        .map((d) => ({ ...d.data(), id: d.id }) as Product)
         .filter((p) => p.visible !== false)
         .sort((a, b) => a.name.localeCompare(b.name));
 }
@@ -29,7 +39,7 @@ export async function getProductsByTcg(tcg: TcgId): Promise<Product[]> {
 export async function getAllProducts(): Promise<Product[]> {
     const snapshot = await getDocs(collection(db, COLLECTION));
     return snapshot.docs
-        .map((d) => ({ id: d.id, ...d.data() }) as Product)
+        .map((d) => ({ ...d.data(), id: d.id }) as Product)
         .sort(
             (a, b) =>
                 a.tcg.localeCompare(b.tcg) || a.name.localeCompare(b.name),
@@ -40,7 +50,9 @@ export async function getAllProducts(): Promise<Product[]> {
 export async function addProduct(
     product: Omit<Product, 'id'>,
 ): Promise<string> {
-    const ref = await addDoc(collection(db, COLLECTION), product);
+    const data: Record<string, unknown> = { ...product };
+    delete data.id;
+    const ref = await addDoc(collection(db, COLLECTION), data);
     return ref.id;
 }
 
@@ -50,7 +62,9 @@ export async function updateProduct(
     id: string,
     fields: Record<string, string | number | boolean | FieldValue | undefined>,
 ): Promise<void> {
-    await updateDoc(doc(db, COLLECTION, id), fields);
+    const data = { ...fields };
+    delete data.id;
+    await updateDoc(doc(db, COLLECTION, id), data);
 }
 
 /** Elimina un producto */

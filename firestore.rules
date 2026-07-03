@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Público: cualquiera puede crear solicitudes de reserva, con forma y límites estrictos
+    match /reservas/{docId} {
+      allow create: if request.resource.data.keys().hasOnly([
+          'productoId', 'productoNombre', 'seccion', 'cliente',
+          'email', 'telefono', 'cantidad', 'notas', 'fecha', 'estado'
+        ])
+        && request.resource.data.keys().hasAll([
+          'productoId', 'productoNombre', 'seccion', 'cliente',
+          'email', 'telefono', 'cantidad', 'notas', 'fecha', 'estado'
+        ])
+        && request.resource.data.productoId is string && request.resource.data.productoId.size() > 0 && request.resource.data.productoId.size() <= 200
+        && request.resource.data.productoNombre is string && request.resource.data.productoNombre.size() <= 200
+        && request.resource.data.seccion is string && request.resource.data.seccion.size() <= 200
+        && request.resource.data.cliente is string && request.resource.data.cliente.size() > 0 && request.resource.data.cliente.size() <= 200
+        && request.resource.data.email is string && request.resource.data.email.size() > 0 && request.resource.data.email.size() <= 200
+        && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+        && request.resource.data.telefono is string && request.resource.data.telefono.size() <= 50
+        && request.resource.data.cantidad is int && request.resource.data.cantidad > 0 && request.resource.data.cantidad <= 100
+        && request.resource.data.notas is string && request.resource.data.notas.size() <= 1000
+        && request.resource.data.fecha == request.time
+        && request.resource.data.estado == 'pendiente';
+      allow read, update, delete: if request.auth != null;
+    }
+
+    // Público: catálogo, navegación y torneos son de solo lectura para cualquiera
+    match /products/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /tcg_categories/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /nav_config/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /torneosJuegos/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Resto: solo usuarios autenticados (admin)
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

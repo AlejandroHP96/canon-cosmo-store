@@ -5,14 +5,16 @@ import ProductsView from '../../components/admin/ProductsView';
 import CategoriesManager from '../../components/admin/CategoriesManager';
 import NavManager from '../../components/admin/NavManager';
 import JuegosManager from '../../components/admin/JuegosManager';
+import ReservasManager from '../../components/admin/ReservasManager';
 
-type AdminView = 'products' | 'categories' | 'nav' | 'torneos';
+type AdminView = 'products' | 'categories' | 'nav' | 'torneos' | 'reservas';
 
 const TABS: { id: AdminView; label: string; icon: string }[] = [
     { id: 'products',   label: 'Productos',  icon: 'inventory' },
     { id: 'categories', label: 'Categorías', icon: 'folder' },
     { id: 'nav',        label: 'Navegación', icon: 'menu' },
     { id: 'torneos',    label: 'Torneos',    icon: 'emoji_events' },
+    { id: 'reservas',   label: 'Reservas',   icon: 'event_upcoming' },
 ];
 
 const AdminPanelPage = () => {
@@ -70,6 +72,7 @@ const AdminPanelPage = () => {
                 {adminView === 'categories' && <CategoriesManager />}
                 {adminView === 'nav'        && <NavManager />}
                 {adminView === 'torneos'    && <JuegosManager />}
+                {adminView === 'reservas'   && <ReservasManager />}
             </div>
         </div>
     );
