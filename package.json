@@ -10,7 +10,6 @@
     "preview": "vite preview",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "seed": "tsx scripts/seed.ts",
     "sync:dev-db": "node scripts/sync-dev-db.js"
   },
   "dependencies": {
