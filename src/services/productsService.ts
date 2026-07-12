@@ -25,13 +25,14 @@ export async function getReservableProducts(): Promise<Product[]> {
         .sort((a, b) => a.name.localeCompare(b.name));
 }
 
-/** Devuelve todos los productos de un TCG concreto */
+/** Devuelve todos los productos de un TCG concreto (excluye los reservables) */
 export async function getProductsByTcg(tcg: TcgId): Promise<Product[]> {
     const q = query(collection(db, COLLECTION), where('tcg', '==', tcg));
     const snapshot = await getDocs(q);
     return snapshot.docs
         .map((d) => ({ ...d.data(), id: d.id }) as Product)
         .filter((p) => p.visible !== false)
+        .filter((p) => !p.reservable)
         .sort((a, b) => a.name.localeCompare(b.name));
 }
 

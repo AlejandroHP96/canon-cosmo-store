@@ -112,6 +112,8 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
             setCategories(cats);
             if (cats.length > 0 && !cats.includes(form.category)) {
                 set('category', cats[0]);
+            } else if (cats.length === 0 && form.category) {
+                set('category', '');
             }
         });
     }, [form.tcg]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -129,6 +131,7 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
                 const updatePayload: Record<string, string | number | boolean | ReturnType<typeof deleteField> | undefined> = {
                     ...Object.fromEntries(Object.entries(raw).filter(([, v]) => v !== undefined && v !== '')),
                     set: raw.set || deleteField(),
+                    category: raw.category || deleteField(),
                     description: raw.description || deleteField(),
                     badge: raw.badge || deleteField(),
                     badgeColor: raw.badgeColor || deleteField(),
@@ -229,20 +232,20 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
                                 className={inputClass}
                             />
                         </div>
-                        <div>
-                            <label className={labelClass}>Categoría</label>
-                            <select
-                                required
-                                value={form.category}
-                                onChange={(e) => set('category', e.target.value)}
-                                className={inputClass}
-                                disabled={categories.length === 0}>
-                                {categories.length === 0 && <option value="">Cargando...</option>}
-                                {categories.map((cat) => (
-                                    <option key={cat} value={cat}>{cat}</option>
-                                ))}
-                            </select>
-                        </div>
+                        {categories.length > 0 && (
+                            <div>
+                                <label className={labelClass}>Categoría</label>
+                                <select
+                                    value={form.category}
+                                    onChange={(e) => set('category', e.target.value)}
+                                    className={inputClass}>
+                                    <option value="">Sin categoría</option>
+                                    {categories.map((cat) => (
+                                        <option key={cat} value={cat}>{cat}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
                     </div>
 
                     {/* Descripción */}
