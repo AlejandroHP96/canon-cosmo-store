@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import CaitSithSprite from './CaitSithSprite';
+import logo from '../../assets/logo.png';
 
 type HeaderProps = {
     onMenuToggle: () => void;
@@ -28,7 +29,7 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
                 <Link
                     to="/"
                     className="flex items-center gap-2 text-xl md:text-2xl font-bold text-[#e0e0ff] font-headline uppercase tracking-widest hover:text-primary transition-colors">
-                    <img src="/logo.png" alt="Cañón Cosmo Store" className="h-8 w-8 object-contain" />
+                    <img src={logo} alt="Cañón Cosmo Store" className="h-8 w-8 object-contain" />
                     <span className="hidden sm:inline">CAÑÓN COSMO STORE</span>
                 </Link>
                 <Link

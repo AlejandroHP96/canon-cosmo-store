@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SEO from '../components/SEO';
+// Importados (no servidos desde public/) para que Vite les añada hash al nombre:
+// así un cambio de foto invalida la caché del navegador sin recarga forzada.
+import toniImg from '../assets/toni.png';
+import jonayImg from '../assets/jonay.png';
 
 type TeamMember = {
     name: string;
@@ -112,7 +116,7 @@ const AboutUs = () => {
             stats: '5/3',
             initials: 'T',
             avatarBg: '#1a2870',
-            avatarImg: '/toni.png',
+            avatarImg: toniImg,
             legendaryCreature: t('aboutUs.legendaryCreature'),
             abilityLabel: t('aboutUs.ability'),
             proxy: t('aboutUs.proxy'),
@@ -126,7 +130,7 @@ const AboutUs = () => {
             stats: '3/5',
             initials: 'J',
             avatarBg: '#2a1870',
-            avatarImg: '/jonay.png',
+            avatarImg: jonayImg,
             legendaryCreature: t('aboutUs.legendaryCreature'),
             abilityLabel: t('aboutUs.ability'),
             proxy: t('aboutUs.proxy'),

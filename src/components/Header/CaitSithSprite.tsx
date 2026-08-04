@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import spriteSheet from '../../assets/caitsith-walk.webp';
 
 const SPRITE_WIDTH = 48;
 const WALK_SPEED   = 200;  // px/s
@@ -94,7 +95,7 @@ const CaitSithSprite = () => {
                     left: `${render.pos}px`,
                     width: `${SPRITE_WIDTH}px`,
                     height: '50px',
-                    backgroundImage: "url('/caitsith-walk.webp')",
+                    backgroundImage: `url('${spriteSheet}')`,
                     backgroundSize: '288px 150px',
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: `${bgX}px 0px`,

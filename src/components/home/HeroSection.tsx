@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import logo from '../../assets/logo.png';
 
 const HeroSection = () => {
     const { t } = useTranslation();
@@ -24,7 +25,7 @@ const HeroSection = () => {
                             <span className="block text-4xl md:text-5xl text-on-surface">Cosmo</span>
                             <span className="block text-lg md:text-xl text-on-surface-variant mt-1">Store</span>
                         </h1>
-                        <img src="/logo.png" alt="Cañón Cosmo Store" className="ml-4 md:ml-10 w-24 h-24 md:w-36 md:h-36 object-contain shrink-0" />
+                        <img src={logo} alt="Cañón Cosmo Store" className="ml-4 md:ml-10 w-24 h-24 md:w-36 md:h-36 object-contain shrink-0" />
                     </div>
                     <p className="text-sm text-on-surface-variant font-body leading-relaxed max-w-sm">
                         {t('hero.description')}
