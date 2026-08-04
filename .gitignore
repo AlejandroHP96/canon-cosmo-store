@@ -27,5 +27,7 @@ tsconfig*.tsbuildinfo
 *.sw?
 .vercel
 .env*
-.keys/
+# Las claves nunca; solo se versionan las instrucciones
+.keys/*
+!.keys/README.md
 .backups/

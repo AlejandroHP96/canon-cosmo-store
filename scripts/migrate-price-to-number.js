@@ -25,18 +25,49 @@ if (target !== 'dev' && target !== 'prod') {
     process.exit(1);
 }
 
-function loadKey(filename) {
-    const filePath = path.join(ROOT, '.keys', filename);
-    try {
-        return JSON.parse(readFileSync(filePath, 'utf-8'));
-    } catch {
-        console.error(`Falta ${filePath}`);
-        console.error('Descárgalo desde Firebase console -> Project settings -> Service accounts -> Generate new private key');
-        process.exit(1);
-    }
+const PROJECT_IDS = { dev: 'canon-cosmo-store-dev', prod: 'canon-cosmo-store' };
+
+function die(...lines) {
+    lines.forEach((l) => console.error(l));
+    process.exit(1);
 }
 
-const app = initializeApp({ credential: cert(loadKey(`sa-${target}.json`)) }, target);
+function loadKey(env) {
+    const filePath = path.join(ROOT, '.keys', `sa-${env}.json`);
+    let raw;
+    try {
+        raw = readFileSync(filePath, 'utf-8');
+    } catch {
+        die(
+            `Falta ${filePath}`,
+            'Descárgalo desde Firebase console -> Project settings -> Service accounts -> Generate new private key',
+            'Ver .keys/README.md',
+        );
+    }
+
+    let key;
+    try {
+        key = JSON.parse(raw);
+    } catch {
+        die(`${filePath} no es JSON válido. Descárgalo de nuevo sin editarlo.`);
+    }
+
+    if (key.type !== 'service_account' || !key.private_key) {
+        die(`${filePath} no parece una service account key (falta type o private_key).`);
+    }
+
+    const expected = PROJECT_IDS[env];
+    if (key.project_id !== expected) {
+        die(
+            `${filePath} es del proyecto "${key.project_id}", pero se esperaba "${expected}".`,
+            'Has confundido las claves de dev y prod. Revísalas antes de seguir.',
+        );
+    }
+
+    return key;
+}
+
+const app = initializeApp({ credential: cert(loadKey(target)) }, target);
 const db = getFirestore(app);
 
 /** '4,99 €' -> 4.99 ; '1.234,50 €' -> 1234.50 ; number -> number */
