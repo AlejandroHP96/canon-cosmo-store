@@ -4,6 +4,9 @@ export const inputClass =
 export const labelClass =
     'block font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1';
 
+/** Color por defecto de los subitems del sidebar cuando no tienen uno propio. */
+export const DEFAULT_NAV_COLOR = '#bec2ff';
+
 export const BADGE_OPTIONS = [
     { label: '— Ninguno', badge: '', badgeColor: '' },
     { label: 'NOVEDAD', badge: 'NOVEDAD', badgeColor: 'bg-[#343dff] border-[#bec2ff]' },
