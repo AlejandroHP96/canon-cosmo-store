@@ -47,13 +47,13 @@ El campo `tcg` es el ID de sección en Firestore. Se deriva del path de la URL:
 
 ```bash
 # Instalar dependencias
-yarn install
+npm install
 
 # Arrancar en desarrollo (http://localhost:3000)
-yarn dev
+npm run dev
 
 # Build de producción
-yarn build
+npm run build
 ```
 
 ## Variables de entorno
