@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "canon-cosmo-store"
+    "default": "canon-cosmo-store",
+    "prod": "canon-cosmo-store",
+    "dev": "canon-cosmo-store-dev"
   }
 }
