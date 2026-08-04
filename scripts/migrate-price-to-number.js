@@ -1,9 +1,12 @@
 // Migra products.price / products.salePrice de string ('4,99 €') a number (4.99).
 //
 // Uso:
-//   node scripts/migrate-price-to-number.js dev            # dry-run sobre dev
-//   node scripts/migrate-price-to-number.js dev --apply    # escribe en dev
-//   node scripts/migrate-price-to-number.js prod --apply   # escribe en prod
+//   npm run migrate:price dev               # dry-run sobre dev
+//   npm run migrate:price dev -- --apply    # escribe en dev
+//   npm run migrate:price prod -- --apply   # escribe en prod
+//
+// Ojo al `--` antes de `--apply`: sin él npm se queda el flag y el script
+// se ejecuta en dry-run. Equivale a `node scripts/migrate-price-to-number.js`.
 //
 // Siempre vuelca un backup JSON de la colección en .backups/ antes de escribir.
 // Requiere service account keys en .keys/sa-prod.json y .keys/sa-dev.json.

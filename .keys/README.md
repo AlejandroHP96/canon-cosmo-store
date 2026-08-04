@@ -21,7 +21,8 @@ El fichero descargado ya viene completo, no hay que editarlo. Debe tener
 ## Comprobar que están bien
 
 ```bash
-npm run migrate:price dev    # dry-run, no escribe nada
+npm run migrate:price dev             # dry-run, no escribe nada
+npm run migrate:price dev -- --apply  # escribe (ojo al `--`)
 ```
 
 Si falta el fichero el script lo dice y sale sin tocar nada.
