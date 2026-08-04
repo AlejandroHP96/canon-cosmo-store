@@ -1,31 +1,21 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { deleteField } from 'firebase/firestore';
 import { addProduct, updateProduct } from '../../services/productsService';
 import { getCategoriesByTcg } from '../../services/categoriesService';
-import { getSidebarConfig, type NavItem } from '../../services/navService';
-import { pathToSectionId, toSlug } from '../../lib/tcgUtils';
+import { toPriceInput } from '../../lib/price';
 import type { Product } from '../../types';
-import { inputClass, labelClass, BADGE_OPTIONS } from './adminStyles';
-
-type FormData = Omit<Product, 'id'>;
-
-const EMPTY_FORM: FormData = {
-    tcg: 'pokemon',
-    name: '',
-    set: '',
-    price: '',
-    category: '',
-    description: '',
-    badge: '',
-    badgeColor: '',
-    badgeText: '',
-    salePrice: '',
-    inStock: true,
-    image: '',
-    featured: false,
-    visible: true,
-    reservable: false,
-};
+import { inputClass, labelClass } from './adminStyles';
+import {
+    buildAddPayload,
+    buildUpdatePayload,
+    EMPTY_PRODUCT_FORM,
+    type ProductForm,
+} from './product/productPayload';
+import { useSectionSelector } from './product/useSectionSelector';
+import SectionSelector from './product/SectionSelector';
+import PriceInput from './product/PriceInput';
+import ToggleGroup from './product/ToggleGroup';
+import BadgeFields from './product/BadgeFields';
+import ProductFormActions from './product/ProductFormActions';
 
 type Props = {
     initial: Product | null;
@@ -37,24 +27,28 @@ type Props = {
 
 const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedContinue }: Props) => {
     const isEdit = initial !== null && !forceCreate;
-    const [form, setForm] = useState<FormData>(initial ? { ...EMPTY_FORM, ...initial } : { ...EMPTY_FORM });
+    const [form, setForm] = useState<ProductForm>(
+        initial ? { ...EMPTY_PRODUCT_FORM, ...initial } : { ...EMPTY_PRODUCT_FORM },
+    );
+    const [priceInput, setPriceInput] = useState(() => toPriceInput(initial?.price));
+    const [salePriceInput, setSalePriceInput] = useState(() => toPriceInput(initial?.salePrice));
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [lastSaved, setLastSaved] = useState<string | null>(null);
     const continueMode = useRef(false);
     const [categories, setCategories] = useState<string[]>([]);
 
-    const [navItems, setNavItems] = useState<NavItem[]>([]);
-    const [menuIdx, setMenuIdx] = useState(0);
-    const [subIdx, setSubIdx] = useState(0);
-    const [navReady, setNavReady] = useState(false);
+    const section = useSectionSelector(initial?.tcg ?? 'pokemon');
 
-    const set = <K extends keyof FormData>(key: K, value: FormData[K]) =>
+    const set = <K extends keyof ProductForm>(key: K, value: ProductForm[K]) =>
         setForm((prev) => ({ ...prev, [key]: value }));
 
-    const handleEsc = useCallback((e: KeyboardEvent) => {
-        if (e.key === 'Escape' && !saving) onClose();
-    }, [onClose, saving]);
+    const handleEsc = useCallback(
+        (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && !saving) onClose();
+        },
+        [onClose, saving],
+    );
 
     useEffect(() => {
         document.addEventListener('keydown', handleEsc);
@@ -62,61 +56,19 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
     }, [handleEsc]);
 
     useEffect(() => {
-        getSidebarConfig().then((cfg) => {
-            const items = cfg.items;
-            setNavItems(items);
-            let mIdx = 0;
-            let sIdx = 0;
-            outer: for (let i = 0; i < items.length; i++) {
-                const item = items[i];
-                if (item.path && pathToSectionId(item.path) === form.tcg) {
-                    mIdx = i;
-                    break outer;
-                }
-                if (!item.path && !(item.submenu?.length) && toSlug(item.label) === form.tcg) {
-                    mIdx = i;
-                    break outer;
-                }
-                for (let j = 0; j < (item.submenu?.length ?? 0); j++) {
-                    if (pathToSectionId(item.submenu![j].path) === form.tcg) {
-                        mIdx = i;
-                        sIdx = j;
-                        break outer;
-                    }
-                }
-            }
-            setMenuIdx(mIdx);
-            setSubIdx(sIdx);
-            setNavReady(true);
-        });
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-    useEffect(() => {
-        if (!navReady || navItems.length === 0) return;
-        const menu = navItems[menuIdx];
-        if (!menu) return;
-        const subs = menu.submenu ?? [];
-        if (subs.length > 0) {
-            const sub = subs[Math.min(subIdx, subs.length - 1)];
-            set('tcg', pathToSectionId(sub.path));
-        } else if (menu.path) {
-            set('tcg', pathToSectionId(menu.path));
-        } else {
-            set('tcg', toSlug(menu.label));
-        }
-    }, [menuIdx, subIdx, navReady]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    useEffect(() => {
-        if (!form.tcg) return;
-        getCategoriesByTcg(form.tcg).then((cats) => {
+        if (!section.sectionId) return;
+        getCategoriesByTcg(section.sectionId).then((cats) => {
             setCategories(cats);
-            if (cats.length > 0 && !cats.includes(form.category)) {
-                set('category', cats[0]);
-            } else if (cats.length === 0 && form.category) {
-                set('category', '');
-            }
+            // La categoría anterior puede no existir en la nueva sección
+            setForm((prev) => {
+                if (cats.length > 0 && !cats.includes(prev.category)) {
+                    return { ...prev, category: cats[0] };
+                }
+                if (cats.length === 0 && prev.category) return { ...prev, category: '' };
+                return prev;
+            });
         });
-    }, [form.tcg]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [section.sectionId]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -126,25 +78,10 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
         setLastSaved(null);
         setSaving(true);
         try {
-            const raw: FormData = { ...form };
             if (isEdit) {
-                const updatePayload: Record<string, string | number | boolean | ReturnType<typeof deleteField> | undefined> = {
-                    ...Object.fromEntries(Object.entries(raw).filter(([, v]) => v !== undefined && v !== '')),
-                    set: raw.set || deleteField(),
-                    category: raw.category || deleteField(),
-                    description: raw.description || deleteField(),
-                    badge: raw.badge || deleteField(),
-                    badgeColor: raw.badgeColor || deleteField(),
-                    badgeText: raw.badge === 'PRÓXIMAMENTE' && raw.badgeText ? raw.badgeText : deleteField(),
-                    salePrice: raw.badge === 'OFERTA' && raw.salePrice ? raw.salePrice : deleteField(),
-                    image: raw.image || deleteField(),
-                };
-                await updateProduct(initial!.id, updatePayload);
+                await updateProduct(initial!.id, buildUpdatePayload(form, section.sectionId));
             } else {
-                const addPayload = Object.fromEntries(
-                    Object.entries(raw).filter(([, v]) => v !== undefined && v !== ''),
-                ) as FormData;
-                await addProduct(addPayload);
+                await addProduct(buildAddPayload(form, section.sectionId));
             }
             if (isContinue) {
                 setLastSaved(form.name);
@@ -160,10 +97,6 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
         }
     };
 
-    const subOptions = navItems[menuIdx]?.submenu ?? [];
-    const selectedOption = BADGE_OPTIONS.find((o) => o.badgeColor === (form.badgeColor ?? '')) ?? BADGE_OPTIONS[0];
-    const isCustomBadge = selectedOption.badge === 'PRÓXIMAMENTE';
-
     return (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-2">
             <div className="tactical-frame p-4 sm:p-6 w-full max-w-2xl max-h-[96vh] overflow-y-auto">
@@ -177,41 +110,16 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    {/* Sección del catálogo */}
-                    <div className="border border-outline-variant/50 p-3 flex flex-col gap-2">
-                        <p className={labelClass}>Sección del catálogo</p>
-                        <div className={`grid gap-2 items-center ${subOptions.length > 0 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
-                            <div className="flex items-center gap-2">
-                                {navItems[menuIdx] && (
-                                    <span className="material-symbols-outlined text-primary text-base shrink-0">
-                                        {navItems[menuIdx].icon}
-                                    </span>
-                                )}
-                                <select
-                                    value={menuIdx}
-                                    onChange={(e) => { setMenuIdx(Number(e.target.value)); setSubIdx(0); }}
-                                    className={inputClass}
-                                    disabled={!navReady}>
-                                    {navItems.map((item, i) => (
-                                        <option key={i} value={i}>{item.label}</option>
-                                    ))}
-                                    {!navReady && <option>Cargando...</option>}
-                                </select>
-                            </div>
-                            {subOptions.length > 0 && (
-                                <select
-                                    value={subIdx}
-                                    onChange={(e) => setSubIdx(Number(e.target.value))}
-                                    className={inputClass}>
-                                    {subOptions.map((sub, i) => (
-                                        <option key={i} value={i}>{sub.label}</option>
-                                    ))}
-                                </select>
-                            )}
-                        </div>
-                    </div>
+                    <SectionSelector
+                        navItems={section.navItems}
+                        navReady={section.navReady}
+                        menuIdx={section.menuIdx}
+                        subIdx={section.subIdx}
+                        subOptions={section.subOptions}
+                        onSelectMenu={section.selectMenu}
+                        onSelectSub={section.setSubIdx}
+                    />
 
-                    {/* Nombre */}
                     <div>
                         <label className={labelClass}>Nombre</label>
                         <input
@@ -222,7 +130,6 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
                         />
                     </div>
 
-                    {/* Set + Categoría */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label className={labelClass}>Set / Expansión</label>
@@ -241,14 +148,15 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
                                     className={inputClass}>
                                     <option value="">Sin categoría</option>
                                     {categories.map((cat) => (
-                                        <option key={cat} value={cat}>{cat}</option>
+                                        <option key={cat} value={cat}>
+                                            {cat}
+                                        </option>
                                     ))}
                                 </select>
                             </div>
                         )}
                     </div>
 
-                    {/* Descripción */}
                     <div>
                         <label className={labelClass}>Descripción</label>
                         <textarea
@@ -259,57 +167,38 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
                         />
                     </div>
 
-                    {/* Precio + Disponibilidad */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label className={labelClass}>
-                                Precio{form.reservable && ' (opcional si aún no lo sabes)'}
-                            </label>
-                            <div className="flex items-center">
-                                <input
-                                    required={!form.reservable}
-                                    placeholder="4,99"
-                                    value={form.price.replace(/ ?€$/, '')}
-                                    onChange={(e) =>
-                                        set('price', e.target.value ? `${e.target.value.trim()} €` : '')
-                                    }
-                                    className={inputClass + ' border-r-0'}
-                                />
-                                <span className="shrink-0 border border-outline-variant bg-surface-container px-3 py-2 text-sm text-on-surface-variant font-body">
-                                    €
-                                </span>
-                            </div>
-                        </div>
-                        <div>
-                            <label className={labelClass}>Disponibilidad</label>
-                            <div className="grid grid-cols-2 gap-2">
-                                {[
-                                    { value: true, label: 'DISPONIBLE', icon: 'check_circle' },
-                                    { value: false, label: 'AGOTADO', icon: 'remove_shopping_cart' },
-                                ].map(({ value, label, icon }) => {
-                                    const active = (form.inStock ?? true) === value;
-                                    return (
-                                        <button
-                                            key={label}
-                                            type="button"
-                                            onClick={() => set('inStock', value)}
-                                            className={`flex items-center justify-center gap-1.5 py-2.5 border font-headline text-[10px] uppercase tracking-widest transition-all ${
-                                                active
-                                                    ? value
-                                                        ? 'border-primary bg-primary/10 text-primary'
-                                                        : 'border-error bg-error/10 text-error'
-                                                    : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
-                                            }`}>
-                                            <span className="material-symbols-outlined text-sm">{icon}</span>
-                                            {label}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
+                        <PriceInput
+                            label={`Precio${form.reservable ? ' (opcional si aún no lo sabes)' : ''}`}
+                            value={priceInput}
+                            placeholder="4,99"
+                            required={!form.reservable}
+                            onChange={(raw, parsed) => {
+                                setPriceInput(raw);
+                                set('price', parsed);
+                            }}
+                        />
+                        <ToggleGroup
+                            label="Disponibilidad"
+                            value={form.inStock ?? true}
+                            onChange={(v) => set('inStock', v)}
+                            options={[
+                                {
+                                    value: true,
+                                    label: 'DISPONIBLE',
+                                    icon: 'check_circle',
+                                    activeClass: 'border-primary bg-primary/10 text-primary',
+                                },
+                                {
+                                    value: false,
+                                    label: 'AGOTADO',
+                                    icon: 'remove_shopping_cart',
+                                    activeClass: 'border-error bg-error/10 text-error',
+                                },
+                            ]}
+                        />
                     </div>
 
-                    {/* URL de imagen */}
                     <div>
                         <label className={labelClass}>URL de imagen</label>
                         <input
@@ -321,95 +210,48 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
                         />
                     </div>
 
-                    {/* Badge */}
-                    <div className="flex items-end gap-3">
-                        <div className="flex-1">
-                            <label className={labelClass}>Badge</label>
-                            <select
-                                value={selectedOption.badgeColor}
-                                onChange={(e) => {
-                                    const opt = BADGE_OPTIONS.find((o) => o.badgeColor === e.target.value)!;
-                                    set('badge', opt.badge);
-                                    set('badgeColor', opt.badgeColor);
-                                    if (opt.badge !== 'OFERTA') set('salePrice', '');
-                                    if (opt.badge !== 'PRÓXIMAMENTE') set('badgeText', '');
-                                }}
-                                className={inputClass}>
-                                {BADGE_OPTIONS.map((o) => (
-                                    <option key={o.label} value={o.badgeColor}>{o.label}</option>
-                                ))}
-                            </select>
-                        </div>
-                        {form.badge && (
-                            <span className={`mb-0.5 px-2 py-1 text-[9px] font-headline border ${selectedOption.badgeColor} text-[#e0e0ff] shrink-0`}>
-                                {form.badge}
-                            </span>
-                        )}
-                    </div>
+                    <BadgeFields
+                        badge={form.badge ?? ''}
+                        badgeColor={form.badgeColor ?? ''}
+                        badgeText={form.badgeText ?? ''}
+                        salePriceInput={salePriceInput}
+                        onBadgeChange={(badge, badgeColor) => {
+                            setForm((prev) => ({
+                                ...prev,
+                                badge,
+                                badgeColor,
+                                ...(badge !== 'OFERTA' && { salePrice: undefined }),
+                                ...(badge !== 'PRÓXIMAMENTE' && { badgeText: '' }),
+                            }));
+                            if (badge !== 'OFERTA') setSalePriceInput('');
+                        }}
+                        onBadgeTextChange={(v) => set('badgeText', v)}
+                        onSalePriceChange={(raw, parsed) => {
+                            setSalePriceInput(raw);
+                            set('salePrice', parsed);
+                        }}
+                    />
 
-                    {/* Texto personalizado del badge */}
-                    {isCustomBadge && (
-                        <div>
-                            <label className={labelClass}>Texto a mostrar en el producto</label>
-                            <input
-                                value={form.badgeText ?? ''}
-                                onChange={(e) => set('badgeText', e.target.value)}
-                                placeholder="Ej: Disponible en julio"
-                                className={inputClass}
-                            />
-                        </div>
-                    )}
+                    <ToggleGroup
+                        label="Visibilidad"
+                        value={form.visible ?? true}
+                        onChange={(v) => set('visible', v)}
+                        options={[
+                            {
+                                value: true,
+                                label: 'Visible',
+                                icon: 'visibility',
+                                activeClass: 'border-primary bg-primary/10 text-primary',
+                            },
+                            {
+                                value: false,
+                                label: 'Oculto',
+                                icon: 'visibility_off',
+                                activeClass: 'border-yellow-500 bg-yellow-500/10 text-yellow-400',
+                            },
+                        ]}
+                    />
 
-                    {/* Precio de oferta */}
-                    {form.badge === 'OFERTA' && (
-                        <div>
-                            <label className={labelClass}>Precio de oferta</label>
-                            <div className="flex items-center">
-                                <input
-                                    placeholder="3,99"
-                                    value={(form.salePrice ?? '').replace(/ ?€$/, '')}
-                                    onChange={(e) =>
-                                        set('salePrice', e.target.value ? `${e.target.value.trim()} €` : '')
-                                    }
-                                    className={inputClass + ' border-r-0 border-[#ffb074]/60 focus:border-[#ffb074]'}
-                                />
-                                <span className="shrink-0 border border-[#ffb074]/60 bg-[#7a3500]/30 px-3 py-2 text-sm text-[#ffb074] font-body">
-                                    €
-                                </span>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Visibilidad */}
-                    <div>
-                        <label className={labelClass}>Visibilidad</label>
-                        <div className="grid grid-cols-2 gap-2">
-                            {[
-                                { value: true,  label: 'Visible',  icon: 'visibility' },
-                                { value: false, label: 'Oculto',   icon: 'visibility_off' },
-                            ].map(({ value, label, icon }) => {
-                                const active = (form.visible ?? true) === value;
-                                return (
-                                    <button
-                                        key={label}
-                                        type="button"
-                                        onClick={() => set('visible', value)}
-                                        className={`flex items-center justify-center gap-1.5 py-2.5 border font-headline text-[10px] uppercase tracking-widest transition-all ${
-                                            active
-                                                ? value
-                                                    ? 'border-primary bg-primary/10 text-primary'
-                                                    : 'border-yellow-500 bg-yellow-500/10 text-yellow-400'
-                                                : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
-                                        }`}>
-                                        <span className="material-symbols-outlined text-sm">{icon}</span>
-                                        {label}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-
-                    {/* Destacado */}
                     <label className="flex items-center gap-3 cursor-pointer">
                         <input
                             type="checkbox"
@@ -422,7 +264,6 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
                         </span>
                     </label>
 
-                    {/* Reservable */}
                     <label className="flex items-center gap-3 cursor-pointer border border-dashed border-outline-variant/40 p-3">
                         <input
                             type="checkbox"
@@ -453,29 +294,15 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
                         </p>
                     )}
 
-                    <div className="flex gap-3 mt-2">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="flex-1 border border-outline-variant text-on-surface-variant font-headline text-xs uppercase tracking-widest py-2.5 hover:border-primary hover:text-primary transition-colors">
-                            Cancelar
-                        </button>
-                        {!isEdit && onSavedContinue && (
-                            <button
-                                type="submit"
-                                disabled={saving}
-                                onClick={() => { continueMode.current = true; }}
-                                className="flex-1 border border-primary/50 text-primary/70 font-headline text-xs uppercase tracking-widest py-2.5 hover:border-primary hover:text-primary transition-colors disabled:opacity-50">
-                                {saving ? 'Guardando...' : '+ Añadir otro'}
-                            </button>
-                        )}
-                        <button
-                            type="submit"
-                            disabled={saving}
-                            className="flex-1 border border-primary bg-surface-container text-primary font-headline text-xs uppercase tracking-widest py-2.5 hover:bg-primary hover:text-surface transition-colors disabled:opacity-50">
-                            {saving ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Crear producto'}
-                        </button>
-                    </div>
+                    <ProductFormActions
+                        isEdit={isEdit}
+                        saving={saving}
+                        showContinue={!isEdit && !!onSavedContinue}
+                        onCancel={onClose}
+                        onContinue={() => {
+                            continueMode.current = true;
+                        }}
+                    />
                 </form>
             </div>
         </div>

@@ -33,7 +33,7 @@ Tienda online para la venta de productos de Trading Card Games (TCG), Funko Pop 
 
 | Colección | Descripción |
 |---|---|
-| `products` | Productos con campos: `tcg`, `name`, `set`, `price`, `category`, `inStock`, `badge`, `badgeColor`, `image`, `featured` |
+| `products` | Productos con campos: `tcg`, `name`, `set`, `price` (number, euros), `salePrice` (number), `category`, `inStock`, `badge`, `badgeColor`, `image`, `featured`, `reservable` |
 | `nav_config/sidebar` | Configuración del sidebar: `{ items: NavItem[] }` |
 | `tcg_categories/{sectionId}` | Categorías por sección: `{ categories: string[] }` |
 

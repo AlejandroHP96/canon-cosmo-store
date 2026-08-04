@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { getReservableProducts } from '../services/productsService';
 import { addReserva } from '../services/reservasService';
 import type { Product } from '../types';
+import { formatPrice } from '../lib/price';
 import SEO from '../components/SEO';
 import ProductImage from '../components/ProductImage';
 
@@ -215,7 +216,7 @@ const Reservas = () => {
                                         {producto.name}
                                     </p>
                                     <p className="font-headline text-sm text-primary mt-1">
-                                        {producto.price}
+                                        {formatPrice(producto.price)}
                                     </p>
                                 </div>
                                 <button

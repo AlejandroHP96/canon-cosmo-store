@@ -1,4 +1,5 @@
 import ProductImage from '../ProductImage';
+import { formatPrice } from '../../lib/price';
 import type { Product } from '../../types';
 
 type Props = {
@@ -51,7 +52,7 @@ const ProductRow = ({ product, isSelected, onToggleSelect, onEdit, onDuplicate, 
                 </p>
             </div>
             <div className="text-right shrink-0 hidden sm:block">
-                <p className="font-headline font-bold text-primary text-sm">{product.price}</p>
+                <p className="font-headline font-bold text-primary text-sm">{formatPrice(product.price)}</p>
                 <p className="text-[10px] text-on-surface-variant font-body">
                     {product.inStock === false ? 'Agotado' : 'Disponible'}
                 </p>

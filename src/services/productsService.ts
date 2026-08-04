@@ -11,16 +11,29 @@ import {
     type FieldValue,
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { toPrice } from '../lib/price';
 import type { Product, TcgId } from '../types';
+import type { QueryDocumentSnapshot } from 'firebase/firestore';
 
 const COLLECTION = 'products';
+
+/** Mapea un documento a Product normalizando los precios legacy (string) a number. */
+function toProduct(d: QueryDocumentSnapshot): Product {
+    const data = d.data();
+    return {
+        ...data,
+        id: d.id,
+        price: toPrice(data.price),
+        salePrice: toPrice(data.salePrice),
+    } as Product;
+}
 
 /** Devuelve productos marcados como reservables */
 export async function getReservableProducts(): Promise<Product[]> {
     const q = query(collection(db, COLLECTION), where('reservable', '==', true));
     const snapshot = await getDocs(q);
     return snapshot.docs
-        .map((d) => ({ ...d.data(), id: d.id }) as Product)
+        .map(toProduct)
         .filter((p) => p.visible !== false)
         .sort((a, b) => a.name.localeCompare(b.name));
 }
@@ -30,7 +43,7 @@ export async function getProductsByTcg(tcg: TcgId): Promise<Product[]> {
     const q = query(collection(db, COLLECTION), where('tcg', '==', tcg));
     const snapshot = await getDocs(q);
     return snapshot.docs
-        .map((d) => ({ ...d.data(), id: d.id }) as Product)
+        .map(toProduct)
         .filter((p) => p.visible !== false)
         .filter((p) => !p.reservable)
         .sort((a, b) => a.name.localeCompare(b.name));
@@ -40,7 +53,7 @@ export async function getProductsByTcg(tcg: TcgId): Promise<Product[]> {
 export async function getAllProducts(): Promise<Product[]> {
     const snapshot = await getDocs(collection(db, COLLECTION));
     return snapshot.docs
-        .map((d) => ({ ...d.data(), id: d.id }) as Product)
+        .map(toProduct)
         .sort(
             (a, b) =>
                 a.tcg.localeCompare(b.tcg) || a.name.localeCompare(b.name),

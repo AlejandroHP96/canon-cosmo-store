@@ -1,8 +1,10 @@
+import { formatPrice } from '../../lib/price';
+
 const SALE_BADGE = 'OFERTA';
 
 type Props = {
-    price: string;
-    salePrice?: string;
+    price?: number;
+    salePrice?: number;
     badge?: string;
     size?: 'sm' | 'md' | 'lg';
 };
@@ -15,19 +17,20 @@ const SIZE = {
 
 const PriceTag = ({ price, salePrice, badge, size = 'md' }: Props) => {
     const s = SIZE[size];
-    if (badge === SALE_BADGE && salePrice) {
+    const formatted = formatPrice(price);
+    if (badge === SALE_BADGE && salePrice !== undefined) {
         return (
             <div className="flex items-baseline gap-2">
                 <span className={`${s.sale} font-headline text-[#ffb074]`}>
-                    {salePrice}
+                    {formatPrice(salePrice)}
                 </span>
                 <span className={`${s.original} font-headline text-on-surface-variant line-through`}>
-                    {price}
+                    {formatted}
                 </span>
             </div>
         );
     }
-    return <span className={`${s.sale} font-headline text-on-surface`}>{price}</span>;
+    return <span className={`${s.sale} font-headline text-on-surface`}>{formatted}</span>;
 };
 
 export default PriceTag;

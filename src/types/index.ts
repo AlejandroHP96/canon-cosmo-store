@@ -11,13 +11,14 @@ export type Product = {
     tcg: TcgId;
     name: string;
     set: string;
-    price: string;
+    /** Euros. Opcional: los productos reservables pueden no tener precio aún. */
+    price?: number;
     category: string;
     description?: string;
     badge?: string;
     badgeColor?: string;
     badgeText?: string; // Texto personalizado a mostrar cuando badge === 'PRÓXIMAMENTE'
-    salePrice?: string;
+    salePrice?: number;
     inStock?: boolean;
     image?: string;
     featured?: boolean;

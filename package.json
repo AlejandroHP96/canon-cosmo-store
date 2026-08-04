@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "sync:dev-db": "node scripts/sync-dev-db.js"
+    "sync:dev-db": "node scripts/sync-dev-db.js",
+    "migrate:price": "node scripts/migrate-price-to-number.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",
