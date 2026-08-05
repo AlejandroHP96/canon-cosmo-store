@@ -79,6 +79,8 @@ npm install          # npm es el gestor; no añadas yarn.lock
 npm run dev          # http://localhost:3000
 npm run build
 npm run lint
+npm test             # Vitest, una pasada
+npm run test:watch
 ```
 
 Crea un `.env.local` en la raíz apuntando al proyecto de desarrollo:
@@ -100,6 +102,23 @@ Necesitan service account keys en `.keys/` — ver [`.keys/README.md`](.keys/REA
 |---|---|
 | `npm run sync:dev-db` | Copia las colecciones de prod a dev (excluye `reservas`) |
 | `npm run migrate:price <dev\|prod>` | Migra `price`/`salePrice` de string a number. Dry-run por defecto; añade `-- --apply` para escribir. Hace backup en `.backups/` |
+
+## Tests
+
+Vitest, en entorno `node`. Solo cubren **funciones puras**: nada de DOM, Firebase ni
+navegador, así que la suite entera tarda menos de medio segundo. Los ficheros
+`*.test.ts` viven junto al código que prueban.
+
+| Módulo | Qué protege |
+|---|---|
+| `lib/price.ts` | El parseo y formateo de importes, incluido el viaje input → number → input del admin |
+| `lib/tcgUtils.ts` | La derivación del ID de sección desde la URL, con el mapeo legacy |
+| `admin/nav/navMutations.ts` | Que editar el nav conserve los `path` y no mute el estado |
+| `admin/product/productPayload.ts` | Qué campos se guardan, cuáles se omiten y cuáles se borran con `deleteField()` |
+
+El criterio para añadir un test aquí: que un fallo sea **silencioso** (corrompe datos
+o desvincula productos sin error visible). La lógica de render y las reglas de
+seguridad no están cubiertas todavía.
 
 ## Reglas de seguridad
 
