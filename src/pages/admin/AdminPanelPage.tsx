@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import ProductsView from '../../components/admin/ProductsView';
 import CategoriesManager from '../../components/admin/CategoriesManager';
 import NavManager from '../../components/admin/NavManager';

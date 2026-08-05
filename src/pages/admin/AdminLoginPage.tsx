@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 
 const ERROR_MESSAGES: Record<string, string> = {
     'auth/invalid-credential': 'Email o contraseña incorrectos.',

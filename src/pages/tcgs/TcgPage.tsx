@@ -16,9 +16,7 @@ import ProductGrid from '../../components/tcg/ProductGrid';
 import ProductModal from '../../components/tcg/ProductModal';
 import SEO from '../../components/SEO';
 
-const TcgPage = () => {
-    const { pathname } = useLocation();
-    const sectionId = pathToSectionId(pathname);
+const TcgSection = ({ sectionId, pathname }: { sectionId: string; pathname: string }) => {
     const categories = useTcgCategories(sectionId);
     const tcgOptions = useTcgOptions();
 
@@ -38,13 +36,15 @@ const TcgPage = () => {
         `Explora todos los productos de ${sectionLabel} en Cañón Cosmo Store.`;
 
     useEffect(() => {
-        setLoading(true);
-        setSelectedCategory('Todo');
-        setSearch('');
+        let cancelled = false;
         getProductsByTcg(sectionId).then((data) => {
+            if (cancelled) return;
             setProducts(data);
             setLoading(false);
         });
+        return () => {
+            cancelled = true;
+        };
     }, [sectionId]);
 
     const { visible, featuredProducts, gridProducts, hasActiveFilter } =
@@ -92,6 +92,17 @@ const TcgPage = () => {
             )}
         </>
     );
+};
+
+/**
+ * Página dinámica de sección (catch-all). La `key` hace que al cambiar de
+ * sección el contenido se remonte: los filtros, la búsqueda y el estado de
+ * carga vuelven solos a su valor inicial, sin resetearlos desde un efecto.
+ */
+const TcgPage = () => {
+    const { pathname } = useLocation();
+    const sectionId = pathToSectionId(pathname);
+    return <TcgSection key={sectionId} sectionId={sectionId} pathname={pathname} />;
 };
 
 export default TcgPage;

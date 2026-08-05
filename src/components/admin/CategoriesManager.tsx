@@ -43,7 +43,7 @@ const CategoriesManager = () => {
             .then((cats) => setCategories(cats))
             .catch(() => setError('Error al cargar categorías.'))
             .finally(() => setLoading(false));
-    }, [tcg]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [tcg]);
 
     const save = async (updated: string[]) => {
         setSaving(true);

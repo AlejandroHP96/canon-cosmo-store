@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     onAuthStateChanged,
     signInWithEmailAndPassword,
@@ -6,15 +6,7 @@ import {
     type User,
 } from 'firebase/auth';
 import { auth } from '../lib/firebase';
-
-type AuthContextValue = {
-    user: User | null;
-    loading: boolean;
-    signIn: (email: string, password: string) => Promise<void>;
-    signOut: () => Promise<void>;
-};
-
-const AuthContext = createContext<AuthContextValue | null>(null);
+import { AuthContext } from './authContext';
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
@@ -41,10 +33,4 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             {children}
         </AuthContext.Provider>
     );
-};
-
-export const useAuth = () => {
-    const ctx = useContext(AuthContext);
-    if (!ctx) throw new Error('useAuth debe usarse dentro de <AuthProvider>');
-    return ctx;
 };
