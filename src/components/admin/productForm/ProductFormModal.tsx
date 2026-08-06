@@ -10,7 +10,7 @@ import {
     EMPTY_PRODUCT_FORM,
     type ProductForm,
 } from './productPayload';
-import { useSectionSelector } from './useSectionSelector';
+import { useSectionSelector } from '../../../hooks/useSectionSelector';
 import SectionSelector from './SectionSelector';
 import PriceInput from './PriceInput';
 import ToggleGroup from './ToggleGroup';

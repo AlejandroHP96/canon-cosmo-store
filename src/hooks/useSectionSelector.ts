@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getSidebarConfig, type NavItem, type SubNavItem } from '../../../services/navService';
-import { pathToSectionId, toSlug } from '../../../lib/tcgUtils';
+import { getSidebarConfig, type NavItem, type SubNavItem } from '../services/navService';
+import { pathToSectionId, toSlug } from '../lib/tcgUtils';
 
 /** ID de sección Firestore que corresponde a una entrada del sidebar. */
 const sectionIdOf = (menu: NavItem, sub?: SubNavItem): string => {

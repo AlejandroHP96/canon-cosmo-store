@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import ProductsView from '../../components/admin/productList/ProductsView';
-import CategoriesManager from '../../components/admin/CategoriesManager';
+import CategoriesManager from '../../components/admin/categories/CategoriesManager';
 import NavManager from '../../components/admin/nav/NavManager';
 import JuegosManager from '../../components/admin/juegos/JuegosManager';
 import ReservasManager from '../../components/admin/reservas/ReservasManager';
