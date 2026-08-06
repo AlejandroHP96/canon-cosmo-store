@@ -14,6 +14,8 @@ import { useSectionSelector } from '../../../hooks/useSectionSelector';
 import SectionSelector from './SectionSelector';
 import PriceInput from './PriceInput';
 import ToggleGroup from './ToggleGroup';
+import ProductBasicFields from './ProductBasicFields';
+import ProductFlagsFields from './ProductFlagsFields';
 import BadgeFields from './BadgeFields';
 import ProductFormActions from './ProductFormActions';
 
@@ -120,52 +122,7 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
                         onSelectSub={section.setSubIdx}
                     />
 
-                    <div>
-                        <label className={labelClass}>Nombre</label>
-                        <input
-                            required
-                            value={form.name}
-                            onChange={(e) => set('name', e.target.value)}
-                            className={inputClass}
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label className={labelClass}>Set / Expansión</label>
-                            <input
-                                value={form.set ?? ''}
-                                onChange={(e) => set('set', e.target.value)}
-                                className={inputClass}
-                            />
-                        </div>
-                        {categories.length > 0 && (
-                            <div>
-                                <label className={labelClass}>Categoría</label>
-                                <select
-                                    value={form.category}
-                                    onChange={(e) => set('category', e.target.value)}
-                                    className={inputClass}>
-                                    <option value="">Sin categoría</option>
-                                    {categories.map((cat) => (
-                                        <option key={cat} value={cat}>
-                                            {cat}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        )}
-                    </div>
-
-                    <div>
-                        <label className={labelClass}>Descripción</label>
-                        <textarea
-                            value={form.description ?? ''}
-                            onChange={(e) => set('description', e.target.value)}
-                            rows={3}
-                            className={inputClass + ' resize-none'}
-                        />
-                    </div>
+                    <ProductBasicFields form={form} categories={categories} onChange={set} />
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <PriceInput
@@ -232,54 +189,7 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
                         }}
                     />
 
-                    <ToggleGroup
-                        label="Visibilidad"
-                        value={form.visible ?? true}
-                        onChange={(v) => set('visible', v)}
-                        options={[
-                            {
-                                value: true,
-                                label: 'Visible',
-                                icon: 'visibility',
-                                activeClass: 'border-primary bg-primary/10 text-primary',
-                            },
-                            {
-                                value: false,
-                                label: 'Oculto',
-                                icon: 'visibility_off',
-                                activeClass: 'border-yellow-500 bg-yellow-500/10 text-yellow-400',
-                            },
-                        ]}
-                    />
-
-                    <label className="flex items-center gap-3 cursor-pointer">
-                        <input
-                            type="checkbox"
-                            checked={form.featured ?? false}
-                            onChange={(e) => set('featured', e.target.checked)}
-                            className="w-4 h-4 accent-primary"
-                        />
-                        <span className="font-headline text-xs uppercase tracking-widest text-on-surface-variant">
-                            Producto destacado
-                        </span>
-                    </label>
-
-                    <label className="flex items-center gap-3 cursor-pointer border border-dashed border-outline-variant/40 p-3">
-                        <input
-                            type="checkbox"
-                            checked={form.reservable ?? false}
-                            onChange={(e) => set('reservable', e.target.checked)}
-                            className="w-4 h-4 accent-primary"
-                        />
-                        <div className="flex flex-col">
-                            <span className="font-headline text-xs uppercase tracking-widest text-on-surface-variant">
-                                Producto reservable
-                            </span>
-                            <span className="font-body text-[10px] text-on-surface-variant/60">
-                                Aparecerá en la sección de reservas pública
-                            </span>
-                        </div>
-                    </label>
+                    <ProductFlagsFields form={form} onChange={set} />
 
                     {error && (
                         <p className="text-xs font-body text-error flex items-center gap-1">
