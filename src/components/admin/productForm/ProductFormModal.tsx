@@ -1,21 +1,21 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { addProduct, updateProduct } from '../../services/productsService';
-import { getCategoriesByTcg } from '../../services/categoriesService';
-import { toPriceInput } from '../../lib/price';
-import type { Product } from '../../types';
-import { inputClass, labelClass } from './adminStyles';
+import { addProduct, updateProduct } from '../../../services/productsService';
+import { getCategoriesByTcg } from '../../../services/categoriesService';
+import { toPriceInput } from '../../../lib/price';
+import type { Product } from '../../../types';
+import { inputClass, labelClass } from '../adminStyles';
 import {
     buildAddPayload,
     buildUpdatePayload,
     EMPTY_PRODUCT_FORM,
     type ProductForm,
-} from './product/productPayload';
-import { useSectionSelector } from './product/useSectionSelector';
-import SectionSelector from './product/SectionSelector';
-import PriceInput from './product/PriceInput';
-import ToggleGroup from './product/ToggleGroup';
-import BadgeFields from './product/BadgeFields';
-import ProductFormActions from './product/ProductFormActions';
+} from './productPayload';
+import { useSectionSelector } from './useSectionSelector';
+import SectionSelector from './SectionSelector';
+import PriceInput from './PriceInput';
+import ToggleGroup from './ToggleGroup';
+import BadgeFields from './BadgeFields';
+import ProductFormActions from './ProductFormActions';
 
 type Props = {
     initial: Product | null;

@@ -1,21 +1,21 @@
 import { useState } from 'react';
-import type { NavItem, SubNavItem } from '../../services/navService';
-import { useSidebarConfig } from '../../hooks/useSidebarConfig';
-import { useDragReorder } from '../../hooks/useDragReorder';
-import * as nav from './nav/navMutations';
-import NavItemRow from './nav/NavItemRow';
-import NavItemEditRow from './nav/NavItemEditRow';
-import SubNavRow from './nav/SubNavRow';
-import SubNavEditRow from './nav/SubNavEditRow';
-import NewSubItemForm from './nav/NewSubItemForm';
-import NewNavItemForm from './nav/NewNavItemForm';
+import type { NavItem, SubNavItem } from '../../../services/navService';
+import { useSidebarConfig } from '../../../hooks/useSidebarConfig';
+import { useDragReorder } from '../../../hooks/useDragReorder';
+import * as nav from './navMutations';
+import NavItemRow from './NavItemRow';
+import NavItemEditRow from './NavItemEditRow';
+import SubNavRow from './SubNavRow';
+import SubNavEditRow from './SubNavEditRow';
+import NewSubItemForm from './NewSubItemForm';
+import NewNavItemForm from './NewNavItemForm';
 import {
     EMPTY_ITEM_FORM,
     EMPTY_SUB_FORM,
     type NavItemForm,
     type NewSubForm,
     type SubNavForm,
-} from './nav/navForms';
+} from './navForms';
 
 const subKey = (itemIdx: number, subIdx: number) => `${itemIdx}-${subIdx}`;
 const parseSubKey = (key: string) => key.split('-').map(Number) as [number, number];

@@ -1,12 +1,12 @@
 import { useEffect, useState, useMemo } from 'react';
-import { getAllProducts, deleteProducts, updateProduct } from '../../services/productsService';
-import { getSidebarConfig, type NavItem } from '../../services/navService';
-import { pathToSectionId, toSlug } from '../../lib/tcgUtils';
-import type { Product } from '../../types';
+import { getAllProducts, deleteProducts, updateProduct } from '../../../services/productsService';
+import { getSidebarConfig, type NavItem } from '../../../services/navService';
+import { pathToSectionId, toSlug } from '../../../lib/tcgUtils';
+import type { Product } from '../../../types';
 import ProductFilters from './ProductFilters';
 import ProductSelectionBar from './ProductSelectionBar';
 import ProductRow from './ProductRow';
-import ProductFormModal from './ProductFormModal';
+import ProductFormModal from '../productForm/ProductFormModal';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import BulkDeleteModal from './BulkDeleteModal';
 

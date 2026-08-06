@@ -1,6 +1,6 @@
-import ProductImage from '../ProductImage';
-import { formatPrice } from '../../lib/price';
-import type { Product } from '../../types';
+import ProductImage from '../../ProductImage';
+import { formatPrice } from '../../../lib/price';
+import type { Product } from '../../../types';
 
 type Props = {
     product: Product;

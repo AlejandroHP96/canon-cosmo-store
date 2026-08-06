@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { deleteProduct } from '../../services/productsService';
-import type { Product } from '../../types';
+import { deleteProduct } from '../../../services/productsService';
+import type { Product } from '../../../types';
 
 type Props = {
     product: Product;

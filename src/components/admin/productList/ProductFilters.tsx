@@ -1,5 +1,5 @@
-import type { NavItem } from '../../services/navService';
-import { pathToSectionId } from '../../lib/tcgUtils';
+import type { NavItem } from '../../../services/navService';
+import { pathToSectionId } from '../../../lib/tcgUtils';
 
 type Props = {
     navItems: NavItem[];
