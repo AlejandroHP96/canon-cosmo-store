@@ -1,3 +1,5 @@
+import FilterChips from '../FilterChips';
+
 type Props = {
     search: string;
     secciones: string[];
@@ -5,13 +7,6 @@ type Props = {
     onSearchChange: (value: string) => void;
     onSeccionChange: (seccion: string | null) => void;
 };
-
-const chipClass = (active: boolean) =>
-    `px-3 py-1.5 font-headline text-[11px] uppercase tracking-wider border transition-all ${
-        active
-            ? 'border-primary text-primary bg-surface-bright'
-            : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
-    }`;
 
 const ReservaFilters = ({
     search,
@@ -40,23 +35,13 @@ const ReservaFilters = ({
                 </button>
             )}
         </div>
-        {secciones.length > 1 && (
-            <div className="flex flex-wrap gap-1.5">
-                <button
-                    onClick={() => onSeccionChange(null)}
-                    className={chipClass(seccionSeleccionada === null)}>
-                    Todas
-                </button>
-                {secciones.map((s) => (
-                    <button
-                        key={s}
-                        onClick={() => onSeccionChange(s)}
-                        className={chipClass(seccionSeleccionada === s)}>
-                        {s}
-                    </button>
-                ))}
-            </div>
-        )}
+        <FilterChips
+            options={secciones}
+            selected={seccionSeleccionada}
+            allLabel="Todas"
+            onSelect={onSeccionChange}
+            activeClass="border-primary text-primary bg-surface-bright"
+        />
     </div>
 );
 

@@ -12,7 +12,7 @@ import {
 } from './productQuery';
 import ProductFilters from './ProductFilters';
 import ProductSearchBar from './ProductSearchBar';
-import CategoryChips from './CategoryChips';
+import FilterChips from '../../FilterChips';
 import ProductSelectionBar from './ProductSelectionBar';
 import ProductRow from './ProductRow';
 import Pagination from './Pagination';
@@ -131,13 +131,15 @@ const ProductsView = () => {
                 }}
             />
 
-            <CategoryChips
-                categories={categories}
+            <FilterChips
+                options={categories}
                 selected={category}
+                allLabel="Todas las categorías"
                 onSelect={(cat) => {
                     setCategory(cat);
                     setPage(0);
                 }}
+                className="mb-6"
             />
 
             <ProductSelectionBar
