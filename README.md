@@ -114,7 +114,12 @@ navegador, así que la suite entera tarda menos de medio segundo. Los ficheros
 | `lib/price.ts` | El parseo y formateo de importes, incluido el viaje input → number → input del admin |
 | `lib/tcgUtils.ts` | La derivación del ID de sección desde la URL, con el mapeo legacy |
 | `admin/nav/navMutations.ts` | Que editar el nav conserve los `path` y no mute el estado |
-| `admin/product/productPayload.ts` | Qué campos se guardan, cuáles se omiten y cuáles se borran con `deleteField()` |
+| `admin/productForm/productPayload.ts` | Qué campos se guardan, cuáles se omiten y cuáles se borran con `deleteField()` |
+| `admin/productList/productQuery.ts` | El filtrado del listado: sección, búsqueda, reservables y categoría |
+| `admin/reservas/reservasQuery.ts` | El orden y el filtrado de la bandeja de reservas |
+| `admin/categories/categoryRules.ts` | Validación de nombres duplicados y vacíos |
+| `components/reservas/reservaQuery.ts` | El filtrado de la página pública de reservas |
+| `components/goldSaucer/slotMachine.ts` | La tabla de premios de la tragaperras |
 
 El criterio para añadir un test aquí: que un fallo sea **silencioso** (corrompe datos
 o desvincula productos sin error visible). La lógica de render y las reglas de
@@ -153,19 +158,29 @@ la web en producción queda leyendo datos que su versión no sabe interpretar.
 src/
 ├── assets/              # Imágenes importadas (Vite les añade hash → cache-busting)
 ├── components/
-│   ├── Header/          # Header, sprite animado de Cait Sith
+│   ├── ErrorBanner.tsx  # Aviso de error descartable
+│   ├── Spinner.tsx      # Indicador de carga
+│   ├── FilterChips.tsx  # Fila de chips excluyentes
+│   ├── ProductImage.tsx
+│   ├── SEO.tsx
+│   ├── Header/          # Header y sprite animado de Cait Sith
 │   ├── SideNav/         # Sidebar dinámico desde Firestore
-│   ├── Layout/
-│   ├── Footer/
+│   ├── Layout/  Footer/
 │   ├── home/            # Hero, grid de TCGs, banner de torneos
 │   ├── tcg/             # Grid, modal, filtros y PriceTag
-│   ├── admin/
-│   │   ├── nav/         # Editor de navegación (filas, formularios, mutaciones puras)
-│   │   └── product/     # Formulario de producto (secciones, precio, badges, payload)
-│   ├── ProductImage.tsx
-│   └── SEO.tsx
-├── contexts/AuthContext.tsx
-├── hooks/               # useSidebarConfig, useDragReorder, useProductFilter, …
+│   ├── reservas/        # Tarjeta, filtros y formulario de la página pública
+│   ├── aboutUs/         # Cartas del equipo
+│   ├── goldSaucer/      # Tragaperras del easter egg
+│   └── admin/
+│       ├── nav/         # Editor de navegación
+│       ├── productForm/ # Formulario de producto
+│       ├── productList/ # Listado, filtros y paginación
+│       ├── categories/  # Categorías por sección
+│       ├── juegos/      # Juegos de torneos
+│       └── reservas/    # Bandeja de solicitudes
+├── contexts/            # AuthProvider y su contexto
+├── hooks/               # useSidebarConfig, useSectionSelector, useDragReorder,
+│                        # useSelection, useSecretCode, useProductFilter, …
 ├── i18n/                # es.json, en.json
 ├── lib/
 │   ├── firebase.ts
@@ -178,6 +193,12 @@ src/
 ├── services/            # products, categories, nav, reservas, torneos
 └── types/index.ts
 ```
+
+Cada área tiene su carpeta, y dentro conviven los componentes de vista con
+un módulo de lógica pura (`productQuery.ts`, `reservasQuery.ts`,
+`navMutations.ts`, `categoryRules.ts`, `productPayload.ts`, `slotMachine.ts`)
+y su fichero de tests al lado. Los componentes que se repetían en varias
+áreas viven en la raíz de `components/`.
 
 `public/` solo contiene `_redirects`. Cualquier imagen nueva va en `src/assets/` e
 importada, para que el nombre lleve hash y un cambio invalide la caché del navegador.
