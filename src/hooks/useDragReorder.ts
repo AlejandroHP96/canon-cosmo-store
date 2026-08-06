@@ -32,3 +32,5 @@ export function useDragReorder(onReorder: (fromKey: string, toKey: string) => vo
 
     return { dragKey, dragProps, isTarget };
 }
+
+export type DragReorder = ReturnType<typeof useDragReorder>;

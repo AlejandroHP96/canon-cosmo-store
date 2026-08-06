@@ -5,9 +5,7 @@ import { useDragReorder } from '../../../hooks/useDragReorder';
 import * as nav from './navMutations';
 import NavItemRow from './NavItemRow';
 import NavItemEditRow from './NavItemEditRow';
-import SubNavRow from './SubNavRow';
-import SubNavEditRow from './SubNavEditRow';
-import NewSubItemForm from './NewSubItemForm';
+import SubmenuPanel from './SubmenuPanel';
 import NewNavItemForm from './NewNavItemForm';
 import ErrorBanner from '../../ErrorBanner';
 import Spinner from '../../Spinner';
@@ -189,66 +187,29 @@ const NavManager = () => {
                             )}
 
                             {expandedIdx.has(idx) && (
-                                <div className="border-t border-outline-variant/30 px-4 pb-3 pt-2 flex flex-col gap-2">
-                                    {(item.submenu?.length ?? 0) === 0 && (
-                                        <p className="text-xs font-body text-on-surface-variant pl-3 py-1 italic">
-                                            Sin subitems aún.
-                                        </p>
-                                    )}
-
-                                    {(item.submenu ?? []).map((sub, sIdx) => {
-                                        const sKey = subKey(idx, sIdx);
-                                        const pickerOpen = colorPickerKey === sKey;
-                                        return editSubKey === sKey ? (
-                                            <SubNavEditRow
-                                                key={sIdx}
-                                                form={editSubForm}
-                                                saving={saving}
-                                                colorPickerOpen={pickerOpen}
-                                                onChange={(patch) => setEditSubForm((f) => ({ ...f, ...patch }))}
-                                                onOpenColorPicker={() => setColorPickerKey(sKey)}
-                                                onCloseColorPicker={() => setColorPickerKey(null)}
-                                                onSave={() => handleEditSubSave(idx, sIdx)}
-                                                onCancel={() => setEditSubKey(null)}
-                                            />
-                                        ) : (
-                                            <div
-                                                key={sIdx}
-                                                {...subDrag.dragProps(sKey)}
-                                                className={`flex items-center gap-3 pl-2 border-l-2 transition-all ${
-                                                    subDrag.isTarget(sKey)
-                                                        ? 'border-primary opacity-80'
-                                                        : subDrag.dragKey === sKey
-                                                          ? 'border-outline-variant/40 opacity-40'
-                                                          : 'border-outline-variant/40'
-                                                }`}>
-                                                <SubNavRow
-                                                    sub={sub}
-                                                    saving={saving}
-                                                    colorPickerOpen={pickerOpen}
-                                                    onOpenColorPicker={() => setColorPickerKey(sKey)}
-                                                    onCloseColorPicker={() => setColorPickerKey(null)}
-                                                    onColorChange={(color) =>
-                                                        save(nav.setSubColor(items, idx, sIdx, color))
-                                                    }
-                                                    onEdit={() => handleEditSubStart(idx, sIdx)}
-                                                    onDelete={() => handleDeleteSub(idx, sIdx)}
-                                                />
-                                            </div>
-                                        );
-                                    })}
-
-                                    <NewSubItemForm
-                                        form={getSubForm(idx)}
-                                        parentLabel={item.label}
-                                        saving={saving}
-                                        colorPickerOpen={colorPickerKey === `new-${idx}`}
-                                        onChange={(patch) => patchSubForm(idx, patch)}
-                                        onOpenColorPicker={() => setColorPickerKey(`new-${idx}`)}
-                                        onCloseColorPicker={() => setColorPickerKey(null)}
-                                        onAdd={() => handleAddSub(idx)}
-                                    />
-                                </div>
+                                <SubmenuPanel
+                                    item={item}
+                                    itemIdx={idx}
+                                    saving={saving}
+                                    subKey={subKey}
+                                    editSubKey={editSubKey}
+                                    editSubForm={editSubForm}
+                                    newSubForm={getSubForm(idx)}
+                                    colorPickerKey={colorPickerKey}
+                                    drag={subDrag}
+                                    onEditSubChange={(patch) => setEditSubForm((f) => ({ ...f, ...patch }))}
+                                    onNewSubChange={(patch) => patchSubForm(idx, patch)}
+                                    onOpenColorPicker={setColorPickerKey}
+                                    onCloseColorPicker={() => setColorPickerKey(null)}
+                                    onEditSubStart={(sIdx) => handleEditSubStart(idx, sIdx)}
+                                    onEditSubSave={(sIdx) => handleEditSubSave(idx, sIdx)}
+                                    onEditSubCancel={() => setEditSubKey(null)}
+                                    onDeleteSub={(sIdx) => handleDeleteSub(idx, sIdx)}
+                                    onSubColorChange={(sIdx, color) =>
+                                        save(nav.setSubColor(items, idx, sIdx, color))
+                                    }
+                                    onAddSub={() => handleAddSub(idx)}
+                                />
                             )}
                         </div>
                     );
