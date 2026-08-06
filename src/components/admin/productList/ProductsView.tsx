@@ -1,11 +1,20 @@
 import { useEffect, useState, useMemo } from 'react';
 import { getAllProducts, deleteProducts, updateProduct } from '../../../services/productsService';
 import { getSidebarConfig, type NavItem } from '../../../services/navService';
-import { pathToSectionId, toSlug } from '../../../lib/tcgUtils';
+import { useSelection } from '../../../hooks/useSelection';
 import type { Product } from '../../../types';
+import {
+    availableCategories,
+    filterProducts,
+    menuSectionIds,
+    type SectionFilter,
+} from './productQuery';
 import ProductFilters from './ProductFilters';
+import ProductSearchBar from './ProductSearchBar';
+import CategoryChips from './CategoryChips';
 import ProductSelectionBar from './ProductSelectionBar';
 import ProductRow from './ProductRow';
+import Pagination from './Pagination';
 import ProductFormModal from '../productForm/ProductFormModal';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import BulkDeleteModal from './BulkDeleteModal';
@@ -15,95 +24,58 @@ const PAGE_SIZE = 25;
 const ProductsView = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
+    const [navItems, setNavItems] = useState<NavItem[]>([]);
 
-    const [filterNavItems, setFilterNavItems] = useState<NavItem[]>([]);
-    const [filterMenuIdx, setFilterMenuIdx] = useState<number | null>(null);
-    const [filterSectionId, setFilterSectionId] = useState<string>('all');
+    const [menuIdx, setMenuIdx] = useState<number | null>(null);
+    const [sectionId, setSectionId] = useState('all');
+    const [search, setSearch] = useState('');
+    const [reservableOnly, setReservableOnly] = useState(false);
+    const [category, setCategory] = useState<string | null>(null);
+    const [page, setPage] = useState(0);
 
     const [showForm, setShowForm] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [duplicating, setDuplicating] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
-
-    const [search, setSearch] = useState('');
-    const [reservableOnly, setReservableOnly] = useState(false);
-    const [filterCategoria, setFilterCategoria] = useState<string | null>(null);
-    const [page, setPage] = useState(0);
-    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-    const [bulkDeleting, setBulkDeleting] = useState(false);
     const [showBulkConfirm, setShowBulkConfirm] = useState(false);
+    const [bulkDeleting, setBulkDeleting] = useState(false);
+
+    const selection = useSelection();
 
     const refresh = async () => {
         setLoading(true);
-        const data = await getAllProducts();
-        setProducts(data);
+        setProducts(await getAllProducts());
         setLoading(false);
     };
 
     useEffect(() => {
         refresh();
-        getSidebarConfig().then((cfg) => setFilterNavItems(cfg.items));
+        getSidebarConfig().then((cfg) => setNavItems(cfg.items));
     }, []);
 
-    const selectedMenu = filterMenuIdx !== null ? filterNavItems[filterMenuIdx] : null;
+    const selectedMenu = menuIdx !== null ? navItems[menuIdx] : null;
 
-    const menuSectionIds: string[] = selectedMenu
-        ? (selectedMenu.submenu?.length ?? 0) > 0
-            ? selectedMenu.submenu!.map((sub) => pathToSectionId(sub.path))
-            : selectedMenu.path
-              ? [pathToSectionId(selectedMenu.path)]
-              : [toSlug(selectedMenu.label)]
-        : [];
-
-    const matchesMenu = (p: Product) =>
-        filterMenuIdx === null
-            ? true
-            : filterSectionId !== 'all'
-              ? p.tcg === filterSectionId
-              : menuSectionIds.includes(p.tcg);
-
-    const categoriasDisponibles = useMemo(
-        () => [...new Set(products.filter(matchesMenu).map((p) => p.category).filter(Boolean))].sort(),
-        [products, filterMenuIdx, filterSectionId, menuSectionIds], // eslint-disable-line react-hooks/exhaustive-deps
+    const section: SectionFilter = useMemo(
+        () => (selectedMenu ? { menuSectionIds: menuSectionIds(selectedMenu), sectionId } : null),
+        [selectedMenu, sectionId],
     );
 
-    const visible = useMemo(() => {
-        const needle = search.trim().toLowerCase();
-        return products.filter((p) => {
-            const matchMenu = matchesMenu(p);
-            const matchSearch = !needle ||
-                p.name.toLowerCase().includes(needle) ||
-                p.set?.toLowerCase().includes(needle) ||
-                p.category?.toLowerCase().includes(needle);
-            const matchReservable = !reservableOnly || p.reservable === true;
-            const matchCategoria = !filterCategoria || p.category === filterCategoria;
-            return matchMenu && matchSearch && matchReservable && matchCategoria;
-        });
-    }, [products, filterMenuIdx, filterSectionId, menuSectionIds, search, reservableOnly, filterCategoria]); // eslint-disable-line react-hooks/exhaustive-deps
+    const categories = useMemo(() => availableCategories(products, section), [products, section]);
+
+    const visible = useMemo(
+        () => filterProducts(products, { section, search, reservableOnly, category }),
+        [products, section, search, reservableOnly, category],
+    );
 
     const totalPages = Math.ceil(visible.length / PAGE_SIZE);
     const paginated = visible.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
-
-    const resetPage = () => setPage(0);
-
-    const toggleSelect = (id: string) =>
-        setSelectedIds((prev) => {
-            const next = new Set(prev);
-            if (next.has(id)) next.delete(id);
-            else next.add(id);
-            return next;
-        });
-
-    const allVisibleSelected = visible.length > 0 && visible.every((p) => selectedIds.has(p.id));
-
-    const toggleSelectAll = () =>
-        setSelectedIds(allVisibleSelected ? new Set() : new Set(visible.map((p) => p.id)));
+    const visibleIds = visible.map((p) => p.id);
 
     const handleBulkDelete = async () => {
         setBulkDeleting(true);
         try {
-            await deleteProducts([...selectedIds]);
-            setSelectedIds(new Set());
+            await deleteProducts([...selection.selected]);
+            selection.clear();
             setShowBulkConfirm(false);
             refresh();
         } finally {
@@ -111,89 +83,68 @@ const ProductsView = () => {
         }
     };
 
+    const openForm = (product: Product | null, isDuplicate = false) => {
+        setEditingProduct(product);
+        setDuplicating(isDuplicate);
+        setShowForm(true);
+    };
+
     return (
         <>
             <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
                 <ProductFilters
-                    navItems={filterNavItems}
-                    filterMenuIdx={filterMenuIdx}
-                    filterSectionId={filterSectionId}
+                    navItems={navItems}
+                    filterMenuIdx={menuIdx}
+                    filterSectionId={sectionId}
                     selectedMenu={selectedMenu}
-                    onMenuChange={(idx) => { setFilterMenuIdx(idx); setFilterSectionId('all'); setFilterCategoria(null); resetPage(); }}
-                    onSectionChange={(id) => { setFilterSectionId(id); setFilterCategoria(null); resetPage(); }}
+                    onMenuChange={(idx) => {
+                        setMenuIdx(idx);
+                        setSectionId('all');
+                        setCategory(null);
+                        setPage(0);
+                    }}
+                    onSectionChange={(id) => {
+                        setSectionId(id);
+                        setCategory(null);
+                        setPage(0);
+                    }}
                 />
                 <button
-                    onClick={() => { setEditingProduct(null); setDuplicating(false); setShowForm(true); }}
+                    onClick={() => openForm(null)}
                     className="flex items-center gap-2 border border-primary text-primary font-headline text-xs uppercase tracking-widest px-4 py-2 hover:bg-primary hover:text-surface transition-colors">
                     <span className="material-symbols-outlined text-sm">add</span>
                     Nuevo producto
                 </button>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 mb-6">
-                <div className="relative flex-1 min-w-[200px]">
-                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm pointer-events-none">
-                        search
-                    </span>
-                    <input
-                        type="text"
-                        value={search}
-                        onChange={(e) => { setSearch(e.target.value); resetPage(); }}
-                        placeholder="Buscar por nombre, set o categoría..."
-                        className="w-full bg-surface-container border border-outline-variant text-on-surface font-body text-sm pl-9 pr-4 py-2 placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary transition-colors"
-                    />
-                    {search && (
-                        <button
-                            onClick={() => { setSearch(''); resetPage(); }}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors">
-                            <span className="material-symbols-outlined text-sm">close</span>
-                        </button>
-                    )}
-                </div>
-                <button
-                    onClick={() => { setReservableOnly((v) => !v); resetPage(); }}
-                    className={`flex items-center gap-1.5 px-3 py-2 font-headline text-xs uppercase tracking-wider border transition-all shrink-0 ${
-                        reservableOnly
-                            ? 'border-primary text-primary bg-surface-container'
-                            : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
-                    }`}>
-                    <span className="material-symbols-outlined text-sm">event_upcoming</span>
-                    Reservables
-                </button>
-            </div>
+            <ProductSearchBar
+                search={search}
+                reservableOnly={reservableOnly}
+                onSearchChange={(v) => {
+                    setSearch(v);
+                    setPage(0);
+                }}
+                onToggleReservable={() => {
+                    setReservableOnly((v) => !v);
+                    setPage(0);
+                }}
+            />
 
-            {categoriasDisponibles.length > 1 && (
-                <div className="flex flex-wrap gap-1.5 mb-6">
-                    <button
-                        onClick={() => { setFilterCategoria(null); resetPage(); }}
-                        className={`px-3 py-1.5 font-headline text-[11px] uppercase tracking-wider border transition-all ${
-                            filterCategoria === null
-                                ? 'border-primary text-primary bg-surface-container'
-                                : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
-                        }`}>
-                        Todas las categorías
-                    </button>
-                    {categoriasDisponibles.map((cat) => (
-                        <button
-                            key={cat}
-                            onClick={() => { setFilterCategoria(cat); resetPage(); }}
-                            className={`px-3 py-1.5 font-headline text-[11px] uppercase tracking-wider border transition-all ${
-                                filterCategoria === cat
-                                    ? 'border-primary text-primary bg-surface-container'
-                                    : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
-                            }`}>
-                            {cat}
-                        </button>
-                    ))}
-                </div>
-            )}
+            <CategoryChips
+                categories={categories}
+                selected={category}
+                onSelect={(cat) => {
+                    setCategory(cat);
+                    setPage(0);
+                }}
+            />
 
             <ProductSelectionBar
                 visibleCount={visible.length}
-                selectedCount={selectedIds.size}
-                allSelected={allVisibleSelected}
-                onToggleAll={toggleSelectAll}
-                onClearSelection={() => setSelectedIds(new Set())}
+                selectedCount={selection.selected.size}
+                allSelected={selection.areAllSelected(visibleIds)}
+                onToggleAll={() => selection.toggleAll(visibleIds)}
+                onClearSelection={selection.clear}
                 onBulkDelete={() => setShowBulkConfirm(true)}
             />
 
@@ -214,78 +165,30 @@ const ProductsView = () => {
                             <ProductRow
                                 key={product.id}
                                 product={product}
-                                isSelected={selectedIds.has(product.id)}
-                                onToggleSelect={() => toggleSelect(product.id)}
-                                onEdit={() => { setEditingProduct(product); setDuplicating(false); setShowForm(true); }}
-                                onDuplicate={() => {
-                                    setEditingProduct({ ...product, name: `${product.name} (copia)` });
-                                    setDuplicating(true);
-                                    setShowForm(true);
-                                }}
+                                isSelected={selection.selected.has(product.id)}
+                                onToggleSelect={() => selection.toggle(product.id)}
+                                onEdit={() => openForm(product)}
+                                onDuplicate={() =>
+                                    openForm({ ...product, name: `${product.name} (copia)` }, true)
+                                }
                                 onDelete={() => setDeleteTarget(product)}
                                 onToggleVisible={async () => {
-                                    await updateProduct(product.id, { visible: product.visible === false });
+                                    await updateProduct(product.id, {
+                                        visible: product.visible === false,
+                                    });
                                     refresh();
                                 }}
                             />
                         ))}
                     </div>
 
-                    {totalPages > 1 && (
-                        <div className="flex items-center justify-between mt-6 pt-4 border-t border-outline-variant/30">
-                            <p className="text-[10px] font-headline text-on-surface-variant tracking-widest uppercase">
-                                {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, visible.length)} de {visible.length}
-                            </p>
-                            <div className="flex items-center gap-1">
-                                <button
-                                    onClick={() => setPage(0)}
-                                    disabled={page === 0}
-                                    className="p-1 text-on-surface-variant disabled:opacity-30 hover:text-primary transition-colors cursor-pointer disabled:cursor-default">
-                                    <span className="material-symbols-outlined text-sm">first_page</span>
-                                </button>
-                                <button
-                                    onClick={() => setPage((p) => p - 1)}
-                                    disabled={page === 0}
-                                    className="p-1 text-on-surface-variant disabled:opacity-30 hover:text-primary transition-colors cursor-pointer disabled:cursor-default">
-                                    <span className="material-symbols-outlined text-sm">chevron_left</span>
-                                </button>
-
-                                {[...Array(totalPages)].map((_, i) => {
-                                    if (totalPages <= 7 || Math.abs(i - page) <= 1 || i === 0 || i === totalPages - 1) {
-                                        return (
-                                            <button
-                                                key={i}
-                                                onClick={() => setPage(i)}
-                                                className={`w-7 h-7 font-headline text-[10px] tracking-widest transition-colors cursor-pointer ${
-                                                    i === page
-                                                        ? 'bg-primary text-surface'
-                                                        : 'text-on-surface-variant hover:text-primary'
-                                                }`}>
-                                                {i + 1}
-                                            </button>
-                                        );
-                                    }
-                                    if (Math.abs(i - page) === 2) {
-                                        return <span key={i} className="text-on-surface-variant/50 text-xs px-0.5">…</span>;
-                                    }
-                                    return null;
-                                })}
-
-                                <button
-                                    onClick={() => setPage((p) => p + 1)}
-                                    disabled={page === totalPages - 1}
-                                    className="p-1 text-on-surface-variant disabled:opacity-30 hover:text-primary transition-colors cursor-pointer disabled:cursor-default">
-                                    <span className="material-symbols-outlined text-sm">chevron_right</span>
-                                </button>
-                                <button
-                                    onClick={() => setPage(totalPages - 1)}
-                                    disabled={page === totalPages - 1}
-                                    className="p-1 text-on-surface-variant disabled:opacity-30 hover:text-primary transition-colors cursor-pointer disabled:cursor-default">
-                                    <span className="material-symbols-outlined text-sm">last_page</span>
-                                </button>
-                            </div>
-                        </div>
-                    )}
+                    <Pagination
+                        page={page}
+                        totalPages={totalPages}
+                        totalItems={visible.length}
+                        pageSize={PAGE_SIZE}
+                        onChange={setPage}
+                    />
                 </>
             )}
 
@@ -294,7 +197,10 @@ const ProductsView = () => {
                     initial={editingProduct}
                     forceCreate={duplicating}
                     onClose={() => setShowForm(false)}
-                    onSaved={() => { setShowForm(false); refresh(); }}
+                    onSaved={() => {
+                        setShowForm(false);
+                        refresh();
+                    }}
                     onSavedContinue={() => refresh()}
                 />
             )}
@@ -304,12 +210,8 @@ const ProductsView = () => {
                     product={deleteTarget}
                     onClose={() => setDeleteTarget(null)}
                     onDeleted={() => {
+                        selection.remove(deleteTarget.id);
                         setDeleteTarget(null);
-                        setSelectedIds((prev) => {
-                            const next = new Set(prev);
-                            next.delete(deleteTarget.id);
-                            return next;
-                        });
                         refresh();
                     }}
                 />
@@ -317,7 +219,7 @@ const ProductsView = () => {
 
             {showBulkConfirm && (
                 <BulkDeleteModal
-                    count={selectedIds.size}
+                    count={selection.selected.size}
                     deleting={bulkDeleting}
                     onClose={() => setShowBulkConfirm(false)}
                     onConfirm={handleBulkDelete}
