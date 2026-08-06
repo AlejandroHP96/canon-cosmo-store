@@ -4,7 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import ProductsView from '../../components/admin/productList/ProductsView';
 import CategoriesManager from '../../components/admin/CategoriesManager';
 import NavManager from '../../components/admin/nav/NavManager';
-import JuegosManager from '../../components/admin/JuegosManager';
+import JuegosManager from '../../components/admin/juegos/JuegosManager';
 import ReservasManager from '../../components/admin/ReservasManager';
 
 type AdminView = 'products' | 'categories' | 'nav' | 'torneos' | 'reservas';

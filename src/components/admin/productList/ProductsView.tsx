@@ -3,6 +3,7 @@ import { getAllProducts, deleteProducts, updateProduct } from '../../../services
 import { getSidebarConfig, type NavItem } from '../../../services/navService';
 import { useSelection } from '../../../hooks/useSelection';
 import type { Product } from '../../../types';
+import Spinner from '../../Spinner';
 import {
     availableCategories,
     filterProducts,
@@ -149,11 +150,7 @@ const ProductsView = () => {
             />
 
             {loading ? (
-                <div className="flex items-center justify-center h-64">
-                    <span className="material-symbols-outlined text-primary text-4xl animate-spin">
-                        progress_activity
-                    </span>
-                </div>
+                <Spinner size="lg" className="h-64" />
             ) : visible.length === 0 ? (
                 <div className="tactical-frame p-8 text-center text-on-surface-variant font-body text-sm">
                     No hay productos.

@@ -15,6 +15,7 @@ import FeaturedSection from '../../components/tcg/FeaturedSection';
 import ProductGrid from '../../components/tcg/ProductGrid';
 import ProductModal from '../../components/tcg/ProductModal';
 import SEO from '../../components/SEO';
+import Spinner from '../../components/Spinner';
 
 const TcgSection = ({ sectionId, pathname }: { sectionId: string; pathname: string }) => {
     const categories = useTcgCategories(sectionId);
@@ -52,11 +53,7 @@ const TcgSection = ({ sectionId, pathname }: { sectionId: string; pathname: stri
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-64">
-                <span className="material-symbols-outlined text-primary text-4xl animate-spin">
-                    progress_activity
-                </span>
-            </div>
+            <Spinner size="lg" className="h-64" />
         );
     }
 

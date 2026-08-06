@@ -10,6 +10,7 @@ import SubNavEditRow from './SubNavEditRow';
 import NewSubItemForm from './NewSubItemForm';
 import NewNavItemForm from './NewNavItemForm';
 import ErrorBanner from '../../ErrorBanner';
+import Spinner from '../../Spinner';
 import {
     EMPTY_ITEM_FORM,
     EMPTY_SUB_FORM,
@@ -56,13 +57,7 @@ const NavManager = () => {
         });
 
     if (loading) {
-        return (
-            <div className="flex justify-center py-10">
-                <span className="material-symbols-outlined text-primary text-3xl animate-spin">
-                    progress_activity
-                </span>
-            </div>
-        );
+        return <Spinner />;
     }
 
     if (!items) return null;

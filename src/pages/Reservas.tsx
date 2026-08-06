@@ -5,6 +5,7 @@ import { addReserva } from '../services/reservasService';
 import type { Product } from '../types';
 import SEO from '../components/SEO';
 import ErrorBanner from '../components/ErrorBanner';
+import Spinner from '../components/Spinner';
 import ReservaCard from '../components/reservas/ReservaCard';
 import ReservaFilters from '../components/reservas/ReservaFilters';
 import ReservaSuccess from '../components/reservas/ReservaSuccess';
@@ -102,11 +103,7 @@ const Reservas = () => {
                 )}
 
                 {loading ? (
-                    <div className="flex justify-center py-16">
-                        <span className="material-symbols-outlined text-primary text-4xl animate-spin">
-                            progress_activity
-                        </span>
-                    </div>
+                    <Spinner size="lg" className="py-16" />
                 ) : productos.length === 0 ? (
                     <div className="tactical-frame p-10 text-center text-on-surface-variant font-body text-sm">
                         No hay productos disponibles para reservar por ahora.

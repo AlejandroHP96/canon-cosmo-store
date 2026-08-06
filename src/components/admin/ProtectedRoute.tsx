@@ -1,16 +1,13 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import Spinner from '../Spinner';
 
 const ProtectedRoute = () => {
     const { user, loading } = useAuth();
 
     if (loading)
         return (
-            <div className="min-h-screen bg-surface flex items-center justify-center">
-                <span className="material-symbols-outlined text-primary text-4xl animate-spin">
-                    progress_activity
-                </span>
-            </div>
+            <Spinner size="lg" className="min-h-screen bg-surface" />
         );
 
     if (!user) return <Navigate to="/cosmos-admin" replace />;
