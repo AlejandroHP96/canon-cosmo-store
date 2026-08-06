@@ -1,0 +1,75 @@
+import type { Product } from '../../types';
+import { NOMBRE_COMPLETO_PATTERN, type ReservaForm } from './reservaForm';
+
+const labelClass =
+    'block font-headline text-[10px] uppercase tracking-widest text-primary/60 mb-1';
+const fieldClass =
+    'w-full bg-surface border border-outline-variant/60 px-3 py-2 text-sm font-body text-on-surface outline-none focus:border-primary transition-colors';
+
+type Props = {
+    producto: Product;
+    form: ReservaForm;
+    saving: boolean;
+    onChange: (patch: Partial<ReservaForm>) => void;
+    onSubmit: (e: React.FormEvent) => void;
+    onClose: () => void;
+};
+
+const ReservaFormModal = ({ producto, form, saving, onChange, onSubmit, onClose }: Props) => (
+    <>
+        <div className="flex items-center justify-between mb-4">
+            <p className="font-headline text-[10px] uppercase tracking-[0.3em] text-primary/60">
+                RESERVAR: {producto.name.toUpperCase()}
+            </p>
+            <button onClick={onClose} className="text-on-surface-variant hover:text-primary transition-colors">
+                <span className="material-symbols-outlined text-sm">close</span>
+            </button>
+        </div>
+        <form onSubmit={onSubmit} className="flex flex-col gap-4">
+            <div>
+                <label className={labelClass}>Nombre completo *</label>
+                <input
+                    required
+                    pattern={NOMBRE_COMPLETO_PATTERN}
+                    title="Introduce nombre y apellidos"
+                    value={form.cliente}
+                    onChange={(e) => onChange({ cliente: e.target.value })}
+                    placeholder="Nombre y apellidos"
+                    className={fieldClass}
+                />
+            </div>
+            <div>
+                <label className={labelClass}>Cantidad</label>
+                <input
+                    type="number"
+                    min={1}
+                    value={form.cantidad}
+                    onChange={(e) =>
+                        onChange({ cantidad: Math.max(1, parseInt(e.target.value) || 1) })
+                    }
+                    className={fieldClass}
+                />
+            </div>
+            <div>
+                <label className={labelClass}>Notas</label>
+                <textarea
+                    rows={3}
+                    value={form.notas}
+                    onChange={(e) => onChange({ notas: e.target.value })}
+                    placeholder="Algo que debamos saber..."
+                    className={fieldClass + ' resize-none'}
+                />
+            </div>
+            <div className="flex justify-end pt-2">
+                <button
+                    type="submit"
+                    disabled={saving}
+                    className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-8 py-2.5 hover:bg-primary hover:text-surface transition-colors disabled:opacity-40">
+                    {saving ? 'Enviando...' : 'Solicitar reserva'}
+                </button>
+            </div>
+        </form>
+    </>
+);
+
+export default ReservaFormModal;

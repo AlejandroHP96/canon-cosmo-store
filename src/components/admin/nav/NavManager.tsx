@@ -9,6 +9,7 @@ import SubNavRow from './SubNavRow';
 import SubNavEditRow from './SubNavEditRow';
 import NewSubItemForm from './NewSubItemForm';
 import NewNavItemForm from './NewNavItemForm';
+import ErrorBanner from '../../ErrorBanner';
 import {
     EMPTY_ITEM_FORM,
     EMPTY_SUB_FORM,
@@ -150,15 +151,7 @@ const NavManager = () => {
 
     return (
         <div className="max-w-2xl">
-            {error && (
-                <div className="flex items-center gap-2 border border-error bg-error-container/20 px-3 py-2.5 mb-6">
-                    <span className="material-symbols-outlined text-error text-base shrink-0">error</span>
-                    <p className="text-sm font-body text-error flex-1">{error}</p>
-                    <button onClick={() => setError(null)} className="text-error/60 hover:text-error shrink-0">
-                        <span className="material-symbols-outlined text-sm">close</span>
-                    </button>
-                </div>
-            )}
+            <ErrorBanner message={error} onDismiss={() => setError(null)} />
 
             <div className="flex flex-col gap-3 mb-6">
                 {items.length === 0 && (
