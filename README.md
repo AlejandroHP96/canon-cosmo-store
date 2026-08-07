@@ -200,3 +200,13 @@ y su fichero de tests al lado. Los componentes que se repetían en varias
 
 `public/` solo contiene `_redirects`. Cualquier imagen nueva va en `src/assets/` e
 importada, para que el nombre lleve hash y un cambio invalide la caché del navegador.
+
+## Imagen para compartir
+
+`public/og-image.jpg` (1200×630) es la miniatura que usan WhatsApp, Discord,
+Twitter y demás al pegar un enlace. Va en `public/` **a propósito**, no en
+`src/assets/`: esas plataformas cachean la URL, y el hash que Vite añade a los
+assets importados la rompería en cada build.
+
+Se genera a partir de `src/assets/logo.png` centrado sobre el fondo de la marca.
+Si cambias el logo, regénerala.
