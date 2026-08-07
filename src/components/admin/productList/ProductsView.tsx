@@ -75,10 +75,11 @@ const ProductsView = () => {
     const handleBulkDelete = async () => {
         setBulkDeleting(true);
         try {
-            await deleteProducts([...selection.selected]);
+            const borrados = new Set(selection.selected);
+            await deleteProducts([...borrados]);
+            setProducts((prev) => prev.filter((p) => !borrados.has(p.id)));
             selection.clear();
             setShowBulkConfirm(false);
-            refresh();
         } finally {
             setBulkDeleting(false);
         }
@@ -172,10 +173,13 @@ const ProductsView = () => {
                                 }
                                 onDelete={() => setDeleteTarget(product)}
                                 onToggleVisible={async () => {
-                                    await updateProduct(product.id, {
-                                        visible: product.visible === false,
-                                    });
-                                    refresh();
+                                    const visible = product.visible === false;
+                                    await updateProduct(product.id, { visible });
+                                    setProducts((prev) =>
+                                        prev.map((p) =>
+                                            p.id === product.id ? { ...p, visible } : p,
+                                        ),
+                                    );
                                 }}
                             />
                         ))}
@@ -209,9 +213,9 @@ const ProductsView = () => {
                     product={deleteTarget}
                     onClose={() => setDeleteTarget(null)}
                     onDeleted={() => {
+                        setProducts((prev) => prev.filter((p) => p.id !== deleteTarget.id));
                         selection.remove(deleteTarget.id);
                         setDeleteTarget(null);
-                        refresh();
                     }}
                 />
             )}
