@@ -4,7 +4,10 @@ import { getProductsByTcg } from '../../services/productsService';
 import { useTcgCategories } from '../../hooks/useTcgCategories';
 import { useTcgOptions } from '../../hooks/useTcgOptions';
 import { useProductFilter } from '../../hooks/useProductFilter';
-import { pathToSectionId } from '../../lib/tcgUtils';
+import { pathToSectionId, toSlug } from '../../lib/tcgUtils';
+import { useNavItems } from '../../hooks/useNavItems';
+import type { NavItem } from '../../services/navService';
+import NotFound from '../NotFound';
 import SECTION_DESCRIPTIONS from '../../data/sectionDescriptions';
 import type { Product } from '../../types';
 import TcgHeader from '../../components/tcg/TcgHeader';
@@ -16,6 +19,21 @@ import ProductGrid from '../../components/tcg/ProductGrid';
 import ProductModal from '../../components/tcg/ProductModal';
 import SEO from '../../components/SEO';
 import Spinner from '../../components/Spinner';
+
+/** Todas las secciones que el sidebar declara, de primer nivel y de submenú. */
+function sectionIdsFromNav(items: NavItem[]): Set<string> {
+    const ids = new Set<string>();
+    for (const item of items) {
+        if (item.submenu?.length) {
+            item.submenu.forEach((sub) => ids.add(pathToSectionId(sub.path)));
+        } else if (item.path) {
+            ids.add(pathToSectionId(item.path));
+        } else {
+            ids.add(toSlug(item.label));
+        }
+    }
+    return ids;
+}
 
 const TcgSection = ({ sectionId, pathname }: { sectionId: string; pathname: string }) => {
     const categories = useTcgCategories(sectionId);
@@ -95,10 +113,21 @@ const TcgSection = ({ sectionId, pathname }: { sectionId: string; pathname: stri
  * Página dinámica de sección (catch-all). La `key` hace que al cambiar de
  * sección el contenido se remonte: los filtros, la búsqueda y el estado de
  * carga vuelven solos a su valor inicial, sin resetearlos desde un efecto.
+ *
+ * Antes de renderizar comprueba que la ruta corresponde a una entrada real
+ * del sidebar. Si no, es un 404: sin esto cualquier URL inventada mostraba
+ * una sección vacía, que Google puede indexar como si existiera.
  */
 const TcgPage = () => {
     const { pathname } = useLocation();
+    const navItems = useNavItems();
     const sectionId = pathToSectionId(pathname);
+
+    // El nav aún no ha cargado: no se puede decidir si la ruta es válida
+    if (navItems.length === 0) return <Spinner size="lg" className="h-64" />;
+
+    if (!sectionIdsFromNav(navItems).has(sectionId)) return <NotFound />;
+
     return <TcgSection key={sectionId} sectionId={sectionId} pathname={pathname} />;
 };
 

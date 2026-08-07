@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { Product } from '../../types';
 import { formatPrice } from '../../lib/price';
 import ProductImage from '../ProductImage';
@@ -7,7 +8,10 @@ type Props = {
     onReservar: () => void;
 };
 
-const ReservaCard = ({ producto, onReservar }: Props) => (
+const ReservaCard = ({ producto, onReservar }: Props) => {
+    const { t } = useTranslation();
+
+    return (
     <div className="tactical-frame p-4 flex flex-col gap-3 hover:bg-surface-bright transition-colors group">
         <ProductImage src={producto.image} alt={producto.name} inStock={producto.inStock} />
         <div className="flex-1 min-w-0">
@@ -22,9 +26,10 @@ const ReservaCard = ({ producto, onReservar }: Props) => (
         <button
             onClick={onReservar}
             className="w-full border border-primary text-primary font-headline text-[10px] uppercase tracking-widest py-2 hover:bg-primary hover:text-surface transition-colors">
-            Reservar
+            {t('reservas.reserve')}
         </button>
     </div>
-);
+    );
+};
 
 export default ReservaCard;

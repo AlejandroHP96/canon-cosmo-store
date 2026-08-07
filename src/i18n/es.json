@@ -76,5 +76,50 @@
     "title": "Torneos",
     "comingSoon": "Próximamente torneos disponibles.",
     "viewMore": "Ver más"
+  },
+  "reservas": {
+    "seo": "Reserva tus productos en Cañón Cosmo Store.",
+    "searchPlaceholder": "Buscar producto...",
+    "allSections": "Todas",
+    "reserve": "Reservar",
+    "empty": "No hay productos disponibles para reservar por ahora.",
+    "noMatch": "Ningún producto coincide con el filtro.",
+    "loadError": "Error al cargar productos disponibles.",
+    "submitError": "Error",
+    "retry": "Inténtalo de nuevo.",
+    "form": {
+      "heading": "RESERVAR",
+      "name": "Nombre completo *",
+      "namePlaceholder": "Nombre y apellidos",
+      "nameHint": "Introduce nombre y apellidos",
+      "quantity": "Cantidad",
+      "notes": "Notas",
+      "notesPlaceholder": "Algo que debamos saber...",
+      "submit": "Solicitar reserva",
+      "submitting": "Enviando..."
+    },
+    "success": {
+      "title": "Solicitud enviada",
+      "text": "Te contactaremos pronto para confirmar tu reserva.",
+      "close": "Cerrar"
+    }
+  },
+  "search": {
+    "placeholder": "Buscar producto...",
+    "clear": "Limpiar búsqueda"
+  },
+  "notFound": {
+    "seoTitle": "Página no encontrada",
+    "label": "Error 404",
+    "title": "Sección no encontrada",
+    "text": "Esta ruta no existe en el catálogo. Puede que la sección se haya renombrado o que el enlace esté mal.",
+    "home": "Volver al inicio"
+  },
+  "error": {
+    "title": "Algo ha fallado",
+    "pageTitle": "Esta página ha fallado",
+    "text": "Ha ocurrido un error inesperado. Puedes reintentar o volver al inicio.",
+    "retry": "Reintentar",
+    "home": "Ir al inicio"
   }
 }

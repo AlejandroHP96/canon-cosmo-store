@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { Product } from '../../types';
 import { NOMBRE_COMPLETO_PATTERN, type ReservaForm } from './reservaForm';
 
@@ -15,11 +16,14 @@ type Props = {
     onClose: () => void;
 };
 
-const ReservaFormModal = ({ producto, form, saving, onChange, onSubmit, onClose }: Props) => (
+const ReservaFormModal = ({ producto, form, saving, onChange, onSubmit, onClose }: Props) => {
+    const { t } = useTranslation();
+
+    return (
     <>
         <div className="flex items-center justify-between mb-4">
             <p className="font-headline text-[10px] uppercase tracking-[0.3em] text-primary/60">
-                RESERVAR: {producto.name.toUpperCase()}
+                {t('reservas.form.heading')}: {producto.name.toUpperCase()}
             </p>
             <button onClick={onClose} className="text-on-surface-variant hover:text-primary transition-colors">
                 <span className="material-symbols-outlined text-sm">close</span>
@@ -27,19 +31,19 @@ const ReservaFormModal = ({ producto, form, saving, onChange, onSubmit, onClose 
         </div>
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
             <div>
-                <label className={labelClass}>Nombre completo *</label>
+                <label className={labelClass}>{t('reservas.form.name')}</label>
                 <input
                     required
                     pattern={NOMBRE_COMPLETO_PATTERN}
-                    title="Introduce nombre y apellidos"
+                    title={t('reservas.form.nameHint')}
                     value={form.cliente}
                     onChange={(e) => onChange({ cliente: e.target.value })}
-                    placeholder="Nombre y apellidos"
+                    placeholder={t('reservas.form.namePlaceholder')}
                     className={fieldClass}
                 />
             </div>
             <div>
-                <label className={labelClass}>Cantidad</label>
+                <label className={labelClass}>{t('reservas.form.quantity')}</label>
                 <input
                     type="number"
                     min={1}
@@ -51,12 +55,12 @@ const ReservaFormModal = ({ producto, form, saving, onChange, onSubmit, onClose 
                 />
             </div>
             <div>
-                <label className={labelClass}>Notas</label>
+                <label className={labelClass}>{t('reservas.form.notes')}</label>
                 <textarea
                     rows={3}
                     value={form.notas}
                     onChange={(e) => onChange({ notas: e.target.value })}
-                    placeholder="Algo que debamos saber..."
+                    placeholder={t('reservas.form.notesPlaceholder')}
                     className={fieldClass + ' resize-none'}
                 />
             </div>
@@ -65,11 +69,12 @@ const ReservaFormModal = ({ producto, form, saving, onChange, onSubmit, onClose 
                     type="submit"
                     disabled={saving}
                     className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-8 py-2.5 hover:bg-primary hover:text-surface transition-colors disabled:opacity-40">
-                    {saving ? 'Enviando...' : 'Solicitar reserva'}
+                    {saving ? t('reservas.form.submitting') : t('reservas.form.submit')}
                 </button>
             </div>
         </form>
     </>
-);
+    );
+};
 
 export default ReservaFormModal;

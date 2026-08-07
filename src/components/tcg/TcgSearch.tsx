@@ -1,9 +1,14 @@
+import { useTranslation } from 'react-i18next';
+
 type Props = {
     value: string;
     onChange: (val: string) => void;
 };
 
-const TcgSearch = ({ value, onChange }: Props) => (
+const TcgSearch = ({ value, onChange }: Props) => {
+    const { t } = useTranslation();
+
+    return (
     <div className="flex items-center border border-outline-variant bg-surface-container-lowest mb-4 focus-within:border-primary transition-colors">
         <span className="material-symbols-outlined text-on-surface-variant text-base px-3 shrink-0">
             search
@@ -12,7 +17,7 @@ const TcgSearch = ({ value, onChange }: Props) => (
             type="text"
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            placeholder="Buscar producto..."
+            placeholder={t('search.placeholder')}
             className="flex-1 bg-transparent text-on-surface font-body text-sm py-2 pr-3 focus:outline-none placeholder:text-on-surface-variant/50"
         />
         {value && (
@@ -23,6 +28,7 @@ const TcgSearch = ({ value, onChange }: Props) => (
             </button>
         )}
     </div>
-);
+    );
+};
 
 export default TcgSearch;

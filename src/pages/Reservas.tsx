@@ -23,16 +23,19 @@ const Reservas = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [success, setSuccess] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [errorKey, setErrorKey] = useState<string | null>(null);
+    const [errorTexto, setErrorTexto] = useState<string | null>(null);
     const [form, setForm] = useState<ReservaForm>(EMPTY_RESERVA_FORM);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [search, setSearch] = useState('');
     const [seccionFiltro, setSeccionFiltro] = useState<string | null>(null);
 
+    // Solo la clave: el mensaje se traduce al pintarlo, así cambiar de idioma
+    // con un error en pantalla lo actualiza en vez de dejarlo congelado
     useEffect(() => {
         getReservableProducts()
             .then(setProductos)
-            .catch(() => setError('Error al cargar productos disponibles.'))
+            .catch(() => setErrorKey('reservas.loadError'))
             .finally(() => setLoading(false));
     }, []);
 
@@ -53,7 +56,8 @@ const Reservas = () => {
         const cliente = form.cliente.trim();
         if (!selectedProduct || !NOMBRE_COMPLETO.test(cliente)) return;
         setSaving(true);
-        setError(null);
+        setErrorTexto(null);
+        setErrorKey(null);
         try {
             await addReserva({
                 productoId: selectedProduct.id,
@@ -66,7 +70,9 @@ const Reservas = () => {
             setSuccess(true);
             cerrarModal();
         } catch (err) {
-            setError(`Error: ${err instanceof Error ? err.message : 'Inténtalo de nuevo.'}`);
+            setErrorTexto(
+                `${t('reservas.submitError')}: ${err instanceof Error ? err.message : t('reservas.retry')}`,
+            );
         } finally {
             setSaving(false);
         }
@@ -76,7 +82,7 @@ const Reservas = () => {
         <div className="min-h-screen bg-surface text-on-surface pt-20 px-6 pb-12">
             <SEO
                 title="Reservas"
-                description="Reserva tus productos en Cañón Cosmo Store."
+                description={t('reservas.seo')}
                 path="/reservas"
             />
             <div className="max-w-5xl mx-auto">
@@ -90,7 +96,13 @@ const Reservas = () => {
                     <div className="h-px bg-primary/30 mt-4" />
                 </div>
 
-                <ErrorBanner message={error} onDismiss={() => setError(null)} />
+                <ErrorBanner
+                    message={errorTexto ?? (errorKey && t(errorKey))}
+                    onDismiss={() => {
+                        setErrorKey(null);
+                        setErrorTexto(null);
+                    }}
+                />
 
                 {!loading && productos.length > 0 && (
                     <ReservaFilters
@@ -106,11 +118,11 @@ const Reservas = () => {
                     <Spinner size="lg" className="py-16" />
                 ) : productos.length === 0 ? (
                     <div className="tactical-frame p-10 text-center text-on-surface-variant font-body text-sm">
-                        No hay productos disponibles para reservar por ahora.
+                        {t('reservas.empty')}
                     </div>
                 ) : productosFiltrados.length === 0 ? (
                     <div className="tactical-frame p-10 text-center text-on-surface-variant font-body text-sm">
-                        Ningún producto coincide con el filtro.
+                        {t('reservas.noMatch')}
                     </div>
                 ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

@@ -1,9 +1,13 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+// Instancia de i18next directamente: los componentes de clase no pueden usar
+// el hook useTranslation, y esta pantalla no necesita reaccionar al idioma
+// una vez mostrada.
+import i18n from '../i18n';
 
 type Props = {
     children: ReactNode;
-    /** Texto del encabezado. Cambia según lo que envuelva el boundary. */
-    title?: string;
+    /** 'page' acota el fallo a una página; 'app' es la red de seguridad final. */
+    variant?: 'page' | 'app';
     /** Muestra el enlace a la home. Sobra si el boundary es global. */
     showHomeLink?: boolean;
 };
@@ -35,7 +39,8 @@ class ErrorBoundary extends Component<Props, State> {
 
     render() {
         const { error } = this.state;
-        const { children, title = 'Algo ha fallado', showHomeLink = true } = this.props;
+        const { children, variant = 'app', showHomeLink = true } = this.props;
+        const title = i18n.t(variant === 'page' ? 'error.pageTitle' : 'error.title');
 
         if (!error) return children;
 
@@ -49,7 +54,7 @@ class ErrorBoundary extends Component<Props, State> {
                         {title}
                     </h2>
                     <p className="font-body text-sm text-on-surface-variant mb-6">
-                        Ha ocurrido un error inesperado. Puedes reintentar o volver al inicio.
+                        {i18n.t('error.text')}
                     </p>
 
                     {/* El detalle solo en desarrollo: en producción no se enseñan interioridades */}
@@ -63,13 +68,13 @@ class ErrorBoundary extends Component<Props, State> {
                         <button
                             onClick={this.reset}
                             className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-6 py-2.5 hover:bg-primary hover:text-surface transition-colors">
-                            Reintentar
+                            {i18n.t('error.retry')}
                         </button>
                         {showHomeLink && (
                             <a
                                 href="/"
                                 className="border border-outline-variant text-on-surface-variant font-headline text-xs uppercase tracking-widest px-6 py-2.5 hover:border-primary hover:text-primary transition-colors flex items-center">
-                                Ir al inicio
+                                {i18n.t('error.home')}
                             </a>
                         )}
                     </div>

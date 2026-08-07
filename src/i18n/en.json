@@ -76,5 +76,50 @@
     "title": "Tournaments",
     "comingSoon": "Tournaments coming soon.",
     "viewMore": "View more"
+  },
+  "reservas": {
+    "seo": "Reserve your products at Cañón Cosmo Store.",
+    "searchPlaceholder": "Search product...",
+    "allSections": "All",
+    "reserve": "Reserve",
+    "empty": "There are no products available to reserve right now.",
+    "noMatch": "No product matches the filter.",
+    "loadError": "Error loading available products.",
+    "submitError": "Error",
+    "retry": "Please try again.",
+    "form": {
+      "heading": "RESERVE",
+      "name": "Full name *",
+      "namePlaceholder": "First and last name",
+      "nameHint": "Enter your first and last name",
+      "quantity": "Quantity",
+      "notes": "Notes",
+      "notesPlaceholder": "Anything we should know...",
+      "submit": "Request reservation",
+      "submitting": "Sending..."
+    },
+    "success": {
+      "title": "Request sent",
+      "text": "We'll contact you soon to confirm your reservation.",
+      "close": "Close"
+    }
+  },
+  "search": {
+    "placeholder": "Search product...",
+    "clear": "Clear search"
+  },
+  "notFound": {
+    "seoTitle": "Page not found",
+    "label": "Error 404",
+    "title": "Section not found",
+    "text": "This route doesn't exist in the catalog. The section may have been renamed, or the link may be wrong.",
+    "home": "Back to home"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "pageTitle": "This page failed",
+    "text": "An unexpected error occurred. You can retry or go back home.",
+    "retry": "Retry",
+    "home": "Go home"
   }
 }
