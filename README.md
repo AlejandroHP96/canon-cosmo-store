@@ -94,6 +94,12 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 ```
 
+`VITE_SITE_URL` es opcional: fija el dominio canónico que usan las etiquetas
+`canonical` y `og:url`. Si no se define se usa el origen desde el que se sirve
+la página, que es lo correcto en local y en los previews. **En producción sí
+conviene definirla**, para que un visitante que llegue por la URL de Vercel no
+haga que Google indexe ese dominio en vez del bueno.
+
 ## Scripts de mantenimiento
 
 Necesitan service account keys en `.keys/` — ver [`.keys/README.md`](.keys/README.md).

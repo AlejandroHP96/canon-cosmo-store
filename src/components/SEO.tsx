@@ -1,7 +1,16 @@
 import { Helmet } from 'react-helmet-async';
 
 const SITE_NAME = 'Cañón Cosmo Store';
-const BASE_URL = 'https://canon-cosmo-store.vercel.app';
+
+/**
+ * Dominio con el que se construyen canonical y og:url.
+ * VITE_SITE_URL manda: es el dominio canónico, el que debe indexar Google.
+ * Sin ella se usa el origen actual, que sirve para local y para previews.
+ */
+const BASE_URL = (
+    import.meta.env.VITE_SITE_URL ?? window.location.origin
+).replace(/\/$/, '');
+
 const DEFAULT_IMAGE = `${BASE_URL}/og-image.jpg`;
 
 type Props = {
