@@ -25,7 +25,7 @@ Tienda online para la venta de productos de Trading Card Games (TCG), Funko Pop 
 - `/torneos` — calendario de torneos por juego
 - `/reservas` — reserva de productos marcados como `reservable`, sin necesidad de cuenta
 - `/aboutus` — el equipo, en formato carta
-- `/gold-saucer` y easter egg del código Konami
+- Easter egg del código Konami
 
 ### Panel de administración (`/cosmos-admin`)
 Acceso protegido con autenticación Firebase (`browserSessionPersistence`: la sesión
@@ -119,7 +119,6 @@ navegador, así que la suite entera tarda menos de medio segundo. Los ficheros
 | `admin/reservas/reservasQuery.ts` | El orden y el filtrado de la bandeja de reservas |
 | `admin/categories/categoryRules.ts` | Validación de nombres duplicados y vacíos |
 | `components/reservas/reservaQuery.ts` | El filtrado de la página pública de reservas |
-| `components/goldSaucer/slotMachine.ts` | La tabla de premios de la tragaperras |
 
 El criterio para añadir un test aquí: que un fallo sea **silencioso** (corrompe datos
 o desvincula productos sin error visible). La lógica de render y las reglas de
@@ -170,7 +169,6 @@ src/
 │   ├── tcg/             # Grid, modal, filtros y PriceTag
 │   ├── reservas/        # Tarjeta, filtros y formulario de la página pública
 │   ├── aboutUs/         # Cartas del equipo
-│   ├── goldSaucer/      # Tragaperras del easter egg
 │   └── admin/
 │       ├── nav/         # Editor de navegación
 │       ├── productForm/ # Formulario de producto
@@ -180,14 +178,14 @@ src/
 │       └── reservas/    # Bandeja de solicitudes
 ├── contexts/            # AuthProvider y su contexto
 ├── hooks/               # useSidebarConfig, useSectionSelector, useDragReorder,
-│                        # useSelection, useSecretCode, useProductFilter, …
+│                        # useSelection, useProductFilter, …
 ├── i18n/                # es.json, en.json
 ├── lib/
 │   ├── firebase.ts
 │   ├── price.ts         # toPrice, parsePriceInput, formatPrice
 │   └── tcgUtils.ts      # pathToSectionId, slugToTcgId, toSlug
 ├── pages/
-│   ├── Home.tsx, AboutUs.tsx, Torneos.tsx, Reservas.tsx, GoldSaucer.tsx
+│   ├── Home.tsx, AboutUs.tsx, Torneos.tsx, Reservas.tsx
 │   ├── tcgs/TcgPage.tsx # Página dinámica de sección (catch-all)
 │   └── admin/           # AdminLoginPage, AdminPanelPage
 ├── services/            # products, categories, nav, reservas, torneos
@@ -196,7 +194,7 @@ src/
 
 Cada área tiene su carpeta, y dentro conviven los componentes de vista con
 un módulo de lógica pura (`productQuery.ts`, `reservasQuery.ts`,
-`navMutations.ts`, `categoryRules.ts`, `productPayload.ts`, `slotMachine.ts`)
+`navMutations.ts`, `categoryRules.ts`, `productPayload.ts`)
 y su fichero de tests al lado. Los componentes que se repetían en varias
 áreas viven en la raíz de `components/`.
 
