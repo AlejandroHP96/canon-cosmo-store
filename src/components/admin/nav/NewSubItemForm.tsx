@@ -65,7 +65,7 @@ const NewSubItemForm = ({
             </span>
             <button
                 onClick={onOpenColorPicker}
-                title="Elegir color"
+                title="Elegir color" aria-label="Elegir color"
                 className="w-5 h-5 rounded-full border border-outline-variant/60"
                 style={{ backgroundColor: form.color || DEFAULT_NAV_COLOR }}
             />

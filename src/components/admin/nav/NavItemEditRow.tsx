@@ -42,13 +42,13 @@ const NavItemEditRow = ({ form, saving, onChange, onSave, onCancel }: Props) => 
                 onClick={onSave}
                 disabled={saving}
                 className="text-primary hover:text-on-surface transition-colors disabled:opacity-40"
-                title="Guardar">
+                title="Guardar" aria-label="Guardar">
                 <span className="material-symbols-outlined text-sm">check</span>
             </button>
             <button
                 onClick={onCancel}
                 className="text-on-surface-variant hover:text-on-surface transition-colors"
-                title="Cancelar">
+                title="Cancelar" aria-label="Cancelar">
                 <span className="material-symbols-outlined text-sm">close</span>
             </button>
         </div>

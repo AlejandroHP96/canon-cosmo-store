@@ -61,7 +61,7 @@ const ProductRow = ({ product, isSelected, onToggleSelect, onEdit, onDuplicate, 
                 <button
                     onClick={onToggleVisible}
                     className={`border p-1.5 transition-colors ${isVisible ? 'border-outline-variant text-on-surface-variant hover:border-yellow-500 hover:text-yellow-500' : 'border-yellow-500 text-yellow-500 hover:border-primary hover:text-primary'}`}
-                    title={isVisible ? 'Ocultar producto' : 'Publicar producto'}>
+                    title={isVisible ? 'Ocultar producto' : 'Publicar producto'} aria-label={isVisible ? 'Ocultar producto' : 'Publicar producto'}>
                     <span className="material-symbols-outlined text-sm">
                         {isVisible ? 'visibility' : 'visibility_off'}
                     </span>
@@ -69,19 +69,19 @@ const ProductRow = ({ product, isSelected, onToggleSelect, onEdit, onDuplicate, 
                 <button
                     onClick={onEdit}
                     className="border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary p-1.5 transition-colors"
-                    title="Editar">
+                    title="Editar" aria-label="Editar">
                     <span className="material-symbols-outlined text-sm">edit</span>
                 </button>
                 <button
                     onClick={onDuplicate}
                     className="border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary p-1.5 transition-colors"
-                    title="Duplicar">
+                    title="Duplicar" aria-label="Duplicar">
                     <span className="material-symbols-outlined text-sm">content_copy</span>
                 </button>
                 <button
                     onClick={onDelete}
                     className="border border-outline-variant text-on-surface-variant hover:border-error hover:text-error p-1.5 transition-colors"
-                    title="Eliminar">
+                    title="Eliminar" aria-label="Eliminar">
                     <span className="material-symbols-outlined text-sm">delete</span>
                 </button>
             </div>

@@ -46,7 +46,7 @@ const ReservaRow = ({ reserva, expanded, saving, onToggleNotas, onDelete }: Prop
                     className={`shrink-0 hover:text-primary transition-colors ${
                         expanded ? 'text-primary' : 'text-on-surface-variant'
                     }`}
-                    title="Ver notas">
+                    title="Ver notas" aria-label="Ver notas">
                     <span className="material-symbols-outlined text-sm">sticky_note_2</span>
                 </button>
             )}
@@ -54,7 +54,7 @@ const ReservaRow = ({ reserva, expanded, saving, onToggleNotas, onDelete }: Prop
                 onClick={onDelete}
                 disabled={saving}
                 className="shrink-0 text-error hover:bg-error-container/30 p-1 transition-colors disabled:opacity-40"
-                title="Eliminar">
+                title="Eliminar" aria-label="Eliminar">
                 <span className="material-symbols-outlined text-sm">delete</span>
             </button>
         </div>

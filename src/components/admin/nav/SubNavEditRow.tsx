@@ -44,13 +44,13 @@ const SubNavEditRow = ({
                 onClick={onSave}
                 disabled={saving}
                 className="text-primary hover:text-on-surface transition-colors disabled:opacity-40"
-                title="Guardar">
+                title="Guardar" aria-label="Guardar">
                 <span className="material-symbols-outlined text-sm">check</span>
             </button>
             <button
                 onClick={onCancel}
                 className="text-on-surface-variant hover:text-on-surface transition-colors"
-                title="Cancelar">
+                title="Cancelar" aria-label="Cancelar">
                 <span className="material-symbols-outlined text-sm">close</span>
             </button>
         </div>
@@ -68,7 +68,7 @@ const SubNavEditRow = ({
             </span>
             <button
                 onClick={onOpenColorPicker}
-                title="Elegir color"
+                title="Elegir color" aria-label="Elegir color"
                 className="w-5 h-5 rounded-full border border-outline-variant/60"
                 style={{ backgroundColor: form.color || DEFAULT_NAV_COLOR }}
             />

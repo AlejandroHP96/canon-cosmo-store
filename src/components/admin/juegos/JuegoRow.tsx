@@ -38,14 +38,14 @@ const JuegoRow = ({ juego, saving, onEdit, onDelete }: Props) => (
                 onClick={onEdit}
                 disabled={saving}
                 className="text-on-surface-variant hover:text-primary transition-colors disabled:opacity-40"
-                title="Editar">
+                title="Editar" aria-label="Editar">
                 <span className="material-symbols-outlined text-sm">edit</span>
             </button>
             <button
                 onClick={onDelete}
                 disabled={saving}
                 className="text-on-surface-variant hover:text-error transition-colors disabled:opacity-40"
-                title="Eliminar">
+                title="Eliminar" aria-label="Eliminar">
                 <span className="material-symbols-outlined text-sm">delete</span>
             </button>
         </div>

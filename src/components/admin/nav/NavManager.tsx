@@ -160,7 +160,7 @@ const NavManager = () => {
                             key={idx}
                             {...itemDrag.dragProps(key)}
                             draggable={editItemIdx !== idx}
-                            className={`tactical-frame transition-all ${
+                            className={`tactical-frame select-none transition-all ${
                                 itemDrag.isTarget(key)
                                     ? 'border-primary border-2 opacity-80'
                                     : itemDrag.dragKey === key

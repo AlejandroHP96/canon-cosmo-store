@@ -30,7 +30,7 @@ const ColorPickerPopover = ({ value, onChange, onClose }: ColorPickerPopoverProp
                 <button
                     onClick={onClose}
                     className="text-on-surface-variant hover:text-on-surface transition-colors"
-                    title="Cerrar">
+                    title="Cerrar" aria-label="Cerrar">
                     <span className="material-symbols-outlined text-sm">close</span>
                 </button>
             </div>
@@ -40,7 +40,7 @@ const ColorPickerPopover = ({ value, onChange, onClose }: ColorPickerPopoverProp
                     <button
                         key={hex}
                         onClick={() => onChange(hex)}
-                        title={hex}
+                        title={hex} aria-label={hex}
                         className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${
                             value.toLowerCase() === hex.toLowerCase()
                                 ? 'border-primary'

@@ -34,7 +34,7 @@ const NavItemRow = ({ item, expanded, saving, onToggleExpand, onEdit, onDelete }
                 onClick={onToggleExpand}
                 disabled={saving}
                 className={`transition-colors disabled:opacity-40 ${expanded ? 'text-primary' : 'text-on-surface-variant hover:text-primary'}`}
-                title="Gestionar submenú">
+                title="Gestionar submenú" aria-label="Gestionar submenú">
                 <span
                     className={`material-symbols-outlined text-sm transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}>
                     expand_more
@@ -44,14 +44,14 @@ const NavItemRow = ({ item, expanded, saving, onToggleExpand, onEdit, onDelete }
                 onClick={onEdit}
                 disabled={saving}
                 className="text-on-surface-variant hover:text-primary transition-colors disabled:opacity-40"
-                title="Editar">
+                title="Editar" aria-label="Editar">
                 <span className="material-symbols-outlined text-sm">edit</span>
             </button>
             <button
                 onClick={onDelete}
                 disabled={saving}
                 className="text-on-surface-variant hover:text-error transition-colors disabled:opacity-40"
-                title="Eliminar">
+                title="Eliminar" aria-label="Eliminar">
                 <span className="material-symbols-outlined text-sm">delete</span>
             </button>
         </div>

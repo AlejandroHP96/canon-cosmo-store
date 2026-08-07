@@ -88,7 +88,7 @@ const SubmenuPanel = ({
                     <div
                         key={sIdx}
                         {...drag.dragProps(key)}
-                        className={`flex items-center gap-3 pl-2 border-l-2 transition-all ${subRowClass(drag, key)}`}>
+                        className={`flex items-center gap-3 pl-2 border-l-2 select-none transition-all ${subRowClass(drag, key)}`}>
                         <SubNavRow
                             sub={sub}
                             saving={saving}
