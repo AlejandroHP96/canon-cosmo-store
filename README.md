@@ -109,6 +109,13 @@ Necesitan service account keys en `.keys/` — ver [`.keys/README.md`](.keys/REA
 | `npm run sync:dev-db` | Copia las colecciones de prod a dev (excluye `reservas`) |
 | `npm run migrate:price <dev\|prod>` | Migra `price`/`salePrice` de string a number. Dry-run por defecto; añade `-- --apply` para escribir. Hace backup en `.backups/` |
 
+## Integración continua
+
+`.github/workflows/ci.yml` ejecuta lint, tests y build en cada push a `develop`
+o `main` y en cada pull request. Usa `npm ci`, que respeta el lockfile exacto y
+falla si se ha desincronizado de `package.json`. El build incluye `tsc -b`, así
+que la comprobación de tipos también entra.
+
 ## Tests
 
 Vitest, en entorno `node`. Solo cubren **funciones puras**: nada de DOM, Firebase ni
