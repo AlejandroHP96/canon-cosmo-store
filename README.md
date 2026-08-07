@@ -207,6 +207,20 @@ y su fichero de tests al lado. Los componentes que se repetían en varias
 `public/` solo contiene `_redirects`. Cualquier imagen nueva va en `src/assets/` e
 importada, para que el nombre lleve hash y un cambio invalide la caché del navegador.
 
+## Manejo de errores
+
+Una excepción durante el render, si nadie la captura, deja el árbol de React
+vacío: pantalla en blanco sin mensaje. `components/ErrorBoundary.tsx` lo evita
+en dos niveles:
+
+- En `main.tsx`, envolviendo la app entera. Red de seguridad final.
+- En el `<main>` del Layout, envolviendo el `<Outlet />`. Un fallo en una página
+  deja en pie header, sidebar y footer, así que se puede navegar a otra sección.
+
+El detalle del error solo se muestra en desarrollo. No captura errores de
+`async`/`await`, de manejadores de eventos ni de `setTimeout`: esos no ocurren
+durante el render.
+
 ## Previsualizaciones al compartir
 
 Los rastreadores de WhatsApp, Discord, Twitter y Telegram **no ejecutan

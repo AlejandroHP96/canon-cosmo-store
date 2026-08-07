@@ -4,6 +4,7 @@ import Header from '../Header/Header';
 import SideNav from '../SideNav/SideNav';
 import Footer from '../Footer/Footer';
 import KonamiEasterEgg from '../KonamiEasterEgg';
+import ErrorBoundary from '../ErrorBoundary';
 
 const Layout = () => {
     const [sideNavOpen, setSideNavOpen] = useState(false);
@@ -22,7 +23,11 @@ const Layout = () => {
                 />
             )}
             <main className="md:ml-64 mt-16 p-4 md:p-8 h-[calc(100vh-100px)] overflow-y-auto bg-surface-dim">
-                <Outlet />
+                {/* Acota el fallo a la página: header, sidebar y footer siguen
+                    en pie, así el usuario puede navegar a otra sección */}
+                <ErrorBoundary title="Esta página ha fallado">
+                    <Outlet />
+                </ErrorBoundary>
             </main>
             <Footer />
             <KonamiEasterEgg />
