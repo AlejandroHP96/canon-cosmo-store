@@ -32,7 +32,7 @@ const ProductModal = ({ product, onClose }: Props) => {
                 </div>
 
                 <div className="w-full mb-5">
-                    <ProductImage src={product.image} featured inStock={product.inStock} className="w-full h-64" />
+                    <ProductImage src={product.image} alt={product.name} featured eager inStock={product.inStock} className="w-full h-64" />
                 </div>
 
                 <p className="text-[10px] font-headline text-primary tracking-[0.2em] uppercase mb-1">

@@ -48,7 +48,13 @@ const Torneos = () => {
                             const inner = (
                                 <div className="relative h-36 sm:h-56 overflow-hidden group">
                                     {juego.imagen ? (
-                                        <img src={juego.imagen} alt={juego.nombre} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                        <img
+                                            src={juego.imagen}
+                                            alt={juego.nombre}
+                                            loading="lazy"
+                                            decoding="async"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
                                     ) : (
                                         <div className="w-full h-full bg-surface-container flex items-center justify-center">
                                             <span className="material-symbols-outlined text-primary/20 text-7xl">emoji_events</span>

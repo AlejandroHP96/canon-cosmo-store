@@ -30,7 +30,7 @@ const CompactCard = ({ product, count, onSelect }: { product: Product; count: 2 
             className="tactical-frame flex flex-col group cursor-pointer hover:bg-surface-bright transition-colors overflow-hidden">
             <div className={`flex flex-row ${s.gap} ${s.padding} pb-3`}>
                 <div className={`${s.img} shrink-0`}>
-                    <ProductImage src={product.image} featured inStock={product.inStock} />
+                    <ProductImage src={product.image} alt={product.name} featured eager inStock={product.inStock} />
                 </div>
                 <div className="flex flex-col justify-center flex-1 min-w-0 gap-1">
                     <p className="text-[9px] font-headline text-primary tracking-[0.2em] uppercase">

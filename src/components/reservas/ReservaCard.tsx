@@ -9,7 +9,7 @@ type Props = {
 
 const ReservaCard = ({ producto, onReservar }: Props) => (
     <div className="tactical-frame p-4 flex flex-col gap-3 hover:bg-surface-bright transition-colors group">
-        <ProductImage src={producto.image} inStock={producto.inStock} />
+        <ProductImage src={producto.image} alt={producto.name} inStock={producto.inStock} />
         <div className="flex-1 min-w-0">
             <p className="text-[9px] font-headline text-primary/60 tracking-widest uppercase truncate">
                 {producto.set || producto.tcg}

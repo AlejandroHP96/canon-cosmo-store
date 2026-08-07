@@ -10,7 +10,13 @@ type Props = {
 const JuegoRow = ({ juego, saving, onEdit, onDelete }: Props) => (
     <div className="tactical-frame p-4 flex items-center gap-4">
         {juego.imagen ? (
-            <img src={juego.imagen} alt={juego.nombre} className="w-14 h-14 object-cover shrink-0" />
+            <img
+                src={juego.imagen}
+                alt={juego.nombre}
+                loading="lazy"
+                decoding="async"
+                className="w-14 h-14 object-cover shrink-0"
+            />
         ) : (
             <div className="w-14 h-14 bg-surface-container flex items-center justify-center shrink-0">
                 <span className="material-symbols-outlined text-primary/30 text-2xl">emoji_events</span>

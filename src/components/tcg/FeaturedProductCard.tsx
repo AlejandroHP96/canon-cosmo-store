@@ -16,7 +16,7 @@ const FeaturedProductCard = ({ product, onSelect }: Props) => {
             {/* Top: imagen izquierda, info derecha (stack en mobile) */}
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 p-4 sm:p-6 pb-4">
                 <div className="w-full sm:w-48 shrink-0">
-                    <ProductImage src={product.image} featured inStock={product.inStock} />
+                    <ProductImage src={product.image} alt={product.name} featured eager inStock={product.inStock} />
                 </div>
                 <div className="flex flex-col justify-center flex-1 gap-2">
                     <p className="text-[10px] font-headline text-primary tracking-[0.2em] uppercase">

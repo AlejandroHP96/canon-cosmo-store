@@ -23,7 +23,7 @@ const ProductRow = ({ product, isSelected, onToggleSelect, onEdit, onDuplicate, 
                 onChange={onToggleSelect}
                 className="w-4 h-4 accent-primary shrink-0"
             />
-            <ProductImage src={product.image} className="w-14 h-14 shrink-0" />
+            <ProductImage src={product.image} alt={product.name} className="w-14 h-14 shrink-0" />
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-0.5">
                     <span className="text-[9px] font-headline uppercase tracking-widest text-primary/60">

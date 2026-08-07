@@ -55,7 +55,7 @@ const ProductGrid = ({ products, totalCount, search, selectedCategory, sectionLa
                         key={product.id}
                         onClick={() => onSelect?.(product)}
                         className="tactical-frame p-4 hover:bg-surface-bright transition-colors cursor-pointer flex flex-col gap-3 group">
-                        <ProductImage src={product.image} inStock={product.inStock} />
+                        <ProductImage src={product.image} alt={product.name} inStock={product.inStock} />
                         <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
                                 <p className="text-[9px] font-headline text-primary/60 tracking-widest uppercase truncate">
