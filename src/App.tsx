@@ -1,39 +1,39 @@
+import { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout/Layout';
+import Spinner from './components/Spinner';
 import Home from './pages/Home';
 import AboutUs from './pages/AboutUs';
 import Torneos from './pages/Torneos';
 import Reservas from './pages/Reservas';
 import TcgPage from './pages/tcgs/TcgPage';
-import { AuthProvider } from './contexts/AuthContext';
-import AdminLoginPage from './pages/admin/AdminLoginPage';
-import AdminPanelPage from './pages/admin/AdminPanelPage';
-import ProtectedRoute from './components/admin/ProtectedRoute';
+
+// El admin y el SDK de autenticación se descargan solo al entrar en /cosmos-admin
+const AdminArea = lazy(() => import('./pages/admin/AdminArea'));
 
 const App = () => {
     return (
-        <AuthProvider>
-            <Routes>
-                {/* Tienda pública */}
-                <Route element={<Layout />}>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/aboutus" element={<AboutUs />} />
-                    <Route path="/torneos" element={<Torneos />} />
-                    <Route path="/reservas" element={<Reservas />} />
-                    {/* Catch-all: cualquier ruta no explícita renderiza TcgPage dinámicamente */}
-                    <Route path="*" element={<TcgPage />} />
-                </Route>
+        <Routes>
+            {/* Tienda pública */}
+            <Route element={<Layout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/aboutus" element={<AboutUs />} />
+                <Route path="/torneos" element={<Torneos />} />
+                <Route path="/reservas" element={<Reservas />} />
+                {/* Catch-all: cualquier ruta no explícita renderiza TcgPage dinámicamente */}
+                <Route path="*" element={<TcgPage />} />
+            </Route>
 
-                {/* Admin — ruta oculta, sin Layout público */}
-                <Route path="/cosmos-admin" element={<AdminLoginPage />} />
-                <Route element={<ProtectedRoute />}>
-                    <Route
-                        path="/cosmos-admin/panel"
-                        element={<AdminPanelPage />}
-                    />
-                </Route>
-            </Routes>
-        </AuthProvider>
+            {/* Admin — ruta oculta, sin Layout público */}
+            <Route
+                path="/cosmos-admin/*"
+                element={
+                    <Suspense fallback={<Spinner size="lg" className="min-h-screen bg-surface" />}>
+                        <AdminArea />
+                    </Suspense>
+                }
+            />
+        </Routes>
     );
 };
 

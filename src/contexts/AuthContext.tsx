@@ -5,7 +5,7 @@ import {
     signOut as firebaseSignOut,
     type User,
 } from 'firebase/auth';
-import { auth } from '../lib/firebase';
+import { auth } from '../lib/firebaseAuth';
 import { AuthContext } from './authContext';
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {

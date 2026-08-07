@@ -1,6 +1,5 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { getAuth, browserSessionPersistence, setPersistence } from 'firebase/auth';
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -12,10 +11,10 @@ const firebaseConfig = {
     measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 
 export const db = getFirestore(app);
-export const auth = getAuth(app);
 
-// Session persistence: auth state is cleared when the browser/tab is closed
-setPersistence(auth, browserSessionPersistence);
+// `auth` vive en firebaseAuth.ts a propósito: este módulo lo importan todos
+// los servicios para leer de Firestore, y si expusiera auth, el SDK de
+// autenticación acabaría en el bundle que descarga la tienda pública.
