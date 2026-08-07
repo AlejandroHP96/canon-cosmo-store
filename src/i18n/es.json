@@ -2,18 +2,13 @@
   "header": {
     "tournaments": "Torneos",
     "reservas": "Reservas",
-    "aboutUs": "Sobre Nosotros",
-    "admin": "Admin"
+    "aboutUs": "Sobre Nosotros"
   },
   "sidenav": {
     "command": "COMANDO",
-    "selectAction": "SELECCIONAR ACCIÓN",
-    "currentStatus": "CURRENT STATUS",
-    "statusMessage": "El archivo de Bugenhagen está abierto. Salud planetaria: ESTABLE."
+    "selectAction": "SELECCIONAR ACCIÓN"
   },
   "footer": {
-    "copyright": "© 2023-2026 SHINRA ELECTRIC POWER CO.",
-    "whereWeAre": "Donde estamos",
     "connection": "CONNECTION: SECURE"
   },
   "hero": {
@@ -40,7 +35,6 @@
     "soldOut": "Agotado"
   },
   "featuredProduct": {
-    "price": "PRECIO",
     "soldOut": "Agotado"
   },
   "aboutUs": {
@@ -48,25 +42,17 @@
     "subtitle": "Miembros del Equipo",
     "description": "Hola, somos Cañon Cosmo y estamos felices de tenerles.",
     "legendaryCreature": "Criatura Legendaria",
-    "ability": "habilidad",
-    "proxy": "Proxy por Cañón Cosmo Store",
     "team": {
       "toni": {
         "role": "Fundador",
         "type1": "Dueño de Tienda",
         "type2": "Llorón",
-        "ability1": "Pokémon",
-        "ability2": "Torneos",
-        "ability3": "Colección",
         "bio": "Al entrar en juego: busca en tu biblioteca hasta 3 cartas TCG y añádelas a tu mano.\n\nCuando Toni declara ataque, puedes revelar una carta Pokémon de tu mano. Si lo haces, Toni recibe +2/+0 hasta el final del turno."
       },
       "jonay": {
         "role": "Fundador",
         "type1": "Dueño de Tienda",
         "type2": "Coleccionista",
-        "ability1": "Funko Pop",
-        "ability2": "Rareza",
-        "ability3": "Comunidad",
         "bio": "Siempre que Jonay entra en juego, busca en tu biblioteca el coleccionable más raro y añádelo a tu vitrina.\n\nSi controlas 5 o más objetos únicos, los rivales no pueden robar cartas adicionales."
       }
     }
@@ -105,8 +91,7 @@
     }
   },
   "search": {
-    "placeholder": "Buscar producto...",
-    "clear": "Limpiar búsqueda"
+    "placeholder": "Buscar producto..."
   },
   "notFound": {
     "seoTitle": "Página no encontrada",
@@ -121,5 +106,8 @@
     "text": "Ha ocurrido un error inesperado. Puedes reintentar o volver al inicio.",
     "retry": "Reintentar",
     "home": "Ir al inicio"
+  },
+  "errors": {
+    "loadSection": "No se han podido cargar los productos de esta sección."
   }
 }

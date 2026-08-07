@@ -1,3 +1,4 @@
+import Modal from '../../Modal';
 type Props = {
     count: number;
     deleting: boolean;
@@ -6,8 +7,11 @@ type Props = {
 };
 
 const BulkDeleteModal = ({ count, deleting, onClose, onConfirm }: Props) => (
-    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-        <div className="tactical-frame p-6 w-full max-w-sm">
+    <Modal
+        onClose={onClose}
+        title="Eliminar productos"
+        panelClass="tactical-frame p-6 w-full max-w-sm"
+        disableBackdropClose={deleting}>
             <h2 className="font-headline font-bold text-lg text-on-surface uppercase tracking-widest mb-2">
                 Eliminar productos
             </h2>
@@ -32,8 +36,7 @@ const BulkDeleteModal = ({ count, deleting, onClose, onConfirm }: Props) => (
                     {deleting ? 'Eliminando...' : `Eliminar ${count}`}
                 </button>
             </div>
-        </div>
-    </div>
+    </Modal>
 );
 
 export default BulkDeleteModal;

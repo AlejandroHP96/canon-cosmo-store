@@ -34,6 +34,7 @@ const ReservaFormModal = ({ producto, form, saving, onChange, onSubmit, onClose 
                 <label className={labelClass}>{t('reservas.form.name')}</label>
                 <input
                     required
+                    maxLength={200}
                     pattern={NOMBRE_COMPLETO_PATTERN}
                     title={t('reservas.form.nameHint')}
                     value={form.cliente}
@@ -47,9 +48,12 @@ const ReservaFormModal = ({ producto, form, saving, onChange, onSubmit, onClose 
                 <input
                     type="number"
                     min={1}
+                    max={100}
                     value={form.cantidad}
                     onChange={(e) =>
-                        onChange({ cantidad: Math.max(1, parseInt(e.target.value) || 1) })
+                        onChange({
+                            cantidad: Math.min(100, Math.max(1, parseInt(e.target.value) || 1)),
+                        })
                     }
                     className={fieldClass}
                 />
@@ -58,6 +62,7 @@ const ReservaFormModal = ({ producto, form, saving, onChange, onSubmit, onClose 
                 <label className={labelClass}>{t('reservas.form.notes')}</label>
                 <textarea
                     rows={3}
+                    maxLength={1000}
                     value={form.notas}
                     onChange={(e) => onChange({ notas: e.target.value })}
                     placeholder={t('reservas.form.notesPlaceholder')}

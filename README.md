@@ -214,6 +214,26 @@ y su fichero de tests al lado. Los componentes que se repetían en varias
 `public/` solo contiene `_redirects`. Cualquier imagen nueva va en `src/assets/` e
 importada, para que el nombre lleve hash y un cambio invalide la caché del navegador.
 
+## Modales
+
+`components/Modal.tsx` es la base de todos los diálogos: pone `role="dialog"`,
+`aria-modal` y el nombre accesible, atrapa el foco mientras está abierto, cierra
+con Escape y devuelve el foco al elemento que lo abrió. Antes cada modal
+repetía el fondo y el panel sin nada de eso.
+
+El overlay del código Konami no lo usa a propósito: es decorativo, se cierra con
+cualquier tecla y atraparle el foco sería peor.
+
+## Protección contra abuso
+
+Las reglas de Firestore validan la forma de cada reserva, pero no pueden limitar
+cuántas se crean. Eso lo cubre **App Check**, que está preparado en
+`lib/appCheck.ts` pero **desactivado** mientras no exista `VITE_RECAPTCHA_SITE_KEY`.
+
+Para activarlo: Firebase Console -> App Check -> registrar la app web con
+reCAPTCHA v3, y poner la clave de sitio en esa variable en Vercel. El módulo se
+carga de forma dinámica, así que no pesa en el bundle mientras esté apagado.
+
 ## Manejo de errores
 
 Una excepción durante el render, si nadie la captura, deja el árbol de React

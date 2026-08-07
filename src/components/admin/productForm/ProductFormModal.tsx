@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Modal from '../../Modal';
 import { addProduct, updateProduct } from '../../../services/productsService';
 import { getCategoriesByTcg } from '../../../services/categoriesService';
 import { toPriceInput } from '../../../lib/price';
@@ -45,18 +46,6 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
     const set = <K extends keyof ProductForm>(key: K, value: ProductForm[K]) =>
         setForm((prev) => ({ ...prev, [key]: value }));
 
-    const handleEsc = useCallback(
-        (e: KeyboardEvent) => {
-            if (e.key === 'Escape' && !saving) onClose();
-        },
-        [onClose, saving],
-    );
-
-    useEffect(() => {
-        document.addEventListener('keydown', handleEsc);
-        return () => document.removeEventListener('keydown', handleEsc);
-    }, [handleEsc]);
-
     useEffect(() => {
         if (!section.sectionId) return;
         getCategoriesByTcg(section.sectionId).then((cats) => {
@@ -100,8 +89,12 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
     };
 
     return (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-2">
-            <div className="tactical-frame p-4 sm:p-6 w-full max-w-2xl max-h-[96vh] overflow-y-auto">
+        <Modal
+            onClose={onClose}
+            title={isEdit ? 'Editar producto' : 'Nuevo producto'}
+            backdropClass="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-2"
+            panelClass="tactical-frame p-4 sm:p-6 w-full max-w-2xl max-h-[96vh] overflow-y-auto"
+            disableBackdropClose={saving}>
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="font-headline font-bold text-lg text-on-surface uppercase tracking-widest">
                         {isEdit ? 'Editar Producto' : 'Nuevo Producto'}
@@ -214,8 +207,7 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
                         }}
                     />
                 </form>
-            </div>
-        </div>
+        </Modal>
     );
 };
 

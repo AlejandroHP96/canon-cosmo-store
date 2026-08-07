@@ -17,16 +17,21 @@ export function useTcgCategories(tcg: TcgId): Category[] {
 
     useEffect(() => {
         let cancelled = false;
-        getCategoriesByTcg(tcg).then((names) => {
-            if (cancelled) return;
-            setLoaded({
-                tcg,
-                categories: names.map((label) => ({
-                    label,
-                    icon: CATEGORY_ICON[label] ?? DEFAULT_CAT_ICON,
-                })),
+        getCategoriesByTcg(tcg)
+            .then((names) => {
+                if (cancelled) return;
+                setLoaded({
+                    tcg,
+                    categories: names.map((label) => ({
+                        label,
+                        icon: CATEGORY_ICON[label] ?? DEFAULT_CAT_ICON,
+                    })),
+                });
+            })
+            // Si falla solo se pierde el filtro: la sección sigue usable
+            .catch(() => {
+                if (!cancelled) setLoaded({ tcg, categories: [] });
             });
-        });
         // Evita que una respuesta lenta de la sección anterior pise a la nueva
         return () => {
             cancelled = true;

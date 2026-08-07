@@ -2,18 +2,13 @@
   "header": {
     "tournaments": "Tournaments",
     "reservas": "Reservations",
-    "aboutUs": "About Us",
-    "admin": "Admin"
+    "aboutUs": "About Us"
   },
   "sidenav": {
     "command": "COMMAND",
-    "selectAction": "SELECT ACTION",
-    "currentStatus": "CURRENT STATUS",
-    "statusMessage": "Bugenhagen's archive is open. Planetary health: STABLE."
+    "selectAction": "SELECT ACTION"
   },
   "footer": {
-    "copyright": "© 2023-2026 SHINRA ELECTRIC POWER CO.",
-    "whereWeAre": "Where we are",
     "connection": "CONNECTION: SECURE"
   },
   "hero": {
@@ -40,7 +35,6 @@
     "soldOut": "Sold out"
   },
   "featuredProduct": {
-    "price": "PRICE",
     "soldOut": "Sold out"
   },
   "aboutUs": {
@@ -48,25 +42,17 @@
     "subtitle": "Party Members",
     "description": "Hi, we are Cañon Cosmo and we're happy to have you here.",
     "legendaryCreature": "Legendary Creature",
-    "ability": "ability",
-    "proxy": "Proxy by Cañón Cosmo Store",
     "team": {
       "toni": {
         "role": "Founder",
         "type1": "Store Owner",
         "type2": "Crybaby",
-        "ability1": "Pokémon",
-        "ability2": "Tournaments",
-        "ability3": "Collection",
         "bio": "When Toni enters play: search your library for up to 3 TCG cards and add them to your hand.\n\nWhenever Toni declares an attack, you may reveal a Pokémon card from your hand. If you do, Toni gets +2/+0 until end of turn."
       },
       "jonay": {
         "role": "Founder",
         "type1": "Store Owner",
         "type2": "Collector",
-        "ability1": "Funko Pop",
-        "ability2": "Rarity",
-        "ability3": "Community",
         "bio": "Whenever Jonay enters play, search your library for the rarest collectible and add it to your showcase.\n\nIf you control 5 or more unique items, opponents cannot draw additional cards."
       }
     }
@@ -105,8 +91,7 @@
     }
   },
   "search": {
-    "placeholder": "Search product...",
-    "clear": "Clear search"
+    "placeholder": "Search product..."
   },
   "notFound": {
     "seoTitle": "Page not found",
@@ -121,5 +106,8 @@
     "text": "An unexpected error occurred. You can retry or go back home.",
     "retry": "Retry",
     "home": "Go home"
+  },
+  "errors": {
+    "loadSection": "Could not load the products for this section."
   }
 }

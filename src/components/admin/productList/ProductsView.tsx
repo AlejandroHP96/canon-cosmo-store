@@ -4,6 +4,7 @@ import { getSidebarConfig, type NavItem } from '../../../services/navService';
 import { useSelection } from '../../../hooks/useSelection';
 import type { Product } from '../../../types';
 import Spinner from '../../Spinner';
+import ErrorBanner from '../../ErrorBanner';
 import {
     availableCategories,
     filterProducts,
@@ -25,6 +26,7 @@ const PAGE_SIZE = 25;
 const ProductsView = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [navItems, setNavItems] = useState<NavItem[]>([]);
 
     const [menuIdx, setMenuIdx] = useState<number | null>(null);
@@ -45,13 +47,20 @@ const ProductsView = () => {
 
     const refresh = async () => {
         setLoading(true);
-        setProducts(await getAllProducts());
-        setLoading(false);
+        try {
+            setProducts(await getAllProducts());
+        } catch {
+            setError('Error al cargar los productos.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
         refresh();
-        getSidebarConfig().then((cfg) => setNavItems(cfg.items));
+        getSidebarConfig()
+            .then((cfg) => setNavItems(cfg.items))
+            .catch(() => setError('Error al cargar la configuración del menú.'));
     }, []);
 
     const selectedMenu = menuIdx !== null ? navItems[menuIdx] : null;
@@ -118,6 +127,8 @@ const ProductsView = () => {
                     Nuevo producto
                 </button>
             </div>
+
+            <ErrorBanner message={error} onDismiss={() => setError(null)} />
 
             <ProductSearchBar
                 search={search}

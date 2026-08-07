@@ -11,6 +11,8 @@ const Torneos = () => {
     useEffect(() => {
         getJuegos()
             .then(setJuegos)
+            // Sin catch, un fallo dejaba una promesa rechazada sin atender
+            .catch(() => setJuegos([]))
             .finally(() => setLoading(false));
     }, []);
 

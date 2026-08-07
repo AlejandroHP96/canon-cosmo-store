@@ -34,13 +34,16 @@ export function useSectionSelector(initialSectionId: string) {
     const [navReady, setNavReady] = useState(false);
 
     useEffect(() => {
-        getSidebarConfig().then((cfg) => {
-            const [m, s] = findIndices(cfg.items, initialSectionId);
-            setNavItems(cfg.items);
-            setMenuIdx(m);
-            setSubIdx(s);
-            setNavReady(true);
-        });
+        getSidebarConfig()
+            .then((cfg) => {
+                const [m, s] = findIndices(cfg.items, initialSectionId);
+                setNavItems(cfg.items);
+                setMenuIdx(m);
+                setSubIdx(s);
+            })
+            // navReady igualmente: si no, el selector se queda deshabilitado
+            // para siempre y el formulario no se puede usar
+            .finally(() => setNavReady(true));
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const menu = navItems[menuIdx];

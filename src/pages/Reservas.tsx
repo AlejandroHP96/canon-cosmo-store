@@ -5,6 +5,7 @@ import { addReserva } from '../services/reservasService';
 import type { Product } from '../types';
 import SEO from '../components/SEO';
 import ErrorBanner from '../components/ErrorBanner';
+import Modal from '../components/Modal';
 import Spinner from '../components/Spinner';
 import ReservaCard from '../components/reservas/ReservaCard';
 import ReservaFilters from '../components/reservas/ReservaFilters';
@@ -138,28 +139,29 @@ const Reservas = () => {
             </div>
 
             {(selectedProduct || success) && (
-                <div
-                    className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4"
-                    onClick={() => (success ? setSuccess(false) : cerrarModal())}>
-                    <div
-                        className="tactical-frame p-6 w-full max-w-lg"
-                        onClick={(e) => e.stopPropagation()}>
-                        {success ? (
-                            <ReservaSuccess onClose={() => setSuccess(false)} />
-                        ) : (
-                            selectedProduct && (
-                                <ReservaFormModal
-                                    producto={selectedProduct}
-                                    form={form}
-                                    saving={saving}
-                                    onChange={(patch) => setForm((prev) => ({ ...prev, ...patch }))}
-                                    onSubmit={handleSubmit}
-                                    onClose={cerrarModal}
-                                />
-                            )
-                        )}
-                    </div>
-                </div>
+                <Modal
+                    onClose={() => (success ? setSuccess(false) : cerrarModal())}
+                    title={
+                        success
+                            ? t('reservas.success.title')
+                            : `${t('reservas.form.heading')}: ${selectedProduct?.name ?? ''}`
+                    }
+                    disableBackdropClose={saving}>
+                    {success ? (
+                        <ReservaSuccess onClose={() => setSuccess(false)} />
+                    ) : (
+                        selectedProduct && (
+                            <ReservaFormModal
+                                producto={selectedProduct}
+                                form={form}
+                                saving={saving}
+                                onChange={(patch) => setForm((prev) => ({ ...prev, ...patch }))}
+                                onSubmit={handleSubmit}
+                                onClose={cerrarModal}
+                            />
+                        )
+                    )}
+                </Modal>
             )}
         </div>
     );

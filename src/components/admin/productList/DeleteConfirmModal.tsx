@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import Modal from '../../Modal';
+import ErrorBanner from '../../ErrorBanner';
 import { deleteProduct } from '../../../services/productsService';
 import type { Product } from '../../../types';
 
@@ -10,20 +12,27 @@ type Props = {
 
 const DeleteConfirmModal = ({ product, onClose, onDeleted }: Props) => {
     const [deleting, setDeleting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const handleDelete = async () => {
         setDeleting(true);
+        setError(null);
         try {
             await deleteProduct(product.id);
             onDeleted();
+        } catch {
+            setError('No se ha podido eliminar. Inténtalo de nuevo.');
         } finally {
             setDeleting(false);
         }
     };
 
     return (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-            <div className="tactical-frame p-6 w-full max-w-sm">
+        <Modal
+            onClose={onClose}
+            title="Eliminar producto"
+            panelClass="tactical-frame p-6 w-full max-w-sm"
+            disableBackdropClose={deleting}>
                 <h2 className="font-headline font-bold text-lg text-on-surface uppercase tracking-widest mb-2">
                     Eliminar producto
                 </h2>
@@ -32,7 +41,9 @@ const DeleteConfirmModal = ({ product, onClose, onDeleted }: Props) => {
                     <span className="text-on-surface font-bold">{product.name}</span>
                     ? Esta acción no se puede deshacer.
                 </p>
-                <div className="flex gap-3">
+                <ErrorBanner message={error} onDismiss={() => setError(null)} className="mb-4" />
+
+            <div className="flex gap-3">
                     <button
                         onClick={onClose}
                         className="flex-1 border border-outline-variant text-on-surface-variant font-headline text-xs uppercase tracking-widest py-2.5 hover:border-primary hover:text-primary transition-colors">
@@ -45,8 +56,7 @@ const DeleteConfirmModal = ({ product, onClose, onDeleted }: Props) => {
                         {deleting ? 'Eliminando...' : 'Eliminar'}
                     </button>
                 </div>
-            </div>
-        </div>
+        </Modal>
     );
 };
 

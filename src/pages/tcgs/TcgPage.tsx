@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { getProductsByTcg } from '../../services/productsService';
 import { useTcgCategories } from '../../hooks/useTcgCategories';
@@ -36,11 +37,13 @@ function sectionIdsFromNav(items: NavItem[]): Set<string> {
 }
 
 const TcgSection = ({ sectionId, pathname }: { sectionId: string; pathname: string }) => {
+    const { t } = useTranslation();
     const categories = useTcgCategories(sectionId);
     const tcgOptions = useTcgOptions();
 
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState('Todo');
     const [search, setSearch] = useState('');
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -56,11 +59,17 @@ const TcgSection = ({ sectionId, pathname }: { sectionId: string; pathname: stri
 
     useEffect(() => {
         let cancelled = false;
-        getProductsByTcg(sectionId).then((data) => {
-            if (cancelled) return;
-            setProducts(data);
-            setLoading(false);
-        });
+        getProductsByTcg(sectionId)
+            .then((data) => {
+                if (!cancelled) setProducts(data);
+            })
+            .catch(() => {
+                // Sin esto el spinner se quedaba girando para siempre
+                if (!cancelled) setError(true);
+            })
+            .finally(() => {
+                if (!cancelled) setLoading(false);
+            });
         return () => {
             cancelled = true;
         };
@@ -69,9 +78,13 @@ const TcgSection = ({ sectionId, pathname }: { sectionId: string; pathname: stri
     const { visible, featuredProducts, gridProducts, hasActiveFilter } =
         useProductFilter(products, selectedCategory, search);
 
-    if (loading) {
+    if (loading) return <Spinner size="lg" className="h-64" />;
+
+    if (error) {
         return (
-            <Spinner size="lg" className="h-64" />
+            <div className="tactical-frame p-8 text-center text-on-surface-variant font-body text-sm">
+                {t('errors.loadSection')}
+            </div>
         );
     }
 

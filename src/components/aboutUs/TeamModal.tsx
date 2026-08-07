@@ -1,6 +1,7 @@
 import type { TeamMember } from './team';
 import { CardInner } from './TeamCard';
 import { cardStyle } from './cardStyle';
+import Modal from '../Modal';
 
 type Props = {
     member: TeamMember;
@@ -8,14 +9,12 @@ type Props = {
 };
 
 const TeamModal = ({ member, onClose }: Props) => (
-    <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
-        style={{ background: 'rgba(0,0,0,0.8)' }}
-        onClick={onClose}>
-        <div
-            className="w-full max-w-lg select-none relative"
-            style={cardStyle}
-            onClick={(e) => e.stopPropagation()}>
+    <Modal
+        onClose={onClose}
+        title={member.name}
+        backdropClass="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80"
+        panelClass="w-full max-w-lg select-none relative"
+        panelStyle={cardStyle}>
             <button
                 onClick={onClose}
                 className="absolute top-3 right-3 text-[#bec2ff]/60 hover:text-white transition-colors z-10"
@@ -23,8 +22,7 @@ const TeamModal = ({ member, onClose }: Props) => (
                 ✕
             </button>
             <CardInner member={member} large />
-        </div>
-    </div>
+    </Modal>
 );
 
 export default TeamModal;
