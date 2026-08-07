@@ -207,6 +207,25 @@ y su fichero de tests al lado. Los componentes que se repetían en varias
 `public/` solo contiene `_redirects`. Cualquier imagen nueva va en `src/assets/` e
 importada, para que el nombre lleve hash y un cambio invalide la caché del navegador.
 
+## Previsualizaciones al compartir
+
+Los rastreadores de WhatsApp, Discord, Twitter y Telegram **no ejecutan
+JavaScript**: leen el HTML que devuelve el servidor y se van. Las etiquetas que
+inyecta `react-helmet-async` desde `SEO.tsx` llegan demasiado tarde para ellos.
+
+Por eso `index.html` lleva un juego de etiquetas por defecto, apuntando a la
+home. Van marcadas con `data-rh="true"`, que es el atributo de
+`react-helmet-async`: al hidratar, Helmet las **sustituye** por las de la ruta
+concreta en lugar de añadir duplicados. Así el rastreador ve la tarjeta genérica
+y el navegador y Google ven la específica.
+
+El `__SITE_URL__` de esas etiquetas lo resuelve `vite.config.ts` en el build,
+a partir de `VITE_SITE_URL` o del dominio de respaldo.
+
+Consecuencia: compartir la URL de una sección concreta muestra la tarjeta
+genérica de la tienda, no la de esa sección. Para tarjetas por ruta haría falta
+prerenderizar el HTML de cada una en el build.
+
 ## Imagen para compartir
 
 `public/og-image.jpg` (1200×630) es la miniatura que usan WhatsApp, Discord,
