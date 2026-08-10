@@ -6,10 +6,6 @@ import App from './App.tsx';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import ErrorBoundary from './components/ErrorBoundary';
-import { initAppCheck } from './lib/appCheck';
-
-// Antes de montar: los tokens deben acompañar ya a las primeras peticiones
-initAppCheck();
 
 createRoot(document.getElementById('root')!).render(
     <HelmetProvider>

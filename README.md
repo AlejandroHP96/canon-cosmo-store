@@ -224,16 +224,6 @@ repetía el fondo y el panel sin nada de eso.
 El overlay del código Konami no lo usa a propósito: es decorativo, se cierra con
 cualquier tecla y atraparle el foco sería peor.
 
-## Protección contra abuso
-
-Las reglas de Firestore validan la forma de cada reserva, pero no pueden limitar
-cuántas se crean. Eso lo cubre **App Check**, que está preparado en
-`lib/appCheck.ts` pero **desactivado** mientras no exista `VITE_RECAPTCHA_SITE_KEY`.
-
-Para activarlo: Firebase Console -> App Check -> registrar la app web con
-reCAPTCHA v3, y poner la clave de sitio en esa variable en Vercel. El módulo se
-carga de forma dinámica, así que no pesa en el bundle mientras esté apagado.
-
 ## Manejo de errores
 
 Una excepción durante el render, si nadie la captura, deja el árbol de React
