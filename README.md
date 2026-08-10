@@ -11,7 +11,7 @@ Tienda online para la venta de productos de Trading Card Games (TCG), Funko Pop 
 | Vite | 8 |
 | Tailwind CSS | 4 |
 | Firebase Firestore / Auth | 12 |
-| React Router | 6 |
+| React Router | 7 |
 | i18next | es / en |
 
 ## Funcionalidades
