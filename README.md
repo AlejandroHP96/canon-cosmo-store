@@ -214,6 +214,50 @@ y su fichero de tests al lado. Los componentes que se repetían en varias
 `public/` solo contiene `_redirects`. Cualquier imagen nueva va en `src/assets/` e
 importada, para que el nombre lleve hash y un cambio invalide la caché del navegador.
 
+## Layout y scroll
+
+La tienda pública es un shell fijo: header arriba, footer abajo, sidebar a la
+izquierda y un único scroller, el `<main>`. Solo scrollea ese elemento.
+
+Sus alturas salen de dos variables CSS declaradas en `index.css`, `--header-h` y
+`--footer-h`. Header y footer **fijan su alto con ellas**, así que no son una
+estimación del alto real: son el alto real. Antes cada pieza llevaba su propio
+número a ojo (`mt-16`, `100px`, `104px`, `64px`) y ya no cuadraban entre sí — el
+sidebar de escritorio se metía por debajo del footer.
+
+El shell usa `dvh`, no `vh`. En móvil `100vh` es el viewport *grande*: incluye la
+franja que tapa la barra de direcciones retráctil. Con `vh` el shell medía más
+que lo visible, el documento scrolleaba por su cuenta y se sentían **dos
+scrolls** superpuestos, el del navegador y el de `<main>`. `dvh` sigue al
+viewport visible. El `overscroll-contain` de `<main>` completa el arreglo: evita
+que el scroll encadene al documento al llegar a los extremos.
+
+De ahí sale una regla: **ninguna página dentro del Layout debe llevar
+`min-h-screen`**. Es un hijo de `100dvh` dentro de un contenedor de
+`100dvh - chrome`, así que sobra siempre y obliga a `<main>` a scrollear aunque
+la página esté vacía. Tampoco hace falta su propio padding superior: el `p-4
+md:p-8` de `<main>` ya lo pone. Las páginas del admin sí usan `min-h-screen`:
+van fuera del Layout y scrollean el documento.
+
+Los modales se renderizan dentro de `<main>` y se posicionan sobre todo lo
+demás. Header y footer están en `z-50`; el fondo de los modales, en `z-60`. Con
+el mismo z-index ganaba el footer, por venir después en el DOM, y tapaba la
+parte baja del diálogo.
+
+## Configuración del nav
+
+`nav_config/sidebar` lo piden seis sitios del código, y hasta tres coinciden en
+la misma navegación. `getSidebarConfig()` lo lee **una vez por sesión**: cachea
+en memoria y comparte la petición en vuelo, así montar varios consumidores no
+multiplica lecturas de Firestore. También guarda copia en `localStorage`, que es
+con lo que `useNavItems` pinta el sidebar antes de que conteste la red.
+
+`getSidebarConfig()` no escribe. Si el documento falta o está en el formato
+antiguo (`tcgItems`/`navEntries`) devuelve `DEFAULT_SIDEBAR` y ya está. Antes
+esta rama hacía un `setDoc` de los valores por defecto: para un visitante
+anónimo las reglas lo rechazaban, pero **si quien cargaba la web estaba
+autenticado, la escritura pasaba y le machacaba la configuración real**.
+
 ## Modales
 
 `components/Modal.tsx` es la base de todos los diálogos: pone `role="dialog"`,
