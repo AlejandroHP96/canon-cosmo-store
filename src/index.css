@@ -64,6 +64,19 @@
     --radius-full: 9999px;
 }
 
+/*
+ * Alto del chrome fijo de la tienda pública. El shell del Layout, el sidebar y
+ * el scroller principal se derivan de aquí. Antes cada uno llevaba su propio
+ * número a ojo (100px, 104px, 64px) y habían dejado de cuadrar entre sí: el
+ * sidebar de escritorio se metía por debajo del footer y el scroller sobraba.
+ * Header y footer fijan su alto con estas mismas variables, así que el valor
+ * no es una estimación: es el alto real.
+ */
+:root {
+    --header-h: 4rem;
+    --footer-h: 2.5rem;
+}
+
 body {
     margin: 0;
     font-synthesis: none;

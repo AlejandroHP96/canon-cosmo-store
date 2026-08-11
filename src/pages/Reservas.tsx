@@ -80,7 +80,7 @@ const Reservas = () => {
     };
 
     return (
-        <div className="min-h-screen bg-surface text-on-surface pt-20 px-6 pb-12">
+        <div className="bg-surface text-on-surface pb-12">
             <SEO
                 title="Reservas"
                 description={t('reservas.seo')}

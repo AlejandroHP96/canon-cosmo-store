@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useNavItems } from '../../hooks/useNavItems';
+import { useLanguage } from '../../hooks/useLanguage';
 import { toSlug } from '../../lib/tcgUtils';
 
 type SideNavProps = {
@@ -9,17 +10,10 @@ type SideNavProps = {
     onClose: () => void;
 };
 
-const LANGS = ['es', 'en'] as const;
-
 const SideNav = ({ isOpen, onClose }: SideNavProps) => {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const items = useNavItems();
-
-    const toggleLang = () => {
-        const next = i18n.language === 'es' ? 'en' : 'es';
-        i18n.changeLanguage(next);
-        localStorage.setItem('canon-cosmo-lang', next);
-    };
+    const { next: nextLang, toggle: toggleLang } = useLanguage();
 
     const [openItems, setOpenItems] = useState<Set<number>>(new Set());
     const [hoveredItem, setHoveredItem] = useState<number | null>(null);
@@ -32,7 +26,7 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
 
     return (
         <aside
-            className={`fixed left-0 top-16 h-[calc(100vh-104px)] md:h-[calc(100vh-64px)] w-64 p-4 bg-[#141851] border-r-2 border-[#e0e0ff] shadow-[inset_0_0_10px_rgba(0,1,172,0.5)] flex flex-col z-40 transition-transform duration-300 md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+            className={`fixed left-0 top-[var(--header-h)] h-[calc(100dvh-var(--header-h)-var(--footer-h))] w-64 p-4 bg-[#141851] border-r-2 border-[#e0e0ff] shadow-[inset_0_0_10px_rgba(0,1,172,0.5)] flex flex-col z-40 transition-transform duration-300 md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
             <div className="mb-8 px-2 text-center">
                 <h2 className="text-[#e0e0ff] font-black font-headline text-xl">
                     {t('sidenav.command')}
@@ -131,7 +125,7 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                     onClick={toggleLang}
                     className="w-full flex items-center py-3 pl-6 text-[#e0e0ff] opacity-70 hover:bg-[#2f336c] hover:opacity-100 transition-all font-headline font-bold text-lg">
                     <span className="material-symbols-outlined mr-3">language</span>
-                    {LANGS.find((l) => l !== i18n.language)?.toUpperCase()}
+                    {nextLang.toUpperCase()}
                 </button>
             </div>
 

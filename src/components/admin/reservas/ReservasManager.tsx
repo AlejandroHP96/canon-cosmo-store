@@ -68,7 +68,7 @@ const ReservasManager = () => {
         }, 'Error al eliminar las reservas.');
 
     return (
-        <div className="max-w-4xl flex flex-col h-[calc(100vh-180px)]">
+        <div className="max-w-4xl flex flex-col h-[calc(100dvh-180px)]">
             <ErrorBanner
                 message={error}
                 onDismiss={() => setError(null)}
@@ -93,7 +93,7 @@ const ReservasManager = () => {
                 />
             )}
 
-            <div className="flex-1 overflow-y-auto min-h-0">
+            <div className="flex-1 overflow-y-auto overscroll-contain min-h-0">
                 {loading ? (
                     <Spinner />
                 ) : reservas.length === 0 ? (

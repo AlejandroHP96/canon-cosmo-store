@@ -20,7 +20,7 @@ const Footer = () => {
     }, []);
 
     return (
-        <footer className="fixed bottom-0 w-full z-50 flex flex-wrap justify-between items-center px-4 md:px-8 py-2 gap-y-1 bg-[#010241] border-t-2 border-[#e0e0ff] font-body text-[10px] tracking-tight">
+        <footer className="fixed bottom-0 w-full z-50 flex justify-between items-center h-[var(--footer-h)] px-4 md:px-8 bg-[#010241] border-t-2 border-[#e0e0ff] font-body text-[10px] tracking-tight">
             <div className="hidden lg:flex items-center gap-3">
                 <span className="material-symbols-outlined text-sm text-primary">terminal</span>
                 <span className="text-primary tracking-[0.25em] font-headline uppercase text-[9px]">Shinra Inc. Terminal</span>

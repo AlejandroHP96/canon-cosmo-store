@@ -17,7 +17,7 @@ const Torneos = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-surface text-on-surface pt-20 px-6 pb-12">
+        <div className="bg-surface text-on-surface pb-12">
             <SEO
                 title="Torneos"
                 description="Consulta los próximos torneos de TCG en Cañón Cosmo Store. Pokémon, One Piece, Final Fantasy y más."
