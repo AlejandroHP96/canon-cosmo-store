@@ -1,32 +1,26 @@
 import { useState, useEffect } from 'react';
-import { getSidebarConfig, type NavItem } from '../services/navService';
-import { pathToSectionId } from '../lib/tcgUtils';
+import { getSidebarConfig, DEFAULT_SIDEBAR, type NavItem } from '../services/navService';
+import { pathToSectionId, toSlug } from '../lib/tcgUtils';
 
 export type TcgOption = {
     id: string;    // ID en Firestore (ej. 'finalfantasy', 'accesorios-tcgs')
     label: string; // Nombre legible (ej. 'Final Fantasy', 'Accesorios TCGs')
 };
 
-/** Opciones de fallback mientras carga el nav config */
-const FALLBACK: TcgOption[] = [
-    { id: 'pokemon', label: 'Pokémon' },
-    { id: 'digimon', label: 'Digimon' },
-    { id: 'onepiece', label: 'One Piece' },
-    { id: 'naruto', label: 'Naruto' },
-    { id: 'finalfantasy', label: 'Final Fantasy' },
-    { id: 'riftbound', label: 'Riftbound' },
-];
-
 /**
  * Extrae TODAS las páginas disponibles del nav config:
- * subitems y entradas de primer nivel con path, de cualquier sección.
+ * subitems y entradas de primer nivel, con path o sin él.
+ *
+ * La derivación del ID es la misma que usa el enrutado en TcgPage: si la
+ * entrada no declara `path`, su sección es el slug de la etiqueta. Sin esa
+ * última rama, las entradas sin path (Accesorios TCGs, Funko Pop) no aparecían
+ * en el selector del formulario de producto, aunque sí tuvieran su página.
  */
 function extractSectionsFromNav(items: NavItem[]): TcgOption[] {
     const seen = new Set<string>();
     const result: TcgOption[] = [];
 
-    const push = (path: string, label: string) => {
-        const id = pathToSectionId(path);
+    const push = (id: string, label: string) => {
         if (id && !seen.has(id)) {
             seen.add(id);
             result.push({ id, label });
@@ -36,16 +30,21 @@ function extractSectionsFromNav(items: NavItem[]): TcgOption[] {
     for (const item of items) {
         // Subitems de grupos expandibles (ej. pokemon, digimon…)
         for (const sub of item.submenu ?? []) {
-            push(sub.path, sub.label);
+            push(pathToSectionId(sub.path), sub.label);
         }
-        // Entradas directas de primer nivel (ej. /accesorios-tcgs, /funko-pop)
-        if (item.path) {
-            push(item.path, item.label);
+        // Entradas de primer nivel, con ruta propia o derivada de la etiqueta
+        if (!item.submenu?.length) {
+            push(item.path ? pathToSectionId(item.path) : toSlug(item.label), item.label);
         }
     }
 
-    return result.length > 0 ? result : FALLBACK;
+    return result;
 }
+
+/** Opciones mientras carga el nav config. Derivadas del mismo default que el
+ *  sidebar, para que no puedan divergir: antes había una segunda lista escrita
+ *  a mano aquí, y ya no coincidía con `DEFAULT_SIDEBAR`. */
+const FALLBACK: TcgOption[] = extractSectionsFromNav(DEFAULT_SIDEBAR.items);
 
 /**
  * Devuelve todas las secciones/páginas disponibles desde el nav config.
@@ -55,14 +54,18 @@ export function useTcgOptions(): TcgOption[] {
     const [options, setOptions] = useState<TcgOption[]>(FALLBACK);
 
     useEffect(() => {
+        let cancelled = false;
         getSidebarConfig()
             .then((config) => {
                 const sections = extractSectionsFromNav(config.items);
-                setOptions(sections);
+                if (!cancelled && sections.length > 0) setOptions(sections);
             })
             .catch(() => {
                 // Mantener fallback en caso de error
             });
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     return options;
