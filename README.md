@@ -240,6 +240,13 @@ la página esté vacía. Tampoco hace falta su propio padding superior: el `p-4
 md:p-8` de `<main>` ya lo pone. Las páginas del admin sí usan `min-h-screen`:
 van fuera del Layout y scrollean el documento.
 
+En pantallas táctiles los campos de formulario se fuerzan a 16px desde
+`index.css`. Safari en iOS amplía la página al enfocar un campo con letra más
+pequeña y no la devuelve, y los campos van en `text-sm`. La regla se aplica una
+vez a `input`, `textarea` y `select` en lugar de campo a campo, y va **fuera de
+`@layer`** a propósito: las utilidades de Tailwind sí van en capa, y lo que no
+está en ninguna gana, que es como se impone a `text-sm`.
+
 Los modales se renderizan dentro de `<main>` y se posicionan sobre todo lo
 demás. Header y footer están en `z-50`; el fondo de los modales, en `z-60`. Con
 el mismo z-index ganaba el footer, por venir después en el DOM, y tapaba la
