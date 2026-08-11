@@ -92,7 +92,7 @@ const ProductFormModal = ({ initial, forceCreate, onClose, onSaved, onSavedConti
         <Modal
             onClose={onClose}
             title={isEdit ? 'Editar producto' : 'Nuevo producto'}
-            backdropClass="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-2"
+            backdropClass="bg-black/70 p-2"
             panelClass="tactical-frame p-4 sm:p-6 w-full max-w-2xl max-h-[96vh] overflow-y-auto"
             disableBackdropClose={saving}>
                 <div className="flex items-center justify-between mb-6">

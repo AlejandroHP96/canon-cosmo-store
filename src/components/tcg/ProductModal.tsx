@@ -13,7 +13,7 @@ const ProductModal = ({ product, onClose }: Props) => {
         <Modal
             onClose={onClose}
             title={product.name}
-            backdropClass="modal-overlay-enter fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4"
+            backdropClass="modal-overlay-enter bg-black/70 p-4"
             panelClass="modal-panel-enter tactical-frame p-4 sm:p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
                 <div className="flex justify-end mb-2">
                     <button onClick={onClose} className="text-on-surface-variant hover:text-primary transition-colors">

@@ -12,7 +12,7 @@ const TeamModal = ({ member, onClose }: Props) => (
     <Modal
         onClose={onClose}
         title={member.name}
-        backdropClass="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80"
+        backdropClass="bg-black/80 p-4"
         panelClass="w-full max-w-lg select-none relative"
         panelStyle={cardStyle}>
             <button

@@ -3,6 +3,14 @@ import { useEffect, useRef, type ReactNode } from 'react';
 const FOCUSABLE =
     'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+/**
+ * Posicionamiento del fondo, igual para todos los modales. Va por encima del
+ * header y del footer, que están en z-50: los modales se renderizan dentro de
+ * <main>, y como el footer viene después en el DOM, con el mismo z-index
+ * ganaba él y tapaba la parte baja del diálogo.
+ */
+const BACKDROP_BASE = 'fixed inset-0 z-[60] flex items-center justify-center';
+
 type Props = {
     children: ReactNode;
     onClose: () => void;
@@ -12,7 +20,7 @@ type Props = {
     panelClass?: string;
     /** Estilos en línea del panel, para los que no usan el marco táctico. */
     panelStyle?: React.CSSProperties;
-    /** Clases del fondo oscuro. */
+    /** Clases extra del fondo oscuro (opacidad, padding, animación de entrada). */
     backdropClass?: string;
     /** Impide cerrar pulsando fuera. */
     disableBackdropClose?: boolean;
@@ -29,7 +37,7 @@ const Modal = ({
     title,
     panelClass = 'tactical-frame p-6 w-full max-w-lg',
     panelStyle,
-    backdropClass = 'fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4',
+    backdropClass = 'bg-black/70 p-4',
     disableBackdropClose = false,
 }: Props) => {
     const panelRef = useRef<HTMLDivElement>(null);
@@ -76,7 +84,9 @@ const Modal = ({
     }, []);
 
     return (
-        <div className={backdropClass} onClick={disableBackdropClose ? undefined : onClose}>
+        <div
+            className={`${BACKDROP_BASE} ${backdropClass}`}
+            onClick={disableBackdropClose ? undefined : onClose}>
             <div
                 ref={panelRef}
                 role="dialog"
