@@ -13,7 +13,7 @@ import ReservaSuccess from '../components/reservas/ReservaSuccess';
 import ReservaFormModal from '../components/reservas/ReservaFormModal';
 import {
     EMPTY_RESERVA_FORM,
-    NOMBRE_COMPLETO,
+    esNombreCompleto,
     normalizeCantidad,
     type ReservaForm,
 } from '../components/reservas/reservaForm';
@@ -56,7 +56,7 @@ const Reservas = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const cliente = form.cliente.trim();
-        if (!selectedProduct || !NOMBRE_COMPLETO.test(cliente)) return;
+        if (!selectedProduct || !esNombreCompleto(cliente)) return;
         setSaving(true);
         setErrorTexto(null);
         setErrorKey(null);

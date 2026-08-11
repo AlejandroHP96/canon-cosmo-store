@@ -46,6 +46,7 @@ const ReservaFormModal = ({ producto, form, saving, onChange, onSubmit, onClose 
                     title={t('reservas.form.nameHint')}
                     value={form.cliente}
                     onChange={(e) => onChange({ cliente: e.target.value })}
+                    onBlur={() => onChange({ cliente: form.cliente.trim() })}
                     placeholder={t('reservas.form.namePlaceholder')}
                     className={fieldClass}
                 />

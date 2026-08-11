@@ -1,8 +1,21 @@
-/** Exige nombre y al menos un apellido (dos palabras separadas por espacio). */
-export const NOMBRE_COMPLETO_PATTERN = '\\S+(\\s+\\S+)+';
+/** Exige nombre y al menos un apellido: dos palabras o más. Sin tope por arriba. */
+const NOMBRE_COMPLETO_CORE = '\\S+(\\s+\\S+)+';
 
-/** La misma regla que el atributo pattern, para validar antes de enviar. */
-export const NOMBRE_COMPLETO = new RegExp(`^${NOMBRE_COMPLETO_PATTERN}$`);
+/**
+ * Para el atributo `pattern` del input, que valida el valor tal cual está
+ * escrito, sin recortarlo. Tolera espacios sueltos a los lados: los teclados
+ * de móvil con texto predictivo dejan uno al final al aceptar la sugerencia, y
+ * eso hacía que el navegador rechazara nombres perfectamente válidos.
+ */
+export const NOMBRE_COMPLETO_PATTERN = `\\s*${NOMBRE_COMPLETO_CORE}\\s*`;
+
+/** La misma regla, ya sobre el valor recortado. */
+export const NOMBRE_COMPLETO = new RegExp(`^${NOMBRE_COMPLETO_CORE}$`);
+
+/** Única puerta de entrada para validar el nombre, recorte incluido. */
+export function esNombreCompleto(raw: string): boolean {
+    return NOMBRE_COMPLETO.test(raw.trim());
+}
 
 /** Tope de unidades por reserva. Lo exigen también las reglas de Firestore. */
 export const MAX_CANTIDAD = 100;

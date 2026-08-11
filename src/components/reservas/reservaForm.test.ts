@@ -2,9 +2,47 @@ import { describe, it, expect } from 'vitest';
 import {
     MAX_CANTIDAD,
     MIN_CANTIDAD,
+    NOMBRE_COMPLETO_PATTERN,
+    esNombreCompleto,
     normalizeCantidad,
     sanitizeCantidadInput,
 } from './reservaForm';
+
+/** Lo que hace el navegador con el atributo pattern: anclado y sin recortar. */
+const patternAcepta = (valor: string) =>
+    new RegExp(`^(?:${NOMBRE_COMPLETO_PATTERN})$`, 'u').test(valor);
+
+describe('nombre completo', () => {
+    it('acepta cualquier número de palabras a partir de dos', () => {
+        expect(esNombreCompleto('Alejandro Herrera')).toBe(true);
+        expect(esNombreCompleto('Jose Alejandro Herrera Pestana')).toBe(true);
+        expect(esNombreCompleto('Maria del Carmen Ruiz de la Fuente')).toBe(true);
+    });
+
+    it('exige al menos un apellido', () => {
+        expect(esNombreCompleto('Alejandro')).toBe(false);
+        expect(esNombreCompleto('')).toBe(false);
+        expect(esNombreCompleto('   ')).toBe(false);
+    });
+
+    it('no se cae por los espacios que deja el teclado del móvil', () => {
+        expect(esNombreCompleto('Jose Alejandro Herrera Pestana ')).toBe(true);
+        expect(esNombreCompleto(' Alejandro Herrera')).toBe(true);
+        expect(esNombreCompleto('  Alejandro Herrera  ')).toBe(true);
+    });
+
+    it('el pattern del input tolera esos mismos espacios', () => {
+        // Antes esto lo rechazaba el navegador antes siquiera de enviar
+        expect(patternAcepta('Jose Alejandro Herrera Pestana ')).toBe(true);
+        expect(patternAcepta(' Alejandro Herrera')).toBe(true);
+        expect(patternAcepta('Alejandro Herrera')).toBe(true);
+    });
+
+    it('el pattern sigue rechazando una sola palabra', () => {
+        expect(patternAcepta('Alejandro')).toBe(false);
+        expect(patternAcepta('  Alejandro  ')).toBe(false);
+    });
+});
 
 describe('sanitizeCantidadInput', () => {
     it('deja escribir cualquier cifra dentro del tope', () => {
