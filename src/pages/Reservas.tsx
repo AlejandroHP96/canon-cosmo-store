@@ -14,6 +14,7 @@ import ReservaFormModal from '../components/reservas/ReservaFormModal';
 import {
     EMPTY_RESERVA_FORM,
     NOMBRE_COMPLETO,
+    normalizeCantidad,
     type ReservaForm,
 } from '../components/reservas/reservaForm';
 import { filtrarReservables, seccionesDisponibles } from '../components/reservas/reservaQuery';
@@ -65,7 +66,7 @@ const Reservas = () => {
                 productoNombre: selectedProduct.name,
                 seccion: selectedProduct.tcg,
                 cliente,
-                cantidad: form.cantidad,
+                cantidad: normalizeCantidad(form.cantidad),
                 notas: form.notas.trim(),
             });
             setSuccess(true);

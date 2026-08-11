@@ -132,6 +132,7 @@ navegador, así que la suite entera tarda menos de medio segundo. Los ficheros
 | `admin/reservas/reservasQuery.ts` | El orden y el filtrado de la bandeja de reservas |
 | `admin/categories/categoryRules.ts` | Validación de nombres duplicados y vacíos |
 | `components/reservas/reservaQuery.ts` | El filtrado de la página pública de reservas |
+| `components/reservas/reservaForm.ts` | Qué se admite en el campo de cantidad y cómo se recorta al tope |
 
 El criterio para añadir un test aquí: que un fallo sea **silencioso** (corrompe datos
 o desvincula productos sin error visible). La lógica de render y las reglas de

@@ -80,6 +80,7 @@
       "namePlaceholder": "Nombre y apellidos",
       "nameHint": "Introduce nombre y apellidos",
       "quantity": "Cantidad",
+      "quantityHint": "Entre {{min}} y {{max}} unidades",
       "notes": "Notas",
       "notesPlaceholder": "Algo que debamos saber...",
       "submit": "Solicitar reserva",

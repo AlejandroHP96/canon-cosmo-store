@@ -1,6 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import type { Product } from '../../types';
-import { NOMBRE_COMPLETO_PATTERN, type ReservaForm } from './reservaForm';
+import {
+    MAX_CANTIDAD,
+    MIN_CANTIDAD,
+    NOMBRE_COMPLETO_PATTERN,
+    normalizeCantidad,
+    sanitizeCantidadInput,
+    type ReservaForm,
+} from './reservaForm';
 
 const labelClass =
     'block font-headline text-[10px] uppercase tracking-widest text-primary/60 mb-1';
@@ -45,15 +52,24 @@ const ReservaFormModal = ({ producto, form, saving, onChange, onSubmit, onClose 
             </div>
             <div>
                 <label className={labelClass}>{t('reservas.form.quantity')}</label>
+                {/* Texto con teclado numérico, no type="number": así se puede
+                    vaciar el campo y teclear la cifra entera. El recorte al
+                    tope ocurre al salir del campo, no en cada tecla. */}
                 <input
-                    type="number"
-                    min={1}
-                    max={100}
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    aria-label={t('reservas.form.quantity')}
+                    title={t('reservas.form.quantityHint', {
+                        min: MIN_CANTIDAD,
+                        max: MAX_CANTIDAD,
+                    })}
                     value={form.cantidad}
                     onChange={(e) =>
-                        onChange({
-                            cantidad: Math.min(100, Math.max(1, parseInt(e.target.value) || 1)),
-                        })
+                        onChange({ cantidad: sanitizeCantidadInput(e.target.value) })
+                    }
+                    onBlur={() =>
+                        onChange({ cantidad: String(normalizeCantidad(form.cantidad)) })
                     }
                     className={fieldClass}
                 />
