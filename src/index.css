@@ -77,8 +77,23 @@
     --footer-h: 2.5rem;
 }
 
+/*
+ * El fondo va en el <html>, no solo en el shell del Layout. Lo que se ve por
+ * fuera de la página —al alejar el zoom en móvil por debajo de su ancho, o al
+ * rebotar el scroll— es el lienzo del navegador, y el lienzo toma su color de
+ * aquí. Sin esto salía blanco, en franjas a los lados.
+ *
+ * color-scheme le dice además al navegador que la página es oscura, para que
+ * los controles nativos y las barras de scroll no se pinten en claro.
+ */
+html {
+    background-color: var(--color-background);
+    color-scheme: dark;
+}
+
 body {
     margin: 0;
+    background-color: var(--color-background);
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
