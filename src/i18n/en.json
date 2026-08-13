@@ -15,7 +15,6 @@
   "hero": {
     "systemActive": "System active · Cañón Cosmo Store · Midgar District VII",
     "description": "Specialised store for trading card games. Booster packs, decks, bundles and singles from the best TCGs on the market.",
-    "viewCatalog": "View catalog",
     "tournaments": "Tournaments"
   },
   "tcgGrid": {

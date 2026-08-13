@@ -34,14 +34,8 @@ const HeroSection = () => {
 
                 <div className="border-t md:border-t-0 md:border-l border-outline-variant/30 p-5 md:p-8 bg-surface-container/40 flex flex-col gap-3 justify-center">
                     <Link
-                        to="/tcgs/pokemon"
-                        className="flex items-center justify-center gap-2 border border-primary bg-primary/10 text-primary font-headline text-xs md:text-sm uppercase tracking-wider md:tracking-widest px-4 md:px-6 py-4 hover:bg-primary hover:text-surface transition-all">
-                        <span className="material-symbols-outlined">playing_cards</span>
-                        {t('hero.viewCatalog')}
-                    </Link>
-                    <Link
                         to="/torneos"
-                        className="flex items-center justify-center gap-2 border border-outline-variant text-on-surface-variant font-headline text-xs md:text-sm uppercase tracking-wider md:tracking-widest px-4 md:px-6 py-4 hover:border-primary hover:text-primary transition-all">
+                        className="flex items-center justify-center gap-2 border border-primary bg-primary/10 text-primary font-headline text-xs md:text-sm uppercase tracking-wider md:tracking-widest px-4 md:px-6 py-4 hover:bg-primary hover:text-surface transition-all">
                         <span className="material-symbols-outlined">emoji_events</span>
                         {t('hero.tournaments')}
                     </Link>

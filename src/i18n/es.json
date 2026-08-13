@@ -15,7 +15,6 @@
   "hero": {
     "systemActive": "Sistema activo · Cañón Cosmo Store · Midgar District VII",
     "description": "Tienda especializada en juegos de cartas coleccionables. Sobres, mazos, bundles y singles de los mejores TCGs del mercado.",
-    "viewCatalog": "Ver catálogo",
     "tournaments": "Torneos"
   },
   "tcgGrid": {
