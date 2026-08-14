@@ -101,7 +101,7 @@ export default defineConfig(({ mode }) => {
             // que Vite no lo descubre al arrancar y lo pre-empaqueta a mitad de
             // sesión. Eso rompía /cosmos-admin en desarrollo con "Component auth
             // has not been registered yet". En el build de producción no pasa.
-            include: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+            include: ['firebase/app', 'firebase/auth', 'firebase/firestore/lite'],
         },
         test: {
             // Solo funciones puras por ahora: sin DOM, sin Firebase, sin navegador

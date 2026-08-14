@@ -1,4 +1,4 @@
-import { deleteField, type FieldValue } from 'firebase/firestore';
+import { deleteField, type FieldValue } from 'firebase/firestore/lite';
 import type { Product } from '../../../types';
 
 /** Datos del formulario: el producto sin su id ni la sección (que se deriva del selector). */

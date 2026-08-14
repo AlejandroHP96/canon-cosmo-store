@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore/lite';
 import { db } from '../lib/firebase';
 import type { TcgId } from '../types';
 

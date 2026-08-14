@@ -50,6 +50,18 @@ que exigen las reglas de Firestore. Ver [Reglas de seguridad](#reglas-de-segurid
 | `torneosJuegos` | Torneos por juego |
 | `reservas` | Solicitudes de reserva entrantes |
 
+### Firestore Lite
+
+Los servicios importan de **`firebase/firestore/lite`**, no de `firebase/firestore`.
+La app no tiene tiempo real en ningún sitio —cero `onSnapshot`: cada pantalla lee
+una vez con `getDoc`/`getDocs` al montarse—, así que el motor de listeners y la
+persistencia offline del SDK completo eran 152 kB de más en la carga inicial.
+
+Lite soporta todo lo que se usa, `writeBatch` y `serverTimestamp()` incluidos.
+Lo que **no** trae es `onSnapshot` ni caché offline: si algún día hace falta una
+vista que se actualice sola, ese fichero vuelve a `firebase/firestore` y el
+bundler se encarga del resto. No mezcles los dos imports en el mismo módulo.
+
 `price` y `salePrice` se guardan como **number** (euros). El formateo vive en
 `src/lib/price.ts`; la vista nunca imprime el valor crudo. Los documentos antiguos
 guardaban strings ya formateados (`"4,99 €"`) y `productsService.toProduct()` sigue

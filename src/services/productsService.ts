@@ -9,11 +9,11 @@ import {
     writeBatch,
     doc,
     type FieldValue,
-} from 'firebase/firestore';
+} from 'firebase/firestore/lite';
 import { db } from '../lib/firebase';
 import { toPrice } from '../lib/price';
 import type { Product, TcgId } from '../types';
-import type { QueryDocumentSnapshot } from 'firebase/firestore';
+import type { QueryDocumentSnapshot } from 'firebase/firestore/lite';
 
 const COLLECTION = 'products';
 

@@ -6,7 +6,7 @@ import {
     deleteDoc,
     deleteField,
     doc,
-} from 'firebase/firestore';
+} from 'firebase/firestore/lite';
 import { db } from '../lib/firebase';
 
 export type JuegoTorneo = {
