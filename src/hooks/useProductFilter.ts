@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import type { Product } from '../types';
+import { normalizarBusqueda } from '../lib/text';
 
 export function useProductFilter(
     products: Product[],
@@ -7,14 +8,14 @@ export function useProductFilter(
     search: string,
 ) {
     return useMemo(() => {
-        const needle = search.trim().toLowerCase();
+        const needle = normalizarBusqueda(search.trim());
         const visible = products.filter((p) => {
             const matchCat =
                 selectedCategory === 'Todo' || p.category === selectedCategory;
             const matchSearch =
                 !needle ||
-                p.name.toLowerCase().includes(needle) ||
-                p.set?.toLowerCase().includes(needle);
+                normalizarBusqueda(p.name).includes(needle) ||
+                normalizarBusqueda(p.set ?? '').includes(needle);
             return matchCat && matchSearch;
         });
         return {

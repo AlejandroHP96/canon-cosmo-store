@@ -131,6 +131,23 @@ describe('filterProducts', () => {
         ).toEqual(['4']);
     });
 
+    it('busca sin distinguir tildes, en los dos sentidos', () => {
+        const conTilde = [
+            ...catalogo,
+            product({ id: '9', name: 'Edición Especial', category: 'Cajas' }),
+        ];
+        expect(
+            filterProducts(conTilde, query({ search: 'edicion' })).map(
+                (p) => p.id,
+            ),
+        ).toEqual(['9']);
+        expect(
+            filterProducts(conTilde, query({ search: 'Edición' })).map(
+                (p) => p.id,
+            ),
+        ).toEqual(['9']);
+    });
+
     it('busca también por set y por categoría', () => {
         expect(
             filterProducts(catalogo, query({ search: 'anime' })).map(

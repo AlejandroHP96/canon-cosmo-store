@@ -1,4 +1,5 @@
 import type { Product } from '../../types';
+import { normalizarBusqueda } from '../../lib/text';
 
 /** Secciones presentes entre los productos reservables, para los chips de filtro. */
 export function seccionesDisponibles(productos: Product[]): string[] {
@@ -11,14 +12,14 @@ export function filtrarReservables(
     search: string,
     seccion: string | null,
 ): Product[] {
-    const q = search.trim().toLowerCase();
+    const q = normalizarBusqueda(search.trim());
     return productos.filter((p) => {
         if (seccion && p.tcg !== seccion) return false;
         if (!q) return true;
         return (
-            p.name.toLowerCase().includes(q) ||
-            (p.set?.toLowerCase().includes(q) ?? false) ||
-            p.tcg.toLowerCase().includes(q)
+            normalizarBusqueda(p.name).includes(q) ||
+            normalizarBusqueda(p.set ?? '').includes(q) ||
+            normalizarBusqueda(p.tcg).includes(q)
         );
     });
 }

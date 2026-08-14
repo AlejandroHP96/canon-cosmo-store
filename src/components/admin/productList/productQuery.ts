@@ -1,4 +1,5 @@
 import { pathToSectionId, toSlug } from '../../../lib/tcgUtils';
+import { normalizarBusqueda } from '../../../lib/text';
 import type { NavItem } from '../../../services/navService';
 import type { Product } from '../../../types';
 
@@ -38,9 +39,9 @@ export function matchesSection(
 function matchesSearch(product: Product, needle: string): boolean {
     if (!needle) return true;
     return (
-        product.name.toLowerCase().includes(needle) ||
-        (product.set?.toLowerCase().includes(needle) ?? false) ||
-        (product.category?.toLowerCase().includes(needle) ?? false)
+        normalizarBusqueda(product.name).includes(needle) ||
+        normalizarBusqueda(product.set ?? '').includes(needle) ||
+        normalizarBusqueda(product.category ?? '').includes(needle)
     );
 }
 
@@ -48,7 +49,7 @@ export function filterProducts(
     products: Product[],
     query: ProductQuery,
 ): Product[] {
-    const needle = query.search.trim().toLowerCase();
+    const needle = normalizarBusqueda(query.search.trim());
     return products.filter(
         (p) =>
             matchesSection(p, query.section) &&

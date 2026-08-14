@@ -53,6 +53,19 @@ describe('filtrarReservables', () => {
         ).toEqual(['2']);
     });
 
+    it('no distingue tildes', () => {
+        const conTilde = [
+            ...reservables,
+            producto({ id: '9', name: 'Edición Especial', set: 'Legendario' }),
+        ];
+        expect(
+            filtrarReservables(conTilde, 'edicion', null).map((p) => p.id),
+        ).toEqual(['9']);
+        expect(
+            filtrarReservables(conTilde, 'Edición', null).map((p) => p.id),
+        ).toEqual(['9']);
+    });
+
     it('no distingue mayúsculas ni espacios sobrantes', () => {
         expect(
             filtrarReservables(reservables, '  CHISPAS ', null).map(
