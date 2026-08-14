@@ -1,6 +1,14 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Estar autenticado NO basta: la apiKey viaja en el bundle público, así que
+    // cualquiera puede crearse una cuenta si el alta está abierta. Lo que da
+    // acceso es el custom claim `admin`, que solo se pone desde el Admin SDK:
+    //   npm run admin:claim prod -- --grant correo@ejemplo.com
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+
     // Público: cualquiera puede crear solicitudes de reserva, con forma y límites estrictos
     match /reservas/{docId} {
       allow create: if request.resource.data.keys().hasOnly([
@@ -20,30 +28,30 @@ service cloud.firestore {
         && request.resource.data.notas is string && request.resource.data.notas.size() <= 1000
         && request.resource.data.fecha == request.time
         && request.resource.data.estado == 'pendiente';
-      allow read, update, delete: if request.auth != null;
+      allow read, update, delete: if isAdmin();
     }
 
     // Público: catálogo, navegación y torneos son de solo lectura para cualquiera
     match /products/{docId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if isAdmin();
     }
     match /tcg_categories/{docId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if isAdmin();
     }
     match /nav_config/{docId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if isAdmin();
     }
     match /torneosJuegos/{docId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if isAdmin();
     }
 
-    // Resto: solo usuarios autenticados (admin)
+    // Resto: solo el admin
     match /{document=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if isAdmin();
     }
   }
 }

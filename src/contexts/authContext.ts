@@ -3,6 +3,8 @@ import type { User } from 'firebase/auth';
 
 export type AuthContextValue = {
     user: User | null;
+    /** El usuario tiene el custom claim `admin`. Estar autenticado no basta. */
+    isAdmin: boolean;
     loading: boolean;
     signIn: (email: string, password: string) => Promise<void>;
     signOut: () => Promise<void>;

@@ -31,6 +31,9 @@ Tienda online para la venta de productos de Trading Card Games (TCG), Funko Pop 
 Acceso protegido con autenticación Firebase (`browserSessionPersistence`: la sesión
 se cierra al cerrar la pestaña). El panel vive en `/cosmos-admin/panel`.
 
+Iniciar sesión no basta: la cuenta necesita el **custom claim `admin`**, que es lo
+que exigen las reglas de Firestore. Ver [Reglas de seguridad](#reglas-de-seguridad).
+
 - CRUD completo de productos, con selección múltiple y borrado en lote
 - Gestión de categorías por sección
 - Editor de la navegación lateral: entradas, subitems, color, imagen y reordenación por drag & drop
@@ -108,6 +111,7 @@ Necesitan service account keys en `.keys/` — ver [`.keys/README.md`](.keys/REA
 |---|---|
 | `npm run sync:dev-db` | Copia las colecciones de prod a dev (excluye `reservas`) |
 | `npm run migrate:price <dev\|prod>` | Migra `price`/`salePrice` de string a number. Dry-run por defecto; añade `-- --apply` para escribir. Hace backup en `.backups/` |
+| `npm run admin:claim <dev\|prod>` | Lista cuentas y su claim `admin`, e informa de si el alta autoservicio está abierta. Sin `--grant`/`--revoke` no escribe nada |
 
 ## Integración continua
 
@@ -141,12 +145,42 @@ seguridad no están cubiertas todavía.
 ## Reglas de seguridad
 
 `firestore.rules` es la fuente de verdad. Catálogo, navegación y torneos son de
-lectura pública y escritura solo autenticada. En `reservas` un anónimo únicamente
+lectura pública y escritura solo para el admin. En `reservas` un anónimo únicamente
 puede **crear**, y el documento debe traer exactamente los 8 campos esperados,
 con límites de tamaño, `estado` forzado a `'pendiente'` y `fecha == request.time`.
-Leer o modificar reservas requiere estar autenticado.
+Leer o modificar reservas es solo del admin.
 
-Desplegar a cada entorno:
+### Quién es admin
+
+Estar autenticado **no** da acceso. La `apiKey` de Firebase viaja en el bundle
+público — es normal y no es un fallo, pero implica que, si el alta autoservicio
+está abierta en la consola, cualquiera puede crearse una cuenta. Por eso las
+reglas no miran `request.auth != null` sino el custom claim `admin`:
+
+```
+function isAdmin() {
+  return request.auth != null && request.auth.token.admin == true;
+}
+```
+
+El claim solo se pone desde el Admin SDK, nunca desde el navegador:
+
+```bash
+npm run admin:claim prod                        # lista cuentas y quién es admin
+npm run admin:claim prod -- --grant a@b.com     # concede
+npm run admin:claim prod -- --revoke a@b.com    # retira
+```
+
+El claim viaja dentro del ID token, así que **no surte efecto hasta que la sesión
+se renueva**: hay que cerrar sesión en el panel y volver a entrar.
+
+El cliente comprueba el mismo claim (`AuthContext` lo lee con `getIdTokenResult`,
+`ProtectedRoute` lo exige y el login rechaza la cuenta sin él), pero eso es solo
+comodidad: la barrera real son las reglas.
+
+### Desplegar las reglas
+
+**Concede el claim antes de desplegar**, o te quedas fuera de tu propio panel.
 
 ```bash
 firebase deploy --only firestore:rules -P dev

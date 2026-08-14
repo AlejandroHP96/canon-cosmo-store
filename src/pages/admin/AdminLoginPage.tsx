@@ -7,10 +7,11 @@ const ERROR_MESSAGES: Record<string, string> = {
     'auth/invalid-email': 'El email no es válido.',
     'auth/too-many-requests': 'Demasiados intentos. Espera un momento.',
     'auth/network-request-failed': 'Error de red. Comprueba tu conexión.',
+    'auth/not-admin': 'Esta cuenta no tiene permisos de administrador.',
 };
 
 const AdminLoginPage = () => {
-    const { user, signIn } = useAuth();
+    const { user, isAdmin, signIn } = useAuth();
     const navigate = useNavigate();
 
     const [email, setEmail] = useState('');
@@ -18,7 +19,9 @@ const AdminLoginPage = () => {
     const [error, setError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
 
-    if (user) return <Navigate to="/cosmos-admin/panel" replace />;
+    // Sin el claim no se redirige al panel: ProtectedRoute devolvería aquí y
+    // el usuario quedaría rebotando entre las dos rutas.
+    if (user && isAdmin) return <Navigate to="/cosmos-admin/panel" replace />;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
