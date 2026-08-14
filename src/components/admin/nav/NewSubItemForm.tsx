@@ -32,7 +32,9 @@ const NewSubItemForm = ({
                     const label = e.target.value;
                     onChange({
                         label,
-                        ...(form.pathAutoSync && { path: deriveSubPath(parentLabel, label) }),
+                        ...(form.pathAutoSync && {
+                            path: deriveSubPath(parentLabel, label),
+                        }),
                     });
                 }}
                 placeholder="Label subitem"
@@ -40,7 +42,9 @@ const NewSubItemForm = ({
             />
             <input
                 value={form.path}
-                onChange={(e) => onChange({ path: e.target.value, pathAutoSync: false })}
+                onChange={(e) =>
+                    onChange({ path: e.target.value, pathAutoSync: false })
+                }
                 placeholder="/ruta"
                 className={inputClass + ' flex-1 font-mono'}
                 onKeyDown={(e) => e.key === 'Enter' && onAdd()}
@@ -65,7 +69,8 @@ const NewSubItemForm = ({
             </span>
             <button
                 onClick={onOpenColorPicker}
-                title="Elegir color" aria-label="Elegir color"
+                title="Elegir color"
+                aria-label="Elegir color"
                 className="w-5 h-5 rounded-full border border-outline-variant/60"
                 style={{ backgroundColor: form.color || DEFAULT_NAV_COLOR }}
             />

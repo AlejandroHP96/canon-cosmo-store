@@ -38,7 +38,9 @@ const ProductFilters = ({
                             ? 'border-primary text-primary bg-surface-container'
                             : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
                     }`}>
-                    <span className="material-symbols-outlined text-sm">{item.icon}</span>
+                    <span className="material-symbols-outlined text-sm">
+                        {item.icon}
+                    </span>
                     {item.label}
                 </button>
             ))}

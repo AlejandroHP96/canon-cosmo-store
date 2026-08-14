@@ -1,114 +1,114 @@
 {
-  "header": {
-    "home": "Home",
-    "tournaments": "Tournaments",
-    "reservas": "Reservations",
-    "aboutUs": "About Us"
-  },
-  "sidenav": {
-    "command": "COMMAND",
-    "selectAction": "SELECT ACTION"
-  },
-  "footer": {
-    "connection": "CONNECTION: SECURE"
-  },
-  "hero": {
-    "systemActive": "System active · Cañón Cosmo Store · Midgar District VII",
-    "description": "Specialised store for trading card games. Booster packs, decks, bundles and singles from the best TCGs on the market.",
-    "tournaments": "Tournaments"
-  },
-  "tcgGrid": {
-    "title": "TCGs",
-    "sections": "sections",
-    "viewCatalog": "View catalog"
-  },
-  "tournamentBanner": {
-    "comingSoon": "Coming soon",
-    "title": "Tournaments & Events",
-    "description": "Check the tournament calendar and sign up for upcoming events."
-  },
-  "productGrid": {
-    "noProducts": "No products yet for",
-    "noResults": "No results for",
-    "noProductsInCategory": "No products in",
-    "fullCatalog": "Full catalog",
-    "soldOut": "Sold out"
-  },
-  "featuredProduct": {
-    "soldOut": "Sold out"
-  },
-  "aboutUs": {
-    "title": "About Us",
-    "subtitle": "Party Members",
-    "description": "Hi, we are Cañon Cosmo and we're happy to have you here.",
-    "legendaryCreature": "Legendary Creature",
-    "team": {
-      "toni": {
-        "role": "Founder",
-        "type1": "Store Owner",
-        "type2": "Crybaby",
-        "bio": "When Toni enters play: search your library for up to 3 TCG cards and add them to your hand.\n\nWhenever Toni declares an attack, you may reveal a Pokémon card from your hand. If you do, Toni gets +2/+0 until end of turn."
-      },
-      "jonay": {
-        "role": "Founder",
-        "type1": "Store Owner",
-        "type2": "Collector",
-        "bio": "Whenever Jonay enters play, search your library for the rarest collectible and add it to your showcase.\n\nIf you control 5 or more unique items, opponents cannot draw additional cards."
-      }
-    }
-  },
-  "tournaments": {
-    "subtitle": "Cañón Cosmo Store",
-    "title": "Tournaments",
-    "comingSoon": "Tournaments coming soon.",
-    "viewMore": "View more"
-  },
-  "reservas": {
-    "seo": "Reserve your products at Cañón Cosmo Store.",
-    "searchPlaceholder": "Search product...",
-    "allSections": "All",
-    "reserve": "Reserve",
-    "empty": "There are no products available to reserve right now.",
-    "noMatch": "No product matches the filter.",
-    "loadError": "Error loading available products.",
-    "submitError": "Error",
-    "retry": "Please try again.",
-    "form": {
-      "heading": "RESERVE",
-      "name": "Full name *",
-      "namePlaceholder": "First and last name",
-      "nameHint": "Enter your first and last name",
-      "quantity": "Quantity",
-      "quantityHint": "Between {{min}} and {{max}} units",
-      "notes": "Notes",
-      "notesPlaceholder": "Anything we should know...",
-      "submit": "Request reservation",
-      "submitting": "Sending..."
+    "header": {
+        "home": "Home",
+        "tournaments": "Tournaments",
+        "reservas": "Reservations",
+        "aboutUs": "About Us"
     },
-    "success": {
-      "title": "Request sent",
-      "text": "We'll contact you soon to confirm your reservation.",
-      "close": "Close"
+    "sidenav": {
+        "command": "COMMAND",
+        "selectAction": "SELECT ACTION"
+    },
+    "footer": {
+        "connection": "CONNECTION: SECURE"
+    },
+    "hero": {
+        "systemActive": "System active · Cañón Cosmo Store · Midgar District VII",
+        "description": "Specialised store for trading card games. Booster packs, decks, bundles and singles from the best TCGs on the market.",
+        "tournaments": "Tournaments"
+    },
+    "tcgGrid": {
+        "title": "TCGs",
+        "sections": "sections",
+        "viewCatalog": "View catalog"
+    },
+    "tournamentBanner": {
+        "comingSoon": "Coming soon",
+        "title": "Tournaments & Events",
+        "description": "Check the tournament calendar and sign up for upcoming events."
+    },
+    "productGrid": {
+        "noProducts": "No products yet for",
+        "noResults": "No results for",
+        "noProductsInCategory": "No products in",
+        "fullCatalog": "Full catalog",
+        "soldOut": "Sold out"
+    },
+    "featuredProduct": {
+        "soldOut": "Sold out"
+    },
+    "aboutUs": {
+        "title": "About Us",
+        "subtitle": "Party Members",
+        "description": "Hi, we are Cañon Cosmo and we're happy to have you here.",
+        "legendaryCreature": "Legendary Creature",
+        "team": {
+            "toni": {
+                "role": "Founder",
+                "type1": "Store Owner",
+                "type2": "Crybaby",
+                "bio": "When Toni enters play: search your library for up to 3 TCG cards and add them to your hand.\n\nWhenever Toni declares an attack, you may reveal a Pokémon card from your hand. If you do, Toni gets +2/+0 until end of turn."
+            },
+            "jonay": {
+                "role": "Founder",
+                "type1": "Store Owner",
+                "type2": "Collector",
+                "bio": "Whenever Jonay enters play, search your library for the rarest collectible and add it to your showcase.\n\nIf you control 5 or more unique items, opponents cannot draw additional cards."
+            }
+        }
+    },
+    "tournaments": {
+        "subtitle": "Cañón Cosmo Store",
+        "title": "Tournaments",
+        "comingSoon": "Tournaments coming soon.",
+        "viewMore": "View more"
+    },
+    "reservas": {
+        "seo": "Reserve your products at Cañón Cosmo Store.",
+        "searchPlaceholder": "Search product...",
+        "allSections": "All",
+        "reserve": "Reserve",
+        "empty": "There are no products available to reserve right now.",
+        "noMatch": "No product matches the filter.",
+        "loadError": "Error loading available products.",
+        "submitError": "Error",
+        "retry": "Please try again.",
+        "form": {
+            "heading": "RESERVE",
+            "name": "Full name *",
+            "namePlaceholder": "First and last name",
+            "nameHint": "Enter your first and last name",
+            "quantity": "Quantity",
+            "quantityHint": "Between {{min}} and {{max}} units",
+            "notes": "Notes",
+            "notesPlaceholder": "Anything we should know...",
+            "submit": "Request reservation",
+            "submitting": "Sending..."
+        },
+        "success": {
+            "title": "Request sent",
+            "text": "We'll contact you soon to confirm your reservation.",
+            "close": "Close"
+        }
+    },
+    "search": {
+        "placeholder": "Search product..."
+    },
+    "notFound": {
+        "seoTitle": "Page not found",
+        "label": "Error 404",
+        "title": "Section not found",
+        "text": "This route doesn't exist in the catalog. The section may have been renamed, or the link may be wrong.",
+        "home": "Back to home"
+    },
+    "error": {
+        "title": "Something went wrong",
+        "pageTitle": "This page failed",
+        "text": "An unexpected error occurred. You can retry or go back home.",
+        "retry": "Retry",
+        "home": "Go home"
+    },
+    "errors": {
+        "loadSection": "Could not load the products for this section."
     }
-  },
-  "search": {
-    "placeholder": "Search product..."
-  },
-  "notFound": {
-    "seoTitle": "Page not found",
-    "label": "Error 404",
-    "title": "Section not found",
-    "text": "This route doesn't exist in the catalog. The section may have been renamed, or the link may be wrong.",
-    "home": "Back to home"
-  },
-  "error": {
-    "title": "Something went wrong",
-    "pageTitle": "This page failed",
-    "text": "An unexpected error occurred. You can retry or go back home.",
-    "retry": "Retry",
-    "home": "Go home"
-  },
-  "errors": {
-    "loadSection": "Could not load the products for this section."
-  }
 }

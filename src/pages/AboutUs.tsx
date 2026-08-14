@@ -41,7 +41,12 @@ const AboutUs = () => {
                 ))}
             </div>
 
-            {selected && <TeamModal member={selected} onClose={() => setSelected(null)} />}
+            {selected && (
+                <TeamModal
+                    member={selected}
+                    onClose={() => setSelected(null)}
+                />
+            )}
         </section>
     );
 };

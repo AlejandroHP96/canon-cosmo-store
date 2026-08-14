@@ -43,7 +43,9 @@ const ReservasFilters = ({
                     <button
                         onClick={() => onSearchChange('')}
                         className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors">
-                        <span className="material-symbols-outlined text-sm">close</span>
+                        <span className="material-symbols-outlined text-sm">
+                            close
+                        </span>
                     </button>
                 )}
             </div>
@@ -51,7 +53,9 @@ const ReservasFilters = ({
                 onClick={onDeleteAll}
                 disabled={saving}
                 className="flex items-center gap-1 border border-error text-error font-headline text-[10px] uppercase tracking-widest px-3 py-2 hover:bg-error-container/30 transition-colors disabled:opacity-40 shrink-0">
-                <span className="material-symbols-outlined text-sm">delete_sweep</span>
+                <span className="material-symbols-outlined text-sm">
+                    delete_sweep
+                </span>
                 Eliminar todas
             </button>
         </div>

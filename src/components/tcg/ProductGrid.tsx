@@ -12,7 +12,14 @@ type Props = {
     onSelect?: (product: Product) => void;
 };
 
-const ProductGrid = ({ products, totalCount, search, selectedCategory, sectionLabel, onSelect }: Props) => {
+const ProductGrid = ({
+    products,
+    totalCount,
+    search,
+    selectedCategory,
+    sectionLabel,
+    onSelect,
+}: Props) => {
     const { t } = useTranslation();
 
     if (products.length === 0) {
@@ -25,18 +32,25 @@ const ProductGrid = ({ products, totalCount, search, selectedCategory, sectionLa
                     {totalCount === 0 ? (
                         <>
                             {t('productGrid.noProducts')}{' '}
-                            <span className="font-headline text-primary uppercase">{sectionLabel}</span>.
+                            <span className="font-headline text-primary uppercase">
+                                {sectionLabel}
+                            </span>
+                            .
                             <br />
                         </>
                     ) : search ? (
                         <>
                             {t('productGrid.noResults')}{' '}
-                            <span className="font-headline text-primary">&ldquo;{search}&rdquo;</span>
+                            <span className="font-headline text-primary">
+                                &ldquo;{search}&rdquo;
+                            </span>
                         </>
                     ) : (
                         <>
                             {t('productGrid.noProductsInCategory')}{' '}
-                            <span className="font-headline text-primary uppercase">{selectedCategory}</span>
+                            <span className="font-headline text-primary uppercase">
+                                {selectedCategory}
+                            </span>
                         </>
                     )}
                 </p>
@@ -55,7 +69,11 @@ const ProductGrid = ({ products, totalCount, search, selectedCategory, sectionLa
                         key={product.id}
                         onClick={() => onSelect?.(product)}
                         className="tactical-frame p-4 hover:bg-surface-bright transition-colors cursor-pointer flex flex-col gap-3 group">
-                        <ProductImage src={product.image} alt={product.name} inStock={product.inStock} />
+                        <ProductImage
+                            src={product.image}
+                            alt={product.name}
+                            inStock={product.inStock}
+                        />
                         <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
                                 <p className="text-[9px] font-headline text-primary/60 tracking-widest uppercase truncate">
@@ -66,7 +84,8 @@ const ProductGrid = ({ products, totalCount, search, selectedCategory, sectionLa
                                 </p>
                             </div>
                             {product.badge && (
-                                <span className={`shrink-0 px-1.5 py-0.5 text-[8px] font-headline border ${product.badgeColor} text-[#e0e0ff]`}>
+                                <span
+                                    className={`shrink-0 px-1.5 py-0.5 text-[8px] font-headline border ${product.badgeColor} text-[#e0e0ff]`}>
                                     {product.badge}
                                 </span>
                             )}
@@ -77,7 +96,12 @@ const ProductGrid = ({ products, totalCount, search, selectedCategory, sectionLa
                             </p>
                         )}
                         <div className="flex items-center justify-between mt-auto pt-2 border-t border-outline-variant/30">
-                            <PriceTag price={product.price} salePrice={product.salePrice} badge={product.badge} size="sm" />
+                            <PriceTag
+                                price={product.price}
+                                salePrice={product.salePrice}
+                                badge={product.badge}
+                                size="sm"
+                            />
                             <div className="flex items-center gap-1.5">
                                 {product.badgeText && (
                                     <span className="text-xs font-body text-on-surface-variant line-clamp-1">

@@ -6,3 +6,7 @@ node_modules/
 *.min.js
 .env
 .DS_Store
+
+# Herramientas locales, no código de la app
+.claude/
+package-lock.json

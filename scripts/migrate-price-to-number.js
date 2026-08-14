@@ -24,7 +24,9 @@ const target = process.argv[2];
 const apply = process.argv.includes('--apply');
 
 if (target !== 'dev' && target !== 'prod') {
-    console.error('Uso: node scripts/migrate-price-to-number.js <dev|prod> [--apply]');
+    console.error(
+        'Uso: node scripts/migrate-price-to-number.js <dev|prod> [--apply]',
+    );
     process.exit(1);
 }
 
@@ -56,7 +58,9 @@ function loadKey(env) {
     }
 
     if (key.type !== 'service_account' || !key.private_key) {
-        die(`${filePath} no parece una service account key (falta type o private_key).`);
+        die(
+            `${filePath} no parece una service account key (falta type o private_key).`,
+        );
     }
 
     const expected = PROJECT_IDS[env];
@@ -96,8 +100,18 @@ function parsePrice(value) {
 function backup(docs) {
     const dir = path.join(ROOT, '.backups');
     mkdirSync(dir, { recursive: true });
-    const file = path.join(dir, `products-${target}-${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
-    writeFileSync(file, JSON.stringify(docs.map((d) => ({ id: d.id, ...d.data() })), null, 2));
+    const file = path.join(
+        dir,
+        `products-${target}-${new Date().toISOString().replace(/[:.]/g, '-')}.json`,
+    );
+    writeFileSync(
+        file,
+        JSON.stringify(
+            docs.map((d) => ({ id: d.id, ...d.data() })),
+            null,
+            2,
+        ),
+    );
     console.log(`Backup: ${path.relative(ROOT, file)} (${docs.length} docs)\n`);
 }
 
@@ -118,28 +132,42 @@ async function main() {
             if (typeof raw === 'number') continue; // ya migrado
             const parsed = parsePrice(raw);
             if (parsed === null) {
-                skipped.push(`${doc.id} (${data.name}): ${key} = ${JSON.stringify(raw)}`);
+                skipped.push(
+                    `${doc.id} (${data.name}): ${key} = ${JSON.stringify(raw)}`,
+                );
                 continue;
             }
             fields[key] = parsed;
         }
 
         if (Object.keys(fields).length > 0) {
-            updates.push({ ref: doc.ref, id: doc.id, name: data.name, fields, before: { price: data.price, salePrice: data.salePrice } });
+            updates.push({
+                ref: doc.ref,
+                id: doc.id,
+                name: data.name,
+                fields,
+                before: { price: data.price, salePrice: data.salePrice },
+            });
         }
     }
 
     for (const u of updates) {
-        const parts = Object.entries(u.fields).map(([k, v]) => `${k}: ${JSON.stringify(u.before[k])} -> ${v}`);
+        const parts = Object.entries(u.fields).map(
+            ([k, v]) => `${k}: ${JSON.stringify(u.before[k])} -> ${v}`,
+        );
         console.log(`  ${u.name}: ${parts.join(', ')}`);
     }
 
     if (skipped.length > 0) {
-        console.log(`\nNO PARSEABLES (${skipped.length}) — se dejan intactos, revísalos a mano:`);
+        console.log(
+            `\nNO PARSEABLES (${skipped.length}) — se dejan intactos, revísalos a mano:`,
+        );
         skipped.forEach((s) => console.log(`  ${s}`));
     }
 
-    console.log(`\n${updates.length} documentos a actualizar, ${skipped.length} sin tocar.`);
+    console.log(
+        `\n${updates.length} documentos a actualizar, ${skipped.length} sin tocar.`,
+    );
 
     if (!apply) {
         console.log('\nDRY-RUN. Nada escrito. Añade --apply para ejecutar.');

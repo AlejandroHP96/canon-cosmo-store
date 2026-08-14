@@ -12,7 +12,8 @@ const FORMATTER = new Intl.NumberFormat('es-ES', {
 
 /** Normaliza un valor de Firestore (number o string legacy) a number. */
 export const toPrice = (value: unknown): number | undefined => {
-    if (typeof value === 'number') return Number.isFinite(value) ? value : undefined;
+    if (typeof value === 'number')
+        return Number.isFinite(value) ? value : undefined;
     if (typeof value !== 'string') return undefined;
     return parsePriceInput(value);
 };

@@ -12,7 +12,14 @@ type Props = {
     onChange: (raw: string, parsed: number | undefined) => void;
 };
 
-const PriceInput = ({ label, value, placeholder, required, highlight, onChange }: Props) => {
+const PriceInput = ({
+    label,
+    value,
+    placeholder,
+    required,
+    highlight,
+    onChange,
+}: Props) => {
     const border = highlight
         ? ' border-r-0 border-[#ffb074]/60 focus:border-[#ffb074]'
         : ' border-r-0';
@@ -29,10 +36,18 @@ const PriceInput = ({ label, value, placeholder, required, highlight, onChange }
                     inputMode="decimal"
                     placeholder={placeholder}
                     value={value}
-                    onChange={(e) => onChange(e.target.value, parsePriceInput(e.target.value))}
+                    onChange={(e) =>
+                        onChange(
+                            e.target.value,
+                            parsePriceInput(e.target.value),
+                        )
+                    }
                     className={inputClass + border}
                 />
-                <span className={`shrink-0 border px-3 py-2 text-sm font-body ${suffix}`}>€</span>
+                <span
+                    className={`shrink-0 border px-3 py-2 text-sm font-body ${suffix}`}>
+                    €
+                </span>
             </div>
         </div>
     );

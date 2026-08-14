@@ -17,7 +17,10 @@ import {
     normalizeCantidad,
     type ReservaForm,
 } from '../components/reservas/reservaForm';
-import { filtrarReservables, seccionesDisponibles } from '../components/reservas/reservaQuery';
+import {
+    filtrarReservables,
+    seccionesDisponibles,
+} from '../components/reservas/reservaQuery';
 
 const Reservas = () => {
     const { t } = useTranslation();
@@ -28,7 +31,9 @@ const Reservas = () => {
     const [errorKey, setErrorKey] = useState<string | null>(null);
     const [errorTexto, setErrorTexto] = useState<string | null>(null);
     const [form, setForm] = useState<ReservaForm>(EMPTY_RESERVA_FORM);
-    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(
+        null,
+    );
     const [search, setSearch] = useState('');
     const [seccionFiltro, setSeccionFiltro] = useState<string | null>(null);
 
@@ -41,7 +46,10 @@ const Reservas = () => {
             .finally(() => setLoading(false));
     }, []);
 
-    const secciones = useMemo(() => seccionesDisponibles(productos), [productos]);
+    const secciones = useMemo(
+        () => seccionesDisponibles(productos),
+        [productos],
+    );
 
     const productosFiltrados = useMemo(
         () => filtrarReservables(productos, search, seccionFiltro),
@@ -141,7 +149,9 @@ const Reservas = () => {
 
             {(selectedProduct || success) && (
                 <Modal
-                    onClose={() => (success ? setSuccess(false) : cerrarModal())}
+                    onClose={() =>
+                        success ? setSuccess(false) : cerrarModal()
+                    }
                     title={
                         success
                             ? t('reservas.success.title')
@@ -156,7 +166,9 @@ const Reservas = () => {
                                 producto={selectedProduct}
                                 form={form}
                                 saving={saving}
-                                onChange={(patch) => setForm((prev) => ({ ...prev, ...patch }))}
+                                onChange={(patch) =>
+                                    setForm((prev) => ({ ...prev, ...patch }))
+                                }
                                 onSubmit={handleSubmit}
                                 onClose={cerrarModal}
                             />

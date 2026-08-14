@@ -32,7 +32,11 @@ class ErrorBoundary extends Component<Props, State> {
     }
 
     componentDidCatch(error: Error, info: ErrorInfo) {
-        console.error('Error capturado por ErrorBoundary:', error, info.componentStack);
+        console.error(
+            'Error capturado por ErrorBoundary:',
+            error,
+            info.componentStack,
+        );
     }
 
     private reset = () => this.setState({ error: null });
@@ -40,7 +44,9 @@ class ErrorBoundary extends Component<Props, State> {
     render() {
         const { error } = this.state;
         const { children, variant = 'app', showHomeLink = true } = this.props;
-        const title = i18n.t(variant === 'page' ? 'error.pageTitle' : 'error.title');
+        const title = i18n.t(
+            variant === 'page' ? 'error.pageTitle' : 'error.title',
+        );
 
         if (!error) return children;
 

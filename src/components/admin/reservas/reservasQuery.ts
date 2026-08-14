@@ -1,7 +1,9 @@
 import type { SolicitudReserva } from '../../../services/reservasService';
 
 /** Más antiguas primero: las que llevan más esperando se atienden antes. */
-export function ordenarPorFecha(reservas: SolicitudReserva[]): SolicitudReserva[] {
+export function ordenarPorFecha(
+    reservas: SolicitudReserva[],
+): SolicitudReserva[] {
     return [...reservas].sort(
         (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime(),
     );

@@ -2,7 +2,13 @@ import type { TeamMember } from './team';
 import { cardStyle } from './cardStyle';
 
 /** Contenido de la carta. `large` es la versión del modal. */
-export const CardInner = ({ member, large = false }: { member: TeamMember; large?: boolean }) => (
+export const CardInner = ({
+    member,
+    large = false,
+}: {
+    member: TeamMember;
+    large?: boolean;
+}) => (
     <>
         <div className={`flex gap-3 ${large ? 'p-5 pb-0' : 'p-3 pb-0'}`}>
             <div
@@ -31,7 +37,8 @@ export const CardInner = ({ member, large = false }: { member: TeamMember; large
                         large ? 'text-2xl' : 'text-base'
                     }`}>
                     {member.name},<br />
-                    <span className={`text-[#bec2ff] font-normal ${large ? 'text-lg' : 'text-sm'}`}>
+                    <span
+                        className={`text-[#bec2ff] font-normal ${large ? 'text-lg' : 'text-sm'}`}>
                         {member.role}
                     </span>
                 </p>
@@ -48,7 +55,9 @@ export const CardInner = ({ member, large = false }: { member: TeamMember; large
             </div>
         </div>
 
-        <div className={`${large ? 'mx-5 mt-4' : 'mx-3 mt-3'} border-t border-[#5a5aaa]/40`} />
+        <div
+            className={`${large ? 'mx-5 mt-4' : 'mx-3 mt-3'} border-t border-[#5a5aaa]/40`}
+        />
 
         <div
             className={`${large ? 'mx-5 my-4 p-5' : 'mx-3 my-3 p-4'} ${large ? '' : 'min-h-[260px]'}`}
@@ -66,7 +75,13 @@ export const CardInner = ({ member, large = false }: { member: TeamMember; large
     </>
 );
 
-const TeamCard = ({ member, onClick }: { member: TeamMember; onClick: () => void }) => (
+const TeamCard = ({
+    member,
+    onClick,
+}: {
+    member: TeamMember;
+    onClick: () => void;
+}) => (
     <div
         className="w-full max-w-[360px] shrink-0 select-none cursor-pointer hover:scale-[1.02] hover:brightness-110 transition-all duration-200"
         style={cardStyle}

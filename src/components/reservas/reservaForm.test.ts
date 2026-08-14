@@ -16,7 +16,9 @@ describe('nombre completo', () => {
     it('acepta cualquier número de palabras a partir de dos', () => {
         expect(esNombreCompleto('Alejandro Herrera')).toBe(true);
         expect(esNombreCompleto('Jose Alejandro Herrera Pestana')).toBe(true);
-        expect(esNombreCompleto('Maria del Carmen Ruiz de la Fuente')).toBe(true);
+        expect(esNombreCompleto('Maria del Carmen Ruiz de la Fuente')).toBe(
+            true,
+        );
     });
 
     it('exige al menos un apellido', () => {

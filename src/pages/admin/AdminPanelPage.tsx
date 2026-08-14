@@ -10,11 +10,11 @@ import ReservasManager from '../../components/admin/reservas/ReservasManager';
 type AdminView = 'products' | 'categories' | 'nav' | 'torneos' | 'reservas';
 
 const TABS: { id: AdminView; label: string; icon: string }[] = [
-    { id: 'products',   label: 'Productos',  icon: 'inventory' },
+    { id: 'products', label: 'Productos', icon: 'inventory' },
     { id: 'categories', label: 'Categorías', icon: 'folder' },
-    { id: 'nav',        label: 'Navegación', icon: 'menu' },
-    { id: 'torneos',    label: 'Torneos',    icon: 'emoji_events' },
-    { id: 'reservas',   label: 'Reservas',   icon: 'event_upcoming' },
+    { id: 'nav', label: 'Navegación', icon: 'menu' },
+    { id: 'torneos', label: 'Torneos', icon: 'emoji_events' },
+    { id: 'reservas', label: 'Reservas', icon: 'event_upcoming' },
 ];
 
 const AdminPanelPage = () => {
@@ -45,7 +45,9 @@ const AdminPanelPage = () => {
                     <button
                         onClick={handleSignOut}
                         className="flex items-center gap-1.5 border border-outline-variant text-on-surface-variant font-headline text-[10px] uppercase tracking-widest px-3 py-1.5 hover:border-primary hover:text-primary transition-colors">
-                        <span className="material-symbols-outlined text-sm">logout</span>
+                        <span className="material-symbols-outlined text-sm">
+                            logout
+                        </span>
                         Salir
                     </button>
                 </div>
@@ -61,18 +63,20 @@ const AdminPanelPage = () => {
                                 ? 'border-primary text-primary'
                                 : 'border-transparent text-on-surface-variant hover:text-on-surface'
                         }`}>
-                        <span className="material-symbols-outlined text-sm">{icon}</span>
+                        <span className="material-symbols-outlined text-sm">
+                            {icon}
+                        </span>
                         {label}
                     </button>
                 ))}
             </div>
 
             <div className="p-6">
-                {adminView === 'products'   && <ProductsView />}
+                {adminView === 'products' && <ProductsView />}
                 {adminView === 'categories' && <CategoriesManager />}
-                {adminView === 'nav'        && <NavManager />}
-                {adminView === 'torneos'    && <JuegosManager />}
-                {adminView === 'reservas'   && <ReservasManager />}
+                {adminView === 'nav' && <NavManager />}
+                {adminView === 'torneos' && <JuegosManager />}
+                {adminView === 'reservas' && <ReservasManager />}
             </div>
         </div>
     );

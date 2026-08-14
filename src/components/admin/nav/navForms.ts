@@ -2,7 +2,12 @@
 
 export type NavItemForm = { icon: string; label: string; path: string };
 
-export type SubNavForm = { label: string; path: string; image: string; color: string };
+export type SubNavForm = {
+    label: string;
+    path: string;
+    image: string;
+    color: string;
+};
 
 export type NewSubForm = SubNavForm & {
     /** Mientras esté activo, la ruta se deriva del label. Se apaga al editarla a mano. */

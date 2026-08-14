@@ -1,5 +1,9 @@
 import { useEffect, useState, useMemo } from 'react';
-import { getAllProducts, deleteProducts, updateProduct } from '../../../services/productsService';
+import {
+    getAllProducts,
+    deleteProducts,
+    updateProduct,
+} from '../../../services/productsService';
 import { getSidebarConfig, type NavItem } from '../../../services/navService';
 import { useSelection } from '../../../hooks/useSelection';
 import type { Product } from '../../../types';
@@ -60,20 +64,34 @@ const ProductsView = () => {
         refresh();
         getSidebarConfig()
             .then((cfg) => setNavItems(cfg.items))
-            .catch(() => setError('Error al cargar la configuración del menú.'));
+            .catch(() =>
+                setError('Error al cargar la configuración del menú.'),
+            );
     }, []);
 
     const selectedMenu = menuIdx !== null ? navItems[menuIdx] : null;
 
     const section: SectionFilter = useMemo(
-        () => (selectedMenu ? { menuSectionIds: menuSectionIds(selectedMenu), sectionId } : null),
+        () =>
+            selectedMenu
+                ? { menuSectionIds: menuSectionIds(selectedMenu), sectionId }
+                : null,
         [selectedMenu, sectionId],
     );
 
-    const categories = useMemo(() => availableCategories(products, section), [products, section]);
+    const categories = useMemo(
+        () => availableCategories(products, section),
+        [products, section],
+    );
 
     const visible = useMemo(
-        () => filterProducts(products, { section, search, reservableOnly, category }),
+        () =>
+            filterProducts(products, {
+                section,
+                search,
+                reservableOnly,
+                category,
+            }),
         [products, section, search, reservableOnly, category],
     );
 
@@ -123,7 +141,9 @@ const ProductsView = () => {
                 <button
                     onClick={() => openForm(null)}
                     className="flex items-center gap-2 border border-primary text-primary font-headline text-xs uppercase tracking-widest px-4 py-2 hover:bg-primary hover:text-surface transition-colors">
-                    <span className="material-symbols-outlined text-sm">add</span>
+                    <span className="material-symbols-outlined text-sm">
+                        add
+                    </span>
                     Nuevo producto
                 </button>
             </div>
@@ -177,18 +197,30 @@ const ProductsView = () => {
                                 key={product.id}
                                 product={product}
                                 isSelected={selection.selected.has(product.id)}
-                                onToggleSelect={() => selection.toggle(product.id)}
+                                onToggleSelect={() =>
+                                    selection.toggle(product.id)
+                                }
                                 onEdit={() => openForm(product)}
                                 onDuplicate={() =>
-                                    openForm({ ...product, name: `${product.name} (copia)` }, true)
+                                    openForm(
+                                        {
+                                            ...product,
+                                            name: `${product.name} (copia)`,
+                                        },
+                                        true,
+                                    )
                                 }
                                 onDelete={() => setDeleteTarget(product)}
                                 onToggleVisible={async () => {
                                     const visible = product.visible === false;
-                                    await updateProduct(product.id, { visible });
+                                    await updateProduct(product.id, {
+                                        visible,
+                                    });
                                     setProducts((prev) =>
                                         prev.map((p) =>
-                                            p.id === product.id ? { ...p, visible } : p,
+                                            p.id === product.id
+                                                ? { ...p, visible }
+                                                : p,
                                         ),
                                     );
                                 }}
@@ -224,7 +256,9 @@ const ProductsView = () => {
                     product={deleteTarget}
                     onClose={() => setDeleteTarget(null)}
                     onDeleted={() => {
-                        setProducts((prev) => prev.filter((p) => p.id !== deleteTarget.id));
+                        setProducts((prev) =>
+                            prev.filter((p) => p.id !== deleteTarget.id),
+                        );
                         selection.remove(deleteTarget.id);
                         setDeleteTarget(null);
                     }}

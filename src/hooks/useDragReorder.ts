@@ -4,7 +4,9 @@ import { useState } from 'react';
  * Reordenación por drag & drop sobre elementos identificados por una clave string.
  * El consumidor decide qué significa cada clave y aplica el movimiento en onReorder.
  */
-export function useDragReorder(onReorder: (fromKey: string, toKey: string) => void) {
+export function useDragReorder(
+    onReorder: (fromKey: string, toKey: string) => void,
+) {
     const [dragKey, setDragKey] = useState<string | null>(null);
     const [overKey, setOverKey] = useState<string | null>(null);
 

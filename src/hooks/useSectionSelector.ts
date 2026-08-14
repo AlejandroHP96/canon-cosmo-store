@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react';
-import { getSidebarConfig, type NavItem, type SubNavItem } from '../services/navService';
+import {
+    getSidebarConfig,
+    type NavItem,
+    type SubNavItem,
+} from '../services/navService';
 import { pathToSectionId, toSlug } from '../lib/tcgUtils';
 
 /** ID de sección Firestore que corresponde a una entrada del sidebar. */
@@ -13,10 +17,17 @@ const sectionIdOf = (menu: NavItem, sub?: SubNavItem): string => {
 function findIndices(items: NavItem[], sectionId: string): [number, number] {
     for (let i = 0; i < items.length; i++) {
         const item = items[i];
-        if (item.path && pathToSectionId(item.path) === sectionId) return [i, 0];
-        if (!item.path && !item.submenu?.length && toSlug(item.label) === sectionId) return [i, 0];
+        if (item.path && pathToSectionId(item.path) === sectionId)
+            return [i, 0];
+        if (
+            !item.path &&
+            !item.submenu?.length &&
+            toSlug(item.label) === sectionId
+        )
+            return [i, 0];
         for (let j = 0; j < (item.submenu?.length ?? 0); j++) {
-            if (pathToSectionId(item.submenu![j].path) === sectionId) return [i, j];
+            if (pathToSectionId(item.submenu![j].path) === sectionId)
+                return [i, j];
         }
     }
     return [0, 0];
@@ -48,7 +59,10 @@ export function useSectionSelector(initialSectionId: string) {
 
     const menu = navItems[menuIdx];
     const subOptions = menu?.submenu ?? [];
-    const activeSub = subOptions.length > 0 ? subOptions[Math.min(subIdx, subOptions.length - 1)] : undefined;
+    const activeSub =
+        subOptions.length > 0
+            ? subOptions[Math.min(subIdx, subOptions.length - 1)]
+            : undefined;
     const sectionId = menu ? sectionIdOf(menu, activeSub) : initialSectionId;
 
     const selectMenu = (idx: number) => {
@@ -56,5 +70,14 @@ export function useSectionSelector(initialSectionId: string) {
         setSubIdx(0);
     };
 
-    return { navItems, navReady, menuIdx, subIdx, subOptions, sectionId, selectMenu, setSubIdx };
+    return {
+        navItems,
+        navReady,
+        menuIdx,
+        subIdx,
+        subOptions,
+        sectionId,
+        selectMenu,
+        setSubIdx,
+    };
 }

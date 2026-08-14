@@ -12,7 +12,9 @@ import {
  * `getSidebarConfig`, así que montar varias instancias no multiplica peticiones.
  */
 export function useNavItems(): NavItem[] {
-    const [items, setItems] = useState<NavItem[]>(() => getCachedNavItems() ?? []);
+    const [items, setItems] = useState<NavItem[]>(
+        () => getCachedNavItems() ?? [],
+    );
 
     useEffect(() => {
         let cancelled = false;
@@ -22,7 +24,10 @@ export function useNavItems(): NavItem[] {
             })
             .catch(() => {
                 // Sin red y sin caché: al menos el nav por defecto
-                if (!cancelled) setItems((prev) => (prev.length > 0 ? prev : DEFAULT_SIDEBAR.items));
+                if (!cancelled)
+                    setItems((prev) =>
+                        prev.length > 0 ? prev : DEFAULT_SIDEBAR.items,
+                    );
             });
         return () => {
             cancelled = true;

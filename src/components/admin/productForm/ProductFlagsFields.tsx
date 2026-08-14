@@ -25,7 +25,9 @@ const Checkbox = ({ checked, label, hint, boxed, onChange }: CheckboxProps) => (
                 {label}
             </span>
             {hint && (
-                <span className="font-body text-[10px] text-on-surface-variant/60">{hint}</span>
+                <span className="font-body text-[10px] text-on-surface-variant/60">
+                    {hint}
+                </span>
             )}
         </div>
     </label>
@@ -33,7 +35,10 @@ const Checkbox = ({ checked, label, hint, boxed, onChange }: CheckboxProps) => (
 
 type Props = {
     form: ProductForm;
-    onChange: <K extends keyof ProductForm>(key: K, value: ProductForm[K]) => void;
+    onChange: <K extends keyof ProductForm>(
+        key: K,
+        value: ProductForm[K],
+    ) => void;
 };
 
 /** Visibilidad, destacado y reservable. */
@@ -54,7 +59,8 @@ const ProductFlagsFields = ({ form, onChange }: Props) => (
                     value: false,
                     label: 'Oculto',
                     icon: 'visibility_off',
-                    activeClass: 'border-yellow-500 bg-yellow-500/10 text-yellow-400',
+                    activeClass:
+                        'border-yellow-500 bg-yellow-500/10 text-yellow-400',
                 },
             ]}
         />

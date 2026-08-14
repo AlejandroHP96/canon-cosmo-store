@@ -6,9 +6,7 @@ const ProtectedRoute = () => {
     const { user, isAdmin, loading } = useAuth();
 
     if (loading)
-        return (
-            <Spinner size="lg" className="min-h-screen bg-surface" />
-        );
+        return <Spinner size="lg" className="min-h-screen bg-surface" />;
 
     // Esto es solo comodidad: la barrera real son las reglas de Firestore, que
     // exigen el mismo claim. Sirve para que a quien pierda el claim con la

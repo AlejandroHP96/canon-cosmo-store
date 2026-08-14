@@ -8,15 +8,21 @@ type ColorPickerPopoverProps = {
 };
 
 /** Popover con paleta de colores predefinidos + selector libre. */
-const ColorPickerPopover = ({ value, onChange, onClose }: ColorPickerPopoverProps) => {
+const ColorPickerPopover = ({
+    value,
+    onChange,
+    onClose,
+}: ColorPickerPopoverProps) => {
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
-            if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+            if (ref.current && !ref.current.contains(e.target as Node))
+                onClose();
         };
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        return () =>
+            document.removeEventListener('mousedown', handleClickOutside);
     }, [onClose]);
 
     return (
@@ -30,8 +36,11 @@ const ColorPickerPopover = ({ value, onChange, onClose }: ColorPickerPopoverProp
                 <button
                     onClick={onClose}
                     className="text-on-surface-variant hover:text-on-surface transition-colors"
-                    title="Cerrar" aria-label="Cerrar">
-                    <span className="material-symbols-outlined text-sm">close</span>
+                    title="Cerrar"
+                    aria-label="Cerrar">
+                    <span className="material-symbols-outlined text-sm">
+                        close
+                    </span>
                 </button>
             </div>
 
@@ -40,7 +49,8 @@ const ColorPickerPopover = ({ value, onChange, onClose }: ColorPickerPopoverProp
                     <button
                         key={hex}
                         onClick={() => onChange(hex)}
-                        title={hex} aria-label={hex}
+                        title={hex}
+                        aria-label={hex}
                         className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${
                             value.toLowerCase() === hex.toLowerCase()
                                 ? 'border-primary'
@@ -58,7 +68,9 @@ const ColorPickerPopover = ({ value, onChange, onClose }: ColorPickerPopoverProp
                     onChange={(e) => onChange(e.target.value)}
                     className="w-8 h-8 border border-outline-variant cursor-pointer bg-transparent"
                 />
-                <span className="font-mono text-xs text-on-surface-variant">{value || '#bec2ff'}</span>
+                <span className="font-mono text-xs text-on-surface-variant">
+                    {value || '#bec2ff'}
+                </span>
             </div>
         </div>
     );

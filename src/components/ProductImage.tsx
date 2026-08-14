@@ -12,7 +12,14 @@ type Props = {
     eager?: boolean;
 };
 
-const ProductImage = ({ src, alt, featured = false, className, inStock = true, eager }: Props) => {
+const ProductImage = ({
+    src,
+    alt,
+    featured = false,
+    className,
+    inStock = true,
+    eager,
+}: Props) => {
     const [failed, setFailed] = useState(false);
     const defaultH = featured ? 'h-48' : 'h-36';
     const sizeClass = className ?? `w-full ${defaultH}`;
@@ -37,7 +44,9 @@ const ProductImage = ({ src, alt, featured = false, className, inStock = true, e
         <div
             aria-hidden="true"
             className={`bg-surface-container-lowest border border-outline-variant/50 flex flex-col items-center justify-center gap-2 ${sizeClass} ${stockClass}`}>
-            <span className="material-symbols-outlined text-outline" style={{ fontSize: '1.25rem' }}>
+            <span
+                className="material-symbols-outlined text-outline"
+                style={{ fontSize: '1.25rem' }}>
                 image
             </span>
         </div>

@@ -30,7 +30,10 @@ function toProduct(d: QueryDocumentSnapshot): Product {
 
 /** Devuelve productos marcados como reservables */
 export async function getReservableProducts(): Promise<Product[]> {
-    const q = query(collection(db, COLLECTION), where('reservable', '==', true));
+    const q = query(
+        collection(db, COLLECTION),
+        where('reservable', '==', true),
+    );
     const snapshot = await getDocs(q);
     return snapshot.docs
         .map(toProduct)

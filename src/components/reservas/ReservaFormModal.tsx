@@ -23,79 +23,106 @@ type Props = {
     onClose: () => void;
 };
 
-const ReservaFormModal = ({ producto, form, saving, onChange, onSubmit, onClose }: Props) => {
+const ReservaFormModal = ({
+    producto,
+    form,
+    saving,
+    onChange,
+    onSubmit,
+    onClose,
+}: Props) => {
     const { t } = useTranslation();
 
     return (
-    <>
-        <div className="flex items-center justify-between mb-4">
-            <p className="font-headline text-[10px] uppercase tracking-[0.3em] text-primary/60">
-                {t('reservas.form.heading')}: {producto.name.toUpperCase()}
-            </p>
-            <button onClick={onClose} className="text-on-surface-variant hover:text-primary transition-colors">
-                <span className="material-symbols-outlined text-sm">close</span>
-            </button>
-        </div>
-        <form onSubmit={onSubmit} className="flex flex-col gap-4">
-            <div>
-                <label className={labelClass}>{t('reservas.form.name')}</label>
-                <input
-                    required
-                    maxLength={200}
-                    pattern={NOMBRE_COMPLETO_PATTERN}
-                    title={t('reservas.form.nameHint')}
-                    value={form.cliente}
-                    onChange={(e) => onChange({ cliente: e.target.value })}
-                    onBlur={() => onChange({ cliente: form.cliente.trim() })}
-                    placeholder={t('reservas.form.namePlaceholder')}
-                    className={fieldClass}
-                />
-            </div>
-            <div>
-                <label className={labelClass}>{t('reservas.form.quantity')}</label>
-                {/* Texto con teclado numérico, no type="number": así se puede
-                    vaciar el campo y teclear la cifra entera. El recorte al
-                    tope ocurre al salir del campo, no en cada tecla. */}
-                <input
-                    type="text"
-                    inputMode="numeric"
-                    autoComplete="off"
-                    aria-label={t('reservas.form.quantity')}
-                    title={t('reservas.form.quantityHint', {
-                        min: MIN_CANTIDAD,
-                        max: MAX_CANTIDAD,
-                    })}
-                    value={form.cantidad}
-                    onChange={(e) =>
-                        onChange({ cantidad: sanitizeCantidadInput(e.target.value) })
-                    }
-                    onBlur={() =>
-                        onChange({ cantidad: String(normalizeCantidad(form.cantidad)) })
-                    }
-                    className={fieldClass}
-                />
-            </div>
-            <div>
-                <label className={labelClass}>{t('reservas.form.notes')}</label>
-                <textarea
-                    rows={3}
-                    maxLength={1000}
-                    value={form.notas}
-                    onChange={(e) => onChange({ notas: e.target.value })}
-                    placeholder={t('reservas.form.notesPlaceholder')}
-                    className={fieldClass + ' resize-none'}
-                />
-            </div>
-            <div className="flex justify-end pt-2">
+        <>
+            <div className="flex items-center justify-between mb-4">
+                <p className="font-headline text-[10px] uppercase tracking-[0.3em] text-primary/60">
+                    {t('reservas.form.heading')}: {producto.name.toUpperCase()}
+                </p>
                 <button
-                    type="submit"
-                    disabled={saving}
-                    className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-8 py-2.5 hover:bg-primary hover:text-surface transition-colors disabled:opacity-40">
-                    {saving ? t('reservas.form.submitting') : t('reservas.form.submit')}
+                    onClick={onClose}
+                    className="text-on-surface-variant hover:text-primary transition-colors">
+                    <span className="material-symbols-outlined text-sm">
+                        close
+                    </span>
                 </button>
             </div>
-        </form>
-    </>
+            <form onSubmit={onSubmit} className="flex flex-col gap-4">
+                <div>
+                    <label className={labelClass}>
+                        {t('reservas.form.name')}
+                    </label>
+                    <input
+                        required
+                        maxLength={200}
+                        pattern={NOMBRE_COMPLETO_PATTERN}
+                        title={t('reservas.form.nameHint')}
+                        value={form.cliente}
+                        onChange={(e) => onChange({ cliente: e.target.value })}
+                        onBlur={() =>
+                            onChange({ cliente: form.cliente.trim() })
+                        }
+                        placeholder={t('reservas.form.namePlaceholder')}
+                        className={fieldClass}
+                    />
+                </div>
+                <div>
+                    <label className={labelClass}>
+                        {t('reservas.form.quantity')}
+                    </label>
+                    {/* Texto con teclado numérico, no type="number": así se puede
+                    vaciar el campo y teclear la cifra entera. El recorte al
+                    tope ocurre al salir del campo, no en cada tecla. */}
+                    <input
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="off"
+                        aria-label={t('reservas.form.quantity')}
+                        title={t('reservas.form.quantityHint', {
+                            min: MIN_CANTIDAD,
+                            max: MAX_CANTIDAD,
+                        })}
+                        value={form.cantidad}
+                        onChange={(e) =>
+                            onChange({
+                                cantidad: sanitizeCantidadInput(e.target.value),
+                            })
+                        }
+                        onBlur={() =>
+                            onChange({
+                                cantidad: String(
+                                    normalizeCantidad(form.cantidad),
+                                ),
+                            })
+                        }
+                        className={fieldClass}
+                    />
+                </div>
+                <div>
+                    <label className={labelClass}>
+                        {t('reservas.form.notes')}
+                    </label>
+                    <textarea
+                        rows={3}
+                        maxLength={1000}
+                        value={form.notas}
+                        onChange={(e) => onChange({ notas: e.target.value })}
+                        placeholder={t('reservas.form.notesPlaceholder')}
+                        className={fieldClass + ' resize-none'}
+                    />
+                </div>
+                <div className="flex justify-end pt-2">
+                    <button
+                        type="submit"
+                        disabled={saving}
+                        className="border border-primary text-primary font-headline text-xs uppercase tracking-widest px-8 py-2.5 hover:bg-primary hover:text-surface transition-colors disabled:opacity-40">
+                        {saving
+                            ? t('reservas.form.submitting')
+                            : t('reservas.form.submit')}
+                    </button>
+                </div>
+            </form>
+        </>
     );
 };
 

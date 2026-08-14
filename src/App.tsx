@@ -28,7 +28,13 @@ const App = () => {
             <Route
                 path="/cosmos-admin/*"
                 element={
-                    <Suspense fallback={<Spinner size="lg" className="min-h-screen bg-surface" />}>
+                    <Suspense
+                        fallback={
+                            <Spinner
+                                size="lg"
+                                className="min-h-screen bg-surface"
+                            />
+                        }>
                         <AdminArea />
                     </Suspense>
                 }

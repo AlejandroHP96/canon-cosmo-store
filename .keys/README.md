@@ -6,14 +6,14 @@ subas su contenido al repo.
 
 ## Qué descargar
 
-Firebase Console -> Project settings -> Service accounts -> *Generate new
-private key*. Sale un `.json` a la carpeta de descargas: renómbralo y muévelo
+Firebase Console -> Project settings -> Service accounts -> _Generate new
+private key_. Sale un `.json` a la carpeta de descargas: renómbralo y muévelo
 aquí con el nombre exacto que espera cada script.
 
-| Fichero | Proyecto | Enlace directo |
-|---|---|---|
-| `sa-dev.json` | `canon-cosmo-store-dev` | https://console.firebase.google.com/project/canon-cosmo-store-dev/settings/serviceaccounts/adminsdk |
-| `sa-prod.json` | `canon-cosmo-store` | https://console.firebase.google.com/project/canon-cosmo-store/settings/serviceaccounts/adminsdk |
+| Fichero        | Proyecto                | Enlace directo                                                                                      |
+| -------------- | ----------------------- | --------------------------------------------------------------------------------------------------- |
+| `sa-dev.json`  | `canon-cosmo-store-dev` | https://console.firebase.google.com/project/canon-cosmo-store-dev/settings/serviceaccounts/adminsdk |
+| `sa-prod.json` | `canon-cosmo-store`     | https://console.firebase.google.com/project/canon-cosmo-store/settings/serviceaccounts/adminsdk     |
 
 El fichero descargado ya viene completo, no hay que editarlo. Debe tener
 `"type": "service_account"` y un `"project_id"` que coincida con el proyecto.
@@ -30,4 +30,4 @@ Si falta el fichero el script lo dice y sale sin tocar nada.
 ## Si se filtra una clave
 
 Revócala en la misma pantalla de la consola (pestaña de service accounts ->
-*Manage service account permissions* -> Keys) y genera una nueva.
+_Manage service account permissions_ -> Keys) y genera una nueva.

@@ -1,114 +1,114 @@
 {
-  "header": {
-    "home": "Inicio",
-    "tournaments": "Torneos",
-    "reservas": "Reservas",
-    "aboutUs": "Sobre Nosotros"
-  },
-  "sidenav": {
-    "command": "COMANDO",
-    "selectAction": "SELECCIONAR ACCIÓN"
-  },
-  "footer": {
-    "connection": "CONNECTION: SECURE"
-  },
-  "hero": {
-    "systemActive": "Sistema activo · Cañón Cosmo Store · Midgar District VII",
-    "description": "Tienda especializada en juegos de cartas coleccionables. Sobres, mazos, bundles y singles de los mejores TCGs del mercado.",
-    "tournaments": "Torneos"
-  },
-  "tcgGrid": {
-    "title": "TCGs",
-    "sections": "secciones",
-    "viewCatalog": "Ver catálogo"
-  },
-  "tournamentBanner": {
-    "comingSoon": "Próximamente",
-    "title": "Torneos & Eventos",
-    "description": "Consulta el calendario de torneos y apúntate a los próximos eventos."
-  },
-  "productGrid": {
-    "noProducts": "Aún no hay productos para",
-    "noResults": "Sin resultados para",
-    "noProductsInCategory": "Sin productos en",
-    "fullCatalog": "Catálogo completo",
-    "soldOut": "Agotado"
-  },
-  "featuredProduct": {
-    "soldOut": "Agotado"
-  },
-  "aboutUs": {
-    "title": "Sobre Nosotros",
-    "subtitle": "Miembros del Equipo",
-    "description": "Hola, somos Cañon Cosmo y estamos felices de tenerles.",
-    "legendaryCreature": "Criatura Legendaria",
-    "team": {
-      "toni": {
-        "role": "Fundador",
-        "type1": "Dueño de Tienda",
-        "type2": "Llorón",
-        "bio": "Al entrar en juego: busca en tu biblioteca hasta 3 cartas TCG y añádelas a tu mano.\n\nCuando Toni declara ataque, puedes revelar una carta Pokémon de tu mano. Si lo haces, Toni recibe +2/+0 hasta el final del turno."
-      },
-      "jonay": {
-        "role": "Fundador",
-        "type1": "Dueño de Tienda",
-        "type2": "Coleccionista",
-        "bio": "Siempre que Jonay entra en juego, busca en tu biblioteca el coleccionable más raro y añádelo a tu vitrina.\n\nSi controlas 5 o más objetos únicos, los rivales no pueden robar cartas adicionales."
-      }
-    }
-  },
-  "tournaments": {
-    "subtitle": "Cañón Cosmo Store",
-    "title": "Torneos",
-    "comingSoon": "Próximamente torneos disponibles.",
-    "viewMore": "Ver más"
-  },
-  "reservas": {
-    "seo": "Reserva tus productos en Cañón Cosmo Store.",
-    "searchPlaceholder": "Buscar producto...",
-    "allSections": "Todas",
-    "reserve": "Reservar",
-    "empty": "No hay productos disponibles para reservar por ahora.",
-    "noMatch": "Ningún producto coincide con el filtro.",
-    "loadError": "Error al cargar productos disponibles.",
-    "submitError": "Error",
-    "retry": "Inténtalo de nuevo.",
-    "form": {
-      "heading": "RESERVAR",
-      "name": "Nombre completo *",
-      "namePlaceholder": "Nombre y apellidos",
-      "nameHint": "Introduce nombre y apellidos",
-      "quantity": "Cantidad",
-      "quantityHint": "Entre {{min}} y {{max}} unidades",
-      "notes": "Notas",
-      "notesPlaceholder": "Algo que debamos saber...",
-      "submit": "Solicitar reserva",
-      "submitting": "Enviando..."
+    "header": {
+        "home": "Inicio",
+        "tournaments": "Torneos",
+        "reservas": "Reservas",
+        "aboutUs": "Sobre Nosotros"
     },
-    "success": {
-      "title": "Solicitud enviada",
-      "text": "Te contactaremos pronto para confirmar tu reserva.",
-      "close": "Cerrar"
+    "sidenav": {
+        "command": "COMANDO",
+        "selectAction": "SELECCIONAR ACCIÓN"
+    },
+    "footer": {
+        "connection": "CONNECTION: SECURE"
+    },
+    "hero": {
+        "systemActive": "Sistema activo · Cañón Cosmo Store · Midgar District VII",
+        "description": "Tienda especializada en juegos de cartas coleccionables. Sobres, mazos, bundles y singles de los mejores TCGs del mercado.",
+        "tournaments": "Torneos"
+    },
+    "tcgGrid": {
+        "title": "TCGs",
+        "sections": "secciones",
+        "viewCatalog": "Ver catálogo"
+    },
+    "tournamentBanner": {
+        "comingSoon": "Próximamente",
+        "title": "Torneos & Eventos",
+        "description": "Consulta el calendario de torneos y apúntate a los próximos eventos."
+    },
+    "productGrid": {
+        "noProducts": "Aún no hay productos para",
+        "noResults": "Sin resultados para",
+        "noProductsInCategory": "Sin productos en",
+        "fullCatalog": "Catálogo completo",
+        "soldOut": "Agotado"
+    },
+    "featuredProduct": {
+        "soldOut": "Agotado"
+    },
+    "aboutUs": {
+        "title": "Sobre Nosotros",
+        "subtitle": "Miembros del Equipo",
+        "description": "Hola, somos Cañon Cosmo y estamos felices de tenerles.",
+        "legendaryCreature": "Criatura Legendaria",
+        "team": {
+            "toni": {
+                "role": "Fundador",
+                "type1": "Dueño de Tienda",
+                "type2": "Llorón",
+                "bio": "Al entrar en juego: busca en tu biblioteca hasta 3 cartas TCG y añádelas a tu mano.\n\nCuando Toni declara ataque, puedes revelar una carta Pokémon de tu mano. Si lo haces, Toni recibe +2/+0 hasta el final del turno."
+            },
+            "jonay": {
+                "role": "Fundador",
+                "type1": "Dueño de Tienda",
+                "type2": "Coleccionista",
+                "bio": "Siempre que Jonay entra en juego, busca en tu biblioteca el coleccionable más raro y añádelo a tu vitrina.\n\nSi controlas 5 o más objetos únicos, los rivales no pueden robar cartas adicionales."
+            }
+        }
+    },
+    "tournaments": {
+        "subtitle": "Cañón Cosmo Store",
+        "title": "Torneos",
+        "comingSoon": "Próximamente torneos disponibles.",
+        "viewMore": "Ver más"
+    },
+    "reservas": {
+        "seo": "Reserva tus productos en Cañón Cosmo Store.",
+        "searchPlaceholder": "Buscar producto...",
+        "allSections": "Todas",
+        "reserve": "Reservar",
+        "empty": "No hay productos disponibles para reservar por ahora.",
+        "noMatch": "Ningún producto coincide con el filtro.",
+        "loadError": "Error al cargar productos disponibles.",
+        "submitError": "Error",
+        "retry": "Inténtalo de nuevo.",
+        "form": {
+            "heading": "RESERVAR",
+            "name": "Nombre completo *",
+            "namePlaceholder": "Nombre y apellidos",
+            "nameHint": "Introduce nombre y apellidos",
+            "quantity": "Cantidad",
+            "quantityHint": "Entre {{min}} y {{max}} unidades",
+            "notes": "Notas",
+            "notesPlaceholder": "Algo que debamos saber...",
+            "submit": "Solicitar reserva",
+            "submitting": "Enviando..."
+        },
+        "success": {
+            "title": "Solicitud enviada",
+            "text": "Te contactaremos pronto para confirmar tu reserva.",
+            "close": "Cerrar"
+        }
+    },
+    "search": {
+        "placeholder": "Buscar producto..."
+    },
+    "notFound": {
+        "seoTitle": "Página no encontrada",
+        "label": "Error 404",
+        "title": "Sección no encontrada",
+        "text": "Esta ruta no existe en el catálogo. Puede que la sección se haya renombrado o que el enlace esté mal.",
+        "home": "Volver al inicio"
+    },
+    "error": {
+        "title": "Algo ha fallado",
+        "pageTitle": "Esta página ha fallado",
+        "text": "Ha ocurrido un error inesperado. Puedes reintentar o volver al inicio.",
+        "retry": "Reintentar",
+        "home": "Ir al inicio"
+    },
+    "errors": {
+        "loadSection": "No se han podido cargar los productos de esta sección."
     }
-  },
-  "search": {
-    "placeholder": "Buscar producto..."
-  },
-  "notFound": {
-    "seoTitle": "Página no encontrada",
-    "label": "Error 404",
-    "title": "Sección no encontrada",
-    "text": "Esta ruta no existe en el catálogo. Puede que la sección se haya renombrado o que el enlace esté mal.",
-    "home": "Volver al inicio"
-  },
-  "error": {
-    "title": "Algo ha fallado",
-    "pageTitle": "Esta página ha fallado",
-    "text": "Ha ocurrido un error inesperado. Puedes reintentar o volver al inicio.",
-    "retry": "Reintentar",
-    "home": "Ir al inicio"
-  },
-  "errors": {
-    "loadSection": "No se han podido cargar los productos de esta sección."
-  }
 }

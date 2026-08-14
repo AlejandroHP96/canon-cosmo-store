@@ -9,7 +9,11 @@ const items = (): NavItem[] => [
         submenu: [
             { label: 'Pokemon', path: '/tcgs/pokemon' },
             { label: 'Digimon', path: '/tcgs/digimon', color: '#ff0000' },
-            { label: 'One Piece', path: '/tcgs/one-piece', image: 'https://x/y.png' },
+            {
+                label: 'One Piece',
+                path: '/tcgs/one-piece',
+                image: 'https://x/y.png',
+            },
         ],
     },
     { icon: 'diamond', label: 'Accesorios TCGs', path: '/accesorios-tcgs' },
@@ -18,7 +22,9 @@ const items = (): NavItem[] => [
 
 describe('deriveSubPath', () => {
     it('compone la ruta a partir de los labels', () => {
-        expect(nav.deriveSubPath('Accesorios TCGs', 'Fundas')).toBe('/accesorios-tcgs/fundas');
+        expect(nav.deriveSubPath('Accesorios TCGs', 'Fundas')).toBe(
+            '/accesorios-tcgs/fundas',
+        );
     });
 });
 
@@ -36,8 +42,15 @@ describe('primer nivel', () => {
 
     it('updateItem conserva el path original', () => {
         // Cambiar la ruta desvincularía los productos ya asociados a ella
-        const out = nav.updateItem(items(), 1, { icon: 'star', label: 'Renombrado' });
-        expect(out[1]).toEqual({ icon: 'star', label: 'Renombrado', path: '/accesorios-tcgs' });
+        const out = nav.updateItem(items(), 1, {
+            icon: 'star',
+            label: 'Renombrado',
+        });
+        expect(out[1]).toEqual({
+            icon: 'star',
+            label: 'Renombrado',
+            path: '/accesorios-tcgs',
+        });
     });
 
     it('updateItem conserva el submenú', () => {
@@ -66,28 +79,50 @@ describe('primer nivel', () => {
 
 describe('subitems', () => {
     it('addSub añade al submenú indicado', () => {
-        const out = nav.addSub(items(), 0, { label: 'Riftbound', path: '/tcgs/riftbound' });
+        const out = nav.addSub(items(), 0, {
+            label: 'Riftbound',
+            path: '/tcgs/riftbound',
+        });
         expect(out[0].submenu).toHaveLength(4);
         expect(out[0].submenu![3].label).toBe('Riftbound');
     });
 
     it('addSub crea el submenú si la entrada no tenía', () => {
-        const out = nav.addSub(items(), 2, { label: 'Anime', path: '/funko-pop/anime' });
-        expect(out[2].submenu).toEqual([{ label: 'Anime', path: '/funko-pop/anime' }]);
+        const out = nav.addSub(items(), 2, {
+            label: 'Anime',
+            path: '/funko-pop/anime',
+        });
+        expect(out[2].submenu).toEqual([
+            { label: 'Anime', path: '/funko-pop/anime' },
+        ]);
     });
 
     it('removeSub quita solo ese subitem', () => {
         const out = nav.removeSub(items(), 0, 1);
-        expect(out[0].submenu!.map((s) => s.label)).toEqual(['Pokemon', 'One Piece']);
+        expect(out[0].submenu!.map((s) => s.label)).toEqual([
+            'Pokemon',
+            'One Piece',
+        ]);
     });
 
     it('updateSub conserva el path original', () => {
-        const out = nav.updateSub(items(), 0, 0, { label: 'Pokémon TCG', image: '', color: '' });
-        expect(out[0].submenu![0]).toEqual({ label: 'Pokémon TCG', path: '/tcgs/pokemon' });
+        const out = nav.updateSub(items(), 0, 0, {
+            label: 'Pokémon TCG',
+            image: '',
+            color: '',
+        });
+        expect(out[0].submenu![0]).toEqual({
+            label: 'Pokémon TCG',
+            path: '/tcgs/pokemon',
+        });
     });
 
     it('updateSub descarta imagen y color vacíos en vez de guardarlos', () => {
-        const out = nav.updateSub(items(), 0, 1, { label: 'Digimon', image: '', color: '' });
+        const out = nav.updateSub(items(), 0, 1, {
+            label: 'Digimon',
+            image: '',
+            color: '',
+        });
         expect(out[0].submenu![1]).not.toHaveProperty('color');
         expect(out[0].submenu![1]).not.toHaveProperty('image');
     });
@@ -98,7 +133,10 @@ describe('subitems', () => {
             image: 'https://x/p.png',
             color: '#00ff00',
         });
-        expect(out[0].submenu![0]).toMatchObject({ image: 'https://x/p.png', color: '#00ff00' });
+        expect(out[0].submenu![0]).toMatchObject({
+            image: 'https://x/p.png',
+            color: '#00ff00',
+        });
     });
 
     it('setSubColor cambia el color sin tocar el resto', () => {
@@ -113,7 +151,11 @@ describe('subitems', () => {
 
     it('moveSub reordena dentro del submenú', () => {
         const out = nav.moveSub(items(), 0, 2, 0);
-        expect(out[0].submenu!.map((s) => s.label)).toEqual(['One Piece', 'Pokemon', 'Digimon']);
+        expect(out[0].submenu!.map((s) => s.label)).toEqual([
+            'One Piece',
+            'Pokemon',
+            'Digimon',
+        ]);
     });
 
     it('moveSub no toca los demás menús', () => {
@@ -127,13 +169,26 @@ describe('inmutabilidad', () => {
     // El hook guarda en Firestore y solo entonces actualiza el estado:
     // si estas funciones mutasen, la UI mostraría cambios no persistidos
     it.each([
-        ['addItem', (i: NavItem[]) => nav.addItem(i, { icon: 'x', label: 'y' })],
+        [
+            'addItem',
+            (i: NavItem[]) => nav.addItem(i, { icon: 'x', label: 'y' }),
+        ],
         ['removeItem', (i: NavItem[]) => nav.removeItem(i, 0)],
-        ['updateItem', (i: NavItem[]) => nav.updateItem(i, 0, { icon: 'x', label: 'y' })],
+        [
+            'updateItem',
+            (i: NavItem[]) => nav.updateItem(i, 0, { icon: 'x', label: 'y' }),
+        ],
         ['moveItem', (i: NavItem[]) => nav.moveItem(i, 0, 2)],
-        ['addSub', (i: NavItem[]) => nav.addSub(i, 0, { label: 'x', path: '/x' })],
+        [
+            'addSub',
+            (i: NavItem[]) => nav.addSub(i, 0, { label: 'x', path: '/x' }),
+        ],
         ['removeSub', (i: NavItem[]) => nav.removeSub(i, 0, 0)],
-        ['updateSub', (i: NavItem[]) => nav.updateSub(i, 0, 0, { label: 'x', image: '', color: '' })],
+        [
+            'updateSub',
+            (i: NavItem[]) =>
+                nav.updateSub(i, 0, 0, { label: 'x', image: '', color: '' }),
+        ],
         ['setSubColor', (i: NavItem[]) => nav.setSubColor(i, 0, 0, '#fff')],
         ['moveSub', (i: NavItem[]) => nav.moveSub(i, 0, 0, 2)],
     ])('%s no muta la entrada', (_name, fn) => {

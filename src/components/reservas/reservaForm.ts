@@ -32,7 +32,11 @@ export type ReservaForm = {
     notas: string;
 };
 
-export const EMPTY_RESERVA_FORM: ReservaForm = { cliente: '', cantidad: '1', notas: '' };
+export const EMPTY_RESERVA_FORM: ReservaForm = {
+    cliente: '',
+    cantidad: '1',
+    notas: '',
+};
 
 /**
  * Filtra lo que se admite en el campo mientras se teclea: solo dígitos, y sin

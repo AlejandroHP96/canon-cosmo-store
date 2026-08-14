@@ -1,13 +1,36 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+const KONAMI = [
+    'ArrowUp',
+    'ArrowUp',
+    'ArrowDown',
+    'ArrowDown',
+    'ArrowLeft',
+    'ArrowRight',
+    'ArrowLeft',
+    'ArrowRight',
+    'b',
+    'a',
+];
 
 const QUOTES: { char: string; color: string; quote: string }[] = [
-    { char: 'Presidente Shinra', color: '#d4af37', quote: "Mira a 'Rompe-aire', el soldado del tecno. Fue creado por nuestro departamento de Desarrollo de armas." },
-    { char: 'Cloud',             color: '#7ec8e3', quote: '¡Muy bien, allé voy!' },
-    { char: 'Aeris',             color: '#ffb3cc', quote: 'Dicen que en Midgar no crecen ni la hierba ni las flores, pero por algún motivo, las flores sí.' },
-    { char: 'Jessie',            color: '#ff9eb5', quote: '¡Ya esté!' },
-    { char: 'Recepcionista',     color: '#aaaaaa', quote: 'Sr.....Cloud? Su fiesta le espera en el piso 2.' },
+    {
+        char: 'Presidente Shinra',
+        color: '#d4af37',
+        quote: "Mira a 'Rompe-aire', el soldado del tecno. Fue creado por nuestro departamento de Desarrollo de armas.",
+    },
+    { char: 'Cloud', color: '#7ec8e3', quote: '¡Muy bien, allé voy!' },
+    {
+        char: 'Aeris',
+        color: '#ffb3cc',
+        quote: 'Dicen que en Midgar no crecen ni la hierba ni las flores, pero por algún motivo, las flores sí.',
+    },
+    { char: 'Jessie', color: '#ff9eb5', quote: '¡Ya esté!' },
+    {
+        char: 'Recepcionista',
+        color: '#aaaaaa',
+        quote: 'Sr.....Cloud? Su fiesta le espera en el piso 2.',
+    },
 ];
 
 type Phase = 'idle' | 'flashing' | 'dialog';
@@ -32,7 +55,10 @@ const KonamiEasterEgg = () => {
 
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
-            if (phase !== 'idle') { dismiss(); return; }
+            if (phase !== 'idle') {
+                dismiss();
+                return;
+            }
             if (e.key === KONAMI[progress.current]) {
                 progress.current += 1;
                 if (progress.current === KONAMI.length) {
@@ -64,7 +90,8 @@ const KonamiEasterEgg = () => {
                         style={{
                             background: 'rgba(0, 1, 36, 0.97)',
                             border: '2px solid #c8a800',
-                            boxShadow: 'inset 0 0 0 1px rgba(200,168,0,0.25), 0 0 40px rgba(200,168,0,0.15)',
+                            boxShadow:
+                                'inset 0 0 0 1px rgba(200,168,0,0.25), 0 0 40px rgba(200,168,0,0.15)',
                         }}>
                         <div className="px-4 py-2 border-b border-[#c8a800]/25">
                             <span

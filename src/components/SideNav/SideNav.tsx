@@ -40,7 +40,10 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                 {items.length === 0 && (
                     <div className="flex flex-col gap-2 px-2 opacity-30 animate-pulse">
                         {[...Array(3)].map((_, i) => (
-                            <div key={i} className="h-10 bg-[#bec2ff]/20 rounded-sm" />
+                            <div
+                                key={i}
+                                className="h-10 bg-[#bec2ff]/20 rounded-sm"
+                            />
                         ))}
                     </div>
                 )}
@@ -124,11 +127,12 @@ const SideNav = ({ isOpen, onClose }: SideNavProps) => {
                 <button
                     onClick={toggleLang}
                     className="w-full flex items-center py-3 pl-6 text-[#e0e0ff] opacity-70 hover:bg-[#2f336c] hover:opacity-100 transition-all font-headline font-bold text-lg">
-                    <span className="material-symbols-outlined mr-3">language</span>
+                    <span className="material-symbols-outlined mr-3">
+                        language
+                    </span>
                     {nextLang.toUpperCase()}
                 </button>
             </div>
-
         </aside>
     );
 };

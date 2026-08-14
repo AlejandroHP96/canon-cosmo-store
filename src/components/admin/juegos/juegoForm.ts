@@ -7,7 +7,12 @@ export type JuegoForm = {
     url: string;
 };
 
-export const EMPTY_JUEGO_FORM: JuegoForm = { nombre: '', imagen: '', descripcion: '', url: '' };
+export const EMPTY_JUEGO_FORM: JuegoForm = {
+    nombre: '',
+    imagen: '',
+    descripcion: '',
+    url: '',
+};
 
 export const juegoToForm = (juego: JuegoTorneo): JuegoForm => ({
     nombre: juego.nombre,

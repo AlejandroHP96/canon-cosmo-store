@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
-import { getSidebarConfig, DEFAULT_SIDEBAR, type NavItem } from '../services/navService';
+import {
+    getSidebarConfig,
+    DEFAULT_SIDEBAR,
+    type NavItem,
+} from '../services/navService';
 import { pathToSectionId, toSlug } from '../lib/tcgUtils';
 
 export type TcgOption = {
-    id: string;    // ID en Firestore (ej. 'finalfantasy', 'accesorios-tcgs')
+    id: string; // ID en Firestore (ej. 'finalfantasy', 'accesorios-tcgs')
     label: string; // Nombre legible (ej. 'Final Fantasy', 'Accesorios TCGs')
 };
 
@@ -34,7 +38,10 @@ function extractSectionsFromNav(items: NavItem[]): TcgOption[] {
         }
         // Entradas de primer nivel, con ruta propia o derivada de la etiqueta
         if (!item.submenu?.length) {
-            push(item.path ? pathToSectionId(item.path) : toSlug(item.label), item.label);
+            push(
+                item.path ? pathToSectionId(item.path) : toSlug(item.label),
+                item.label,
+            );
         }
     }
 

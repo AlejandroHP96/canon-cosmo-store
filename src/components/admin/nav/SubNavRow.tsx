@@ -30,13 +30,18 @@ const SubNavRow = ({
             title="Arrastrar para reordenar">
             drag_indicator
         </span>
-        <span className="font-body text-sm text-on-surface flex-1">{sub.label}</span>
-        <span className="font-mono text-xs text-on-surface-variant hidden sm:block">{sub.path}</span>
+        <span className="font-body text-sm text-on-surface flex-1">
+            {sub.label}
+        </span>
+        <span className="font-mono text-xs text-on-surface-variant hidden sm:block">
+            {sub.path}
+        </span>
         <div className="relative">
             <button
                 onClick={onOpenColorPicker}
                 disabled={saving}
-                title="Color" aria-label="Color"
+                title="Color"
+                aria-label="Color"
                 className="w-5 h-5 rounded-full border border-outline-variant/60 disabled:opacity-40"
                 style={{ backgroundColor: sub.color || DEFAULT_NAV_COLOR }}
             />
@@ -52,14 +57,16 @@ const SubNavRow = ({
             onClick={onEdit}
             disabled={saving}
             className="text-on-surface-variant hover:text-primary transition-colors disabled:opacity-40"
-            title="Editar" aria-label="Editar">
+            title="Editar"
+            aria-label="Editar">
             <span className="material-symbols-outlined text-sm">edit</span>
         </button>
         <button
             onClick={onDelete}
             disabled={saving}
             className="text-on-surface-variant hover:text-error transition-colors disabled:opacity-40"
-            title="Eliminar" aria-label="Eliminar">
+            title="Eliminar"
+            aria-label="Eliminar">
             <span className="material-symbols-outlined text-sm">delete</span>
         </button>
     </>

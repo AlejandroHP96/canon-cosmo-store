@@ -18,19 +18,29 @@ import {
 } from './navForms';
 
 const subKey = (itemIdx: number, subIdx: number) => `${itemIdx}-${subIdx}`;
-const parseSubKey = (key: string) => key.split('-').map(Number) as [number, number];
+const parseSubKey = (key: string) =>
+    key.split('-').map(Number) as [number, number];
 
 const NavManager = () => {
-    const { items, loading, saving, error, setError, save } = useSidebarConfig();
+    const { items, loading, saving, error, setError, save } =
+        useSidebarConfig();
 
     const [expandedIdx, setExpandedIdx] = useState<Set<number>>(new Set([0]));
     const [editItemIdx, setEditItemIdx] = useState<number | null>(null);
-    const [editItemForm, setEditItemForm] = useState<NavItemForm>(EMPTY_ITEM_FORM);
+    const [editItemForm, setEditItemForm] =
+        useState<NavItemForm>(EMPTY_ITEM_FORM);
     const [newItem, setNewItem] = useState<NavItemForm>(EMPTY_ITEM_FORM);
 
     const [editSubKey, setEditSubKey] = useState<string | null>(null);
-    const [editSubForm, setEditSubForm] = useState<SubNavForm>({ label: '', path: '', image: '', color: '' });
-    const [newSubForms, setNewSubForms] = useState<Record<number, NewSubForm>>({});
+    const [editSubForm, setEditSubForm] = useState<SubNavForm>({
+        label: '',
+        path: '',
+        image: '',
+        color: '',
+    });
+    const [newSubForms, setNewSubForms] = useState<Record<number, NewSubForm>>(
+        {},
+    );
     const [colorPickerKey, setColorPickerKey] = useState<string | null>(null);
 
     const itemDrag = useDragReorder((from, to) => {
@@ -85,7 +95,11 @@ const NavManager = () => {
     const handleEditItemStart = (idx: number) => {
         const item = items[idx];
         setEditItemIdx(idx);
-        setEditItemForm({ icon: item.icon, label: item.label, path: item.path ?? '' });
+        setEditItemForm({
+            icon: item.icon,
+            label: item.label,
+            path: item.path ?? '',
+        });
     };
 
     const handleEditItemSave = async () => {
@@ -99,10 +113,14 @@ const NavManager = () => {
 
     // ── Handlers subitems ─────────────────────────────────────────────────────
 
-    const getSubForm = (idx: number): NewSubForm => newSubForms[idx] ?? EMPTY_SUB_FORM;
+    const getSubForm = (idx: number): NewSubForm =>
+        newSubForms[idx] ?? EMPTY_SUB_FORM;
 
     const patchSubForm = (idx: number, patch: Partial<NewSubForm>) =>
-        setNewSubForms((prev) => ({ ...prev, [idx]: { ...getSubForm(idx), ...patch } }));
+        setNewSubForms((prev) => ({
+            ...prev,
+            [idx]: { ...getSubForm(idx), ...patch },
+        }));
 
     const handleAddSub = async (itemIdx: number) => {
         const form = getSubForm(itemIdx);
@@ -124,7 +142,12 @@ const NavManager = () => {
     const handleEditSubStart = (itemIdx: number, subIdx: number) => {
         const sub = items[itemIdx].submenu![subIdx];
         setEditSubKey(subKey(itemIdx, subIdx));
-        setEditSubForm({ label: sub.label, path: sub.path, image: sub.image ?? '', color: sub.color ?? '' });
+        setEditSubForm({
+            label: sub.label,
+            path: sub.path,
+            image: sub.image ?? '',
+            color: sub.color ?? '',
+        });
     };
 
     const handleEditSubSave = async (itemIdx: number, subIdx: number) => {
@@ -171,7 +194,12 @@ const NavManager = () => {
                                 <NavItemEditRow
                                     form={editItemForm}
                                     saving={saving}
-                                    onChange={(patch) => setEditItemForm((f) => ({ ...f, ...patch }))}
+                                    onChange={(patch) =>
+                                        setEditItemForm((f) => ({
+                                            ...f,
+                                            ...patch,
+                                        }))
+                                    }
                                     onSave={handleEditItemSave}
                                     onCancel={() => setEditItemIdx(null)}
                                 />
@@ -197,16 +225,38 @@ const NavManager = () => {
                                     newSubForm={getSubForm(idx)}
                                     colorPickerKey={colorPickerKey}
                                     drag={subDrag}
-                                    onEditSubChange={(patch) => setEditSubForm((f) => ({ ...f, ...patch }))}
-                                    onNewSubChange={(patch) => patchSubForm(idx, patch)}
+                                    onEditSubChange={(patch) =>
+                                        setEditSubForm((f) => ({
+                                            ...f,
+                                            ...patch,
+                                        }))
+                                    }
+                                    onNewSubChange={(patch) =>
+                                        patchSubForm(idx, patch)
+                                    }
                                     onOpenColorPicker={setColorPickerKey}
-                                    onCloseColorPicker={() => setColorPickerKey(null)}
-                                    onEditSubStart={(sIdx) => handleEditSubStart(idx, sIdx)}
-                                    onEditSubSave={(sIdx) => handleEditSubSave(idx, sIdx)}
+                                    onCloseColorPicker={() =>
+                                        setColorPickerKey(null)
+                                    }
+                                    onEditSubStart={(sIdx) =>
+                                        handleEditSubStart(idx, sIdx)
+                                    }
+                                    onEditSubSave={(sIdx) =>
+                                        handleEditSubSave(idx, sIdx)
+                                    }
                                     onEditSubCancel={() => setEditSubKey(null)}
-                                    onDeleteSub={(sIdx) => handleDeleteSub(idx, sIdx)}
+                                    onDeleteSub={(sIdx) =>
+                                        handleDeleteSub(idx, sIdx)
+                                    }
                                     onSubColorChange={(sIdx, color) =>
-                                        save(nav.setSubColor(items, idx, sIdx, color))
+                                        save(
+                                            nav.setSubColor(
+                                                items,
+                                                idx,
+                                                sIdx,
+                                                color,
+                                            ),
+                                        )
                                     }
                                     onAddSub={() => handleAddSub(idx)}
                                 />

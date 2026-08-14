@@ -4,7 +4,10 @@ import type { ProductForm } from './productPayload';
 type Props = {
     form: ProductForm;
     categories: string[];
-    onChange: <K extends keyof ProductForm>(key: K, value: ProductForm[K]) => void;
+    onChange: <K extends keyof ProductForm>(
+        key: K,
+        value: ProductForm[K],
+    ) => void;
 };
 
 /** Nombre, set, categoría, descripción e imagen. */

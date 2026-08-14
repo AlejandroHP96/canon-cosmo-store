@@ -9,7 +9,19 @@ export const DEFAULT_NAV_COLOR = '#bec2ff';
 
 export const BADGE_OPTIONS = [
     { label: '— Ninguno', badge: '', badgeColor: '' },
-    { label: 'NOVEDAD', badge: 'NOVEDAD', badgeColor: 'bg-[#343dff] border-[#bec2ff]' },
-    { label: 'OFERTA', badge: 'OFERTA', badgeColor: 'bg-[#7a3500] border-[#ffb074]' },
-    { label: 'PRÓXIMAMENTE', badge: 'PRÓXIMAMENTE', badgeColor: 'bg-[#4a4a4a] border-[#c4c4c4]' },
+    {
+        label: 'NOVEDAD',
+        badge: 'NOVEDAD',
+        badgeColor: 'bg-[#343dff] border-[#bec2ff]',
+    },
+    {
+        label: 'OFERTA',
+        badge: 'OFERTA',
+        badgeColor: 'bg-[#7a3500] border-[#ffb074]',
+    },
+    {
+        label: 'PRÓXIMAMENTE',
+        badge: 'PRÓXIMAMENTE',
+        badgeColor: 'bg-[#4a4a4a] border-[#c4c4c4]',
+    },
 ];

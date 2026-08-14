@@ -21,7 +21,11 @@ const reserva = (patch: Partial<SolicitudReserva>): SolicitudReserva => ({
 });
 
 const solicitudes: SolicitudReserva[] = [
-    reserva({ id: '1', fecha: '2026-03-01T10:00:00.000Z', cliente: 'Ana Pérez' }),
+    reserva({
+        id: '1',
+        fecha: '2026-03-01T10:00:00.000Z',
+        cliente: 'Ana Pérez',
+    }),
     reserva({
         id: '2',
         fecha: '2026-01-01T10:00:00.000Z',
@@ -40,7 +44,11 @@ const solicitudes: SolicitudReserva[] = [
 
 describe('ordenarPorFecha', () => {
     it('deja las más antiguas primero', () => {
-        expect(ordenarPorFecha(solicitudes).map((r) => r.id)).toEqual(['2', '3', '1']);
+        expect(ordenarPorFecha(solicitudes).map((r) => r.id)).toEqual([
+            '2',
+            '3',
+            '1',
+        ]);
     });
 
     it('no muta la lista original', () => {
@@ -52,7 +60,10 @@ describe('ordenarPorFecha', () => {
 
 describe('seccionesDeReservas', () => {
     it('devuelve las secciones únicas y ordenadas', () => {
-        expect(seccionesDeReservas(solicitudes)).toEqual(['digimon', 'pokemon']);
+        expect(seccionesDeReservas(solicitudes)).toEqual([
+            'digimon',
+            'pokemon',
+        ]);
     });
 });
 
@@ -66,7 +77,10 @@ describe('productosDeReservas', () => {
     });
 
     it('se limita a la sección elegida', () => {
-        expect(productosDeReservas(solicitudes, 'pokemon')).toEqual(['ETB Pokemon', 'Sobre Pokemon']);
+        expect(productosDeReservas(solicitudes, 'pokemon')).toEqual([
+            'ETB Pokemon',
+            'Sobre Pokemon',
+        ]);
     });
 });
 
@@ -76,17 +90,31 @@ describe('filtrarReservas', () => {
     });
 
     it('filtra por sección y por producto', () => {
-        expect(filtrarReservas(solicitudes, '', 'digimon', null).map((r) => r.id)).toEqual(['2']);
-        expect(filtrarReservas(solicitudes, '', null, 'ETB Pokemon').map((r) => r.id)).toEqual(['3']);
+        expect(
+            filtrarReservas(solicitudes, '', 'digimon', null).map((r) => r.id),
+        ).toEqual(['2']);
+        expect(
+            filtrarReservas(solicitudes, '', null, 'ETB Pokemon').map(
+                (r) => r.id,
+            ),
+        ).toEqual(['3']);
     });
 
     it('busca por cliente, producto o email', () => {
-        expect(filtrarReservas(solicitudes, 'marta', null, null).map((r) => r.id)).toEqual(['3']);
-        expect(filtrarReservas(solicitudes, 'mazo', null, null).map((r) => r.id)).toEqual(['2']);
-        expect(filtrarReservas(solicitudes, 'luis@', null, null).map((r) => r.id)).toEqual(['2']);
+        expect(
+            filtrarReservas(solicitudes, 'marta', null, null).map((r) => r.id),
+        ).toEqual(['3']);
+        expect(
+            filtrarReservas(solicitudes, 'mazo', null, null).map((r) => r.id),
+        ).toEqual(['2']);
+        expect(
+            filtrarReservas(solicitudes, 'luis@', null, null).map((r) => r.id),
+        ).toEqual(['2']);
     });
 
     it('no falla si la reserva no tiene email', () => {
-        expect(() => filtrarReservas(solicitudes, 'algo', null, null)).not.toThrow();
+        expect(() =>
+            filtrarReservas(solicitudes, 'algo', null, null),
+        ).not.toThrow();
     });
 });

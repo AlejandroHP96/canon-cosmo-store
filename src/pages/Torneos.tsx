@@ -59,7 +59,9 @@ const Torneos = () => {
                                         />
                                     ) : (
                                         <div className="w-full h-full bg-surface-container flex items-center justify-center">
-                                            <span className="material-symbols-outlined text-primary/20 text-7xl">emoji_events</span>
+                                            <span className="material-symbols-outlined text-primary/20 text-7xl">
+                                                emoji_events
+                                            </span>
                                         </div>
                                     )}
                                     <div className="absolute inset-0 bg-gradient-to-t from-[#010241] via-[#010241]/60 to-transparent" />
@@ -75,7 +77,9 @@ const Torneos = () => {
                                         {juego.url && (
                                             <span className="mt-1 flex items-center gap-1 text-[10px] font-headline uppercase tracking-widest text-primary opacity-0 group-hover:opacity-100 transition-opacity">
                                                 {t('tournaments.viewMore')}
-                                                <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                                                <span className="material-symbols-outlined text-sm">
+                                                    arrow_forward
+                                                </span>
                                             </span>
                                         )}
                                     </div>
@@ -83,9 +87,18 @@ const Torneos = () => {
                             );
                             const cls = `tactical-frame overflow-hidden${juego.url ? ' cursor-pointer hover:border-primary transition-colors' : ''}`;
                             return juego.url ? (
-                                <a key={juego.id} href={juego.url} target="_blank" rel="noopener noreferrer" className={cls}>{inner}</a>
+                                <a
+                                    key={juego.id}
+                                    href={juego.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={cls}>
+                                    {inner}
+                                </a>
                             ) : (
-                                <div key={juego.id} className={cls}>{inner}</div>
+                                <div key={juego.id} className={cls}>
+                                    {inner}
+                                </div>
                             );
                         })}
                     </div>

@@ -46,7 +46,9 @@ const ProductSelectionBar = ({
                 <button
                     onClick={onBulkDelete}
                     className="flex items-center gap-1.5 border border-error text-error font-headline text-xs uppercase tracking-widest px-3 py-1.5 hover:bg-error hover:text-surface transition-colors">
-                    <span className="material-symbols-outlined text-sm">delete_sweep</span>
+                    <span className="material-symbols-outlined text-sm">
+                        delete_sweep
+                    </span>
                     Eliminar seleccionados
                 </button>
             </div>

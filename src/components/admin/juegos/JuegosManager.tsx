@@ -41,7 +41,10 @@ const JuegosManager = () => {
     }, []);
 
     /** Envuelve una escritura con su estado de guardado, su error y el refresco. */
-    const run = async (operacion: () => Promise<void>, mensajeError: string) => {
+    const run = async (
+        operacion: () => Promise<void>,
+        mensajeError: string,
+    ) => {
         setSaving(true);
         setError(null);
         try {
@@ -71,7 +74,8 @@ const JuegosManager = () => {
         }, 'Error al guardar. Inténtalo de nuevo.');
     };
 
-    const handleDelete = (id: string) => run(() => deleteJuego(id), 'Error al eliminar.');
+    const handleDelete = (id: string) =>
+        run(() => deleteJuego(id), 'Error al eliminar.');
 
     return (
         <div className="max-w-2xl">
@@ -82,7 +86,11 @@ const JuegosManager = () => {
                 onSubmit={handleAdd}
             />
 
-            <ErrorBanner message={error} onDismiss={() => setError(null)} className="mb-4" />
+            <ErrorBanner
+                message={error}
+                onDismiss={() => setError(null)}
+                className="mb-4"
+            />
 
             {loading ? (
                 <Spinner />
@@ -98,7 +106,12 @@ const JuegosManager = () => {
                                 key={juego.id}
                                 form={editForm}
                                 saving={saving}
-                                onChange={(patch) => setEditForm((prev) => ({ ...prev, ...patch }))}
+                                onChange={(patch) =>
+                                    setEditForm((prev) => ({
+                                        ...prev,
+                                        ...patch,
+                                    }))
+                                }
                                 onSave={handleEditSave}
                                 onCancel={() => setEditingId(null)}
                             />

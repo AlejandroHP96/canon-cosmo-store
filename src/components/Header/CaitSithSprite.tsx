@@ -2,15 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 import spriteSheet from '../../assets/caitsith-walk.webp';
 
 const SPRITE_WIDTH = 48;
-const WALK_SPEED   = 200;  // px/s
-const WALK_FRAME_MS  = 300;  // ms per walk frame
-const REST_FRAME_MS  = 450;  // ms per rest frame
-const WALK_DURATION  = 15000; // ms walking before resting
-const REST_DURATION  = 2500; // ms resting
+const WALK_SPEED = 200; // px/s
+const WALK_FRAME_MS = 300; // ms per walk frame
+const REST_FRAME_MS = 450; // ms per rest frame
+const WALK_DURATION = 15000; // ms walking before resting
+const REST_DURATION = 2500; // ms resting
 
 // Frame indices × SPRITE_WIDTH = background-position-x offset
-const WALK_FRAMES = [0, 1];  // frames 1-2 of row 1
-const REST_FRAMES = [3, 4];  // frames 4-5 of row 1 (moogle lying down + jump)
+const WALK_FRAMES = [0, 1]; // frames 1-2 of row 1
+const REST_FRAMES = [3, 4]; // frames 4-5 of row 1 (moogle lying down + jump)
 
 type Mode = 'walking' | 'resting';
 
@@ -19,13 +19,18 @@ const CaitSithSprite = () => {
     const stateRef = useRef({
         pos: 0,
         dir: 1 as 1 | -1,
-        frameIdx: 0,       // index into current frame array
+        frameIdx: 0, // index into current frame array
         lastFrameTime: 0,
         mode: 'walking' as Mode,
         modeStartTime: 0,
     });
     const rafRef = useRef<number>(0);
-    const [render, setRender] = useState({ pos: 0, dir: 1 as 1 | -1, frameIdx: 0, mode: 'walking' as Mode });
+    const [render, setRender] = useState({
+        pos: 0,
+        dir: 1 as 1 | -1,
+        frameIdx: 0,
+        mode: 'walking' as Mode,
+    });
 
     useEffect(() => {
         let lastTime: number | null = null;
@@ -33,7 +38,10 @@ const CaitSithSprite = () => {
         const tick = (timestamp: number) => {
             const s = stateRef.current;
             const container = containerRef.current;
-            if (!container) { rafRef.current = requestAnimationFrame(tick); return; }
+            if (!container) {
+                rafRef.current = requestAnimationFrame(tick);
+                return;
+            }
 
             const maxPos = container.offsetWidth - SPRITE_WIDTH;
 
@@ -43,8 +51,13 @@ const CaitSithSprite = () => {
 
                 if (s.mode === 'walking') {
                     s.pos += s.dir * WALK_SPEED * dt;
-                    if (s.pos >= maxPos) { s.pos = maxPos; s.dir = -1; }
-                    else if (s.pos <= 0) { s.pos = 0;      s.dir =  1; }
+                    if (s.pos >= maxPos) {
+                        s.pos = maxPos;
+                        s.dir = -1;
+                    } else if (s.pos <= 0) {
+                        s.pos = 0;
+                        s.dir = 1;
+                    }
 
                     if (timestamp - s.lastFrameTime >= WALK_FRAME_MS) {
                         s.frameIdx = 1 - s.frameIdx;
@@ -71,7 +84,12 @@ const CaitSithSprite = () => {
                     }
                 }
 
-                setRender({ pos: s.pos, dir: s.dir, frameIdx: s.frameIdx, mode: s.mode });
+                setRender({
+                    pos: s.pos,
+                    dir: s.dir,
+                    frameIdx: s.frameIdx,
+                    mode: s.mode,
+                });
             }
 
             lastTime = timestamp;
@@ -86,7 +104,9 @@ const CaitSithSprite = () => {
     const bgX = -(frames[render.frameIdx] * SPRITE_WIDTH);
 
     return (
-        <div ref={containerRef} className="hidden sm:block flex-1 relative overflow-hidden mx-4 h-10">
+        <div
+            ref={containerRef}
+            className="hidden sm:block flex-1 relative overflow-hidden mx-4 h-10">
             <div
                 aria-hidden="true"
                 style={{

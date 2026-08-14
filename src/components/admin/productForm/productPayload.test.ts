@@ -15,7 +15,9 @@ const form = (patch: Partial<ProductForm> = {}): ProductForm => ({
 
 /** deleteField() devuelve un sentinel de Firestore, no un valor plano */
 const isDeleteField = (v: unknown) =>
-    typeof v === 'object' && v !== null && v.constructor.name.includes('Delete');
+    typeof v === 'object' &&
+    v !== null &&
+    v.constructor.name.includes('Delete');
 
 describe('buildAddPayload', () => {
     it('mete la sección que viene del selector', () => {
@@ -23,21 +25,30 @@ describe('buildAddPayload', () => {
     });
 
     it('descarta los campos vacíos para no ensuciar el documento', () => {
-        const out = buildAddPayload(form({ set: '', description: '', badge: '' }), 'pokemon');
+        const out = buildAddPayload(
+            form({ set: '', description: '', badge: '' }),
+            'pokemon',
+        );
         expect(out).not.toHaveProperty('set');
         expect(out).not.toHaveProperty('description');
         expect(out).not.toHaveProperty('badge');
     });
 
     it('conserva los booleanos en false, que sí son un valor', () => {
-        const out = buildAddPayload(form({ inStock: false, visible: false }), 'pokemon');
+        const out = buildAddPayload(
+            form({ inStock: false, visible: false }),
+            'pokemon',
+        );
         expect(out.inStock).toBe(false);
         expect(out.visible).toBe(false);
     });
 
     it('omite el precio cuando no se ha puesto', () => {
         // Los productos reservables pueden no tener precio todavía
-        const out = buildAddPayload(form({ price: undefined, reservable: true }), 'pokemon');
+        const out = buildAddPayload(
+            form({ price: undefined, reservable: true }),
+            'pokemon',
+        );
         expect(out).not.toHaveProperty('price');
     });
 
@@ -49,7 +60,10 @@ describe('buildAddPayload', () => {
 describe('buildUpdatePayload', () => {
     it('borra los campos opcionales que quedan vacíos', () => {
         // Sin deleteField() se quedarían con el valor anterior
-        const out = buildUpdatePayload(form({ set: '', description: '', image: '' }), 'pokemon');
+        const out = buildUpdatePayload(
+            form({ set: '', description: '', image: '' }),
+            'pokemon',
+        );
         expect(isDeleteField(out.set)).toBe(true);
         expect(isDeleteField(out.description)).toBe(true);
         expect(isDeleteField(out.image)).toBe(true);
@@ -66,18 +80,27 @@ describe('buildUpdatePayload', () => {
 
     describe('salePrice', () => {
         it('se guarda si el badge es OFERTA', () => {
-            const out = buildUpdatePayload(form({ badge: 'OFERTA', salePrice: 3.99 }), 'pokemon');
+            const out = buildUpdatePayload(
+                form({ badge: 'OFERTA', salePrice: 3.99 }),
+                'pokemon',
+            );
             expect(out.salePrice).toBe(3.99);
         });
 
         it('se borra si el badge deja de ser OFERTA', () => {
             // Si no, quedaría un precio rebajado fantasma en el documento
-            const out = buildUpdatePayload(form({ badge: 'NOVEDAD', salePrice: 3.99 }), 'pokemon');
+            const out = buildUpdatePayload(
+                form({ badge: 'NOVEDAD', salePrice: 3.99 }),
+                'pokemon',
+            );
             expect(isDeleteField(out.salePrice)).toBe(true);
         });
 
         it('se borra si es OFERTA pero no se ha puesto importe', () => {
-            const out = buildUpdatePayload(form({ badge: 'OFERTA', salePrice: undefined }), 'pokemon');
+            const out = buildUpdatePayload(
+                form({ badge: 'OFERTA', salePrice: undefined }),
+                'pokemon',
+            );
             expect(isDeleteField(out.salePrice)).toBe(true);
         });
     });
@@ -85,7 +108,10 @@ describe('buildUpdatePayload', () => {
     describe('badgeText', () => {
         it('se guarda si el badge es PRÓXIMAMENTE', () => {
             const out = buildUpdatePayload(
-                form({ badge: 'PRÓXIMAMENTE', badgeText: 'Disponible en julio' }),
+                form({
+                    badge: 'PRÓXIMAMENTE',
+                    badgeText: 'Disponible en julio',
+                }),
                 'pokemon',
             );
             expect(out.badgeText).toBe('Disponible en julio');

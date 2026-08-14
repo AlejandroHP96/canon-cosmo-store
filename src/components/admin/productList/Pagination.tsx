@@ -20,7 +20,13 @@ function pageSlots(page: number, totalPages: number): (number | null)[] {
     return slots;
 }
 
-const Pagination = ({ page, totalPages, totalItems, pageSize, onChange }: Props) => {
+const Pagination = ({
+    page,
+    totalPages,
+    totalItems,
+    pageSize,
+    onChange,
+}: Props) => {
     if (totalPages <= 1) return null;
     const first = page * pageSize + 1;
     const last = Math.min((page + 1) * pageSize, totalItems);
@@ -31,16 +37,28 @@ const Pagination = ({ page, totalPages, totalItems, pageSize, onChange }: Props)
                 {first}–{last} de {totalItems}
             </p>
             <div className="flex items-center gap-1">
-                <button onClick={() => onChange(0)} disabled={page === 0} className={arrowClass}>
-                    <span className="material-symbols-outlined text-sm">first_page</span>
+                <button
+                    onClick={() => onChange(0)}
+                    disabled={page === 0}
+                    className={arrowClass}>
+                    <span className="material-symbols-outlined text-sm">
+                        first_page
+                    </span>
                 </button>
-                <button onClick={() => onChange(page - 1)} disabled={page === 0} className={arrowClass}>
-                    <span className="material-symbols-outlined text-sm">chevron_left</span>
+                <button
+                    onClick={() => onChange(page - 1)}
+                    disabled={page === 0}
+                    className={arrowClass}>
+                    <span className="material-symbols-outlined text-sm">
+                        chevron_left
+                    </span>
                 </button>
 
                 {pageSlots(page, totalPages).map((slot, i) =>
                     slot === null ? (
-                        <span key={`gap-${i}`} className="text-on-surface-variant/50 text-xs px-0.5">
+                        <span
+                            key={`gap-${i}`}
+                            className="text-on-surface-variant/50 text-xs px-0.5">
                             …
                         </span>
                     ) : (
@@ -61,13 +79,17 @@ const Pagination = ({ page, totalPages, totalItems, pageSize, onChange }: Props)
                     onClick={() => onChange(page + 1)}
                     disabled={page === totalPages - 1}
                     className={arrowClass}>
-                    <span className="material-symbols-outlined text-sm">chevron_right</span>
+                    <span className="material-symbols-outlined text-sm">
+                        chevron_right
+                    </span>
                 </button>
                 <button
                     onClick={() => onChange(totalPages - 1)}
                     disabled={page === totalPages - 1}
                     className={arrowClass}>
-                    <span className="material-symbols-outlined text-sm">last_page</span>
+                    <span className="material-symbols-outlined text-sm">
+                        last_page
+                    </span>
                 </button>
             </div>
         </div>

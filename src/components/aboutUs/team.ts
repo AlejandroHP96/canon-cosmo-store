@@ -33,7 +33,10 @@ export function buildTeam(t: Translate): TeamMember[] {
             ...comun,
             name: 'JONAY',
             role: t('aboutUs.team.jonay.role'),
-            types: [t('aboutUs.team.jonay.type1'), t('aboutUs.team.jonay.type2')],
+            types: [
+                t('aboutUs.team.jonay.type1'),
+                t('aboutUs.team.jonay.type2'),
+            ],
             bio: t('aboutUs.team.jonay.bio'),
             initials: 'J',
             avatarBg: '#2a1870',

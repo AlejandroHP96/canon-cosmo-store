@@ -23,9 +23,12 @@ export function useSelection() {
 
     /** Marca todos los ids dados, o los desmarca si ya lo estaban todos. */
     const toggleAll = (ids: string[]) =>
-        setSelected(ids.every((id) => selected.has(id)) ? new Set() : new Set(ids));
+        setSelected(
+            ids.every((id) => selected.has(id)) ? new Set() : new Set(ids),
+        );
 
-    const areAllSelected = (ids: string[]) => ids.length > 0 && ids.every((id) => selected.has(id));
+    const areAllSelected = (ids: string[]) =>
+        ids.length > 0 && ids.every((id) => selected.has(id));
 
     return { selected, toggle, remove, clear, toggleAll, areAllSelected };
 }

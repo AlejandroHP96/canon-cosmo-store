@@ -95,7 +95,9 @@ const SubmenuPanel = ({
                             colorPickerOpen={pickerOpen}
                             onOpenColorPicker={() => onOpenColorPicker(key)}
                             onCloseColorPicker={onCloseColorPicker}
-                            onColorChange={(color) => onSubColorChange(sIdx, color)}
+                            onColorChange={(color) =>
+                                onSubColorChange(sIdx, color)
+                            }
                             onEdit={() => onEditSubStart(sIdx)}
                             onDelete={() => onDeleteSub(sIdx)}
                         />

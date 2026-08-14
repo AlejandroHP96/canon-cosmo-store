@@ -13,7 +13,10 @@ import type { TcgId, Category } from '../types';
 export function useTcgCategories(tcg: TcgId): Category[] {
     // El TCG se guarda junto a sus categorías: así al cambiar de sección se
     // descartan las anteriores sin necesidad de vaciarlas desde el efecto.
-    const [loaded, setLoaded] = useState<{ tcg: TcgId; categories: Category[] } | null>(null);
+    const [loaded, setLoaded] = useState<{
+        tcg: TcgId;
+        categories: Category[];
+    } | null>(null);
 
     useEffect(() => {
         let cancelled = false;

@@ -21,7 +21,9 @@ const BadgeFields = ({
     onBadgeTextChange,
     onSalePriceChange,
 }: Props) => {
-    const selected = BADGE_OPTIONS.find((o) => o.badgeColor === badgeColor) ?? BADGE_OPTIONS[0];
+    const selected =
+        BADGE_OPTIONS.find((o) => o.badgeColor === badgeColor) ??
+        BADGE_OPTIONS[0];
 
     return (
         <>
@@ -31,7 +33,9 @@ const BadgeFields = ({
                     <select
                         value={selected.badgeColor}
                         onChange={(e) => {
-                            const opt = BADGE_OPTIONS.find((o) => o.badgeColor === e.target.value)!;
+                            const opt = BADGE_OPTIONS.find(
+                                (o) => o.badgeColor === e.target.value,
+                            )!;
                             onBadgeChange(opt.badge, opt.badgeColor);
                         }}
                         className={inputClass}>
@@ -52,7 +56,9 @@ const BadgeFields = ({
 
             {selected.badge === 'PRÓXIMAMENTE' && (
                 <div>
-                    <label className={labelClass}>Texto a mostrar en el producto</label>
+                    <label className={labelClass}>
+                        Texto a mostrar en el producto
+                    </label>
                     <input
                         value={badgeText}
                         onChange={(e) => onBadgeTextChange(e.target.value)}

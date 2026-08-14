@@ -107,7 +107,10 @@ describe('toPriceInput', () => {
 
 describe('viaje de ida y vuelta', () => {
     // Lo que ocurre cada vez que se abre y se guarda un producto en el admin
-    it.each([4.99, 50, 13, 0.5, 1234.5, 0])('conserva el valor %s', (precio) => {
-        expect(parsePriceInput(toPriceInput(precio))).toBe(precio);
-    });
+    it.each([4.99, 50, 13, 0.5, 1234.5, 0])(
+        'conserva el valor %s',
+        (precio) => {
+            expect(parsePriceInput(toPriceInput(precio))).toBe(precio);
+        },
+    );
 });

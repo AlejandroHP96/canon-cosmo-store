@@ -20,10 +20,17 @@ type Props = {
     path?: string;
 };
 
-const SEO = ({ title, description, image = DEFAULT_IMAGE, path = '' }: Props) => {
+const SEO = ({
+    title,
+    description,
+    image = DEFAULT_IMAGE,
+    path = '',
+}: Props) => {
     const fullTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
     const fullUrl = `${BASE_URL}${path}`;
-    const desc = description ?? 'Tienda especializada en Trading Card Games, Funko Pop, figuras y coleccionables. Pokémon, One Piece, Final Fantasy, Digimon y mucho más.';
+    const desc =
+        description ??
+        'Tienda especializada en Trading Card Games, Funko Pop, figuras y coleccionables. Pokémon, One Piece, Final Fantasy, Digimon y mucho más.';
 
     return (
         <Helmet>

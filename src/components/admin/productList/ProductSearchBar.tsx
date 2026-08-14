@@ -5,7 +5,12 @@ type Props = {
     onToggleReservable: () => void;
 };
 
-const ProductSearchBar = ({ search, reservableOnly, onSearchChange, onToggleReservable }: Props) => (
+const ProductSearchBar = ({
+    search,
+    reservableOnly,
+    onSearchChange,
+    onToggleReservable,
+}: Props) => (
     <div className="flex flex-wrap items-center gap-3 mb-6">
         <div className="relative flex-1 min-w-[200px]">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm pointer-events-none">
@@ -22,7 +27,9 @@ const ProductSearchBar = ({ search, reservableOnly, onSearchChange, onToggleRese
                 <button
                     onClick={() => onSearchChange('')}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors">
-                    <span className="material-symbols-outlined text-sm">close</span>
+                    <span className="material-symbols-outlined text-sm">
+                        close
+                    </span>
                 </button>
             )}
         </div>
@@ -33,7 +40,9 @@ const ProductSearchBar = ({ search, reservableOnly, onSearchChange, onToggleRese
                     ? 'border-primary text-primary bg-surface-container'
                     : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
             }`}>
-            <span className="material-symbols-outlined text-sm">event_upcoming</span>
+            <span className="material-symbols-outlined text-sm">
+                event_upcoming
+            </span>
             Reservables
         </button>
     </div>

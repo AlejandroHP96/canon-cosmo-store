@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { getCategoriesByTcg, updateCategoriesByTcg } from '../../../services/categoriesService';
+import {
+    getCategoriesByTcg,
+    updateCategoriesByTcg,
+} from '../../../services/categoriesService';
 import { useSectionSelector } from '../../../hooks/useSectionSelector';
 import { inputClass } from '../adminStyles';
 import ErrorBanner from '../../ErrorBanner';
@@ -85,7 +88,8 @@ const CategoriesManager = () => {
             setError(problema);
             return;
         }
-        if (await save(renombrarCategoria(categories, editingCat, editValue))) cancelEdit();
+        if (await save(renombrarCategoria(categories, editingCat, editValue)))
+            cancelEdit();
     };
 
     if (!section.navReady) return <Spinner />;
@@ -124,13 +128,19 @@ const CategoriesManager = () => {
                             }}
                             onRename={handleRename}
                             onCancelEdit={cancelEdit}
-                            onRemove={() => save(quitarCategoria(categories, cat))}
+                            onRemove={() =>
+                                save(quitarCategoria(categories, cat))
+                            }
                         />
                     ))}
                 </div>
             )}
 
-            <ErrorBanner message={error} onDismiss={() => setError(null)} className="mb-3" />
+            <ErrorBanner
+                message={error}
+                onDismiss={() => setError(null)}
+                className="mb-3"
+            />
 
             <div className="flex gap-2 mt-2">
                 <input

@@ -26,7 +26,10 @@ const TcgGrid = () => {
                 {tcgItems.length === 0 && (
                     <div className="col-span-full flex flex-col gap-2 opacity-30 animate-pulse">
                         {[...Array(3)].map((_, i) => (
-                            <div key={i} className="h-20 bg-[#bec2ff]/20 rounded-sm" />
+                            <div
+                                key={i}
+                                className="h-20 bg-[#bec2ff]/20 rounded-sm"
+                            />
                         ))}
                     </div>
                 )}
@@ -37,7 +40,12 @@ const TcgGrid = () => {
                         className="tactical-frame flex overflow-hidden group hover:bg-surface-bright transition-colors h-24">
                         <div
                             className="w-1 shrink-0 transition-all group-hover:w-1.5"
-                            style={{ backgroundColor: tcg.color ?? colorMap[tcg.path] ?? '#bec2ff' }}
+                            style={{
+                                backgroundColor:
+                                    tcg.color ??
+                                    colorMap[tcg.path] ??
+                                    '#bec2ff',
+                            }}
                         />
                         <div className="shrink-0 w-36 p-5 flex flex-col gap-3">
                             <div className="flex-1">

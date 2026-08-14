@@ -19,7 +19,10 @@ const reservables: Product[] = [
 
 describe('seccionesDisponibles', () => {
     it('devuelve las secciones únicas y ordenadas', () => {
-        expect(seccionesDisponibles(reservables)).toEqual(['digimon', 'pokemon']);
+        expect(seccionesDisponibles(reservables)).toEqual([
+            'digimon',
+            'pokemon',
+        ]);
     });
 
     it('devuelve vacío sin productos', () => {
@@ -33,21 +36,35 @@ describe('filtrarReservables', () => {
     });
 
     it('filtra por sección', () => {
-        expect(filtrarReservables(reservables, '', 'pokemon').map((p) => p.id)).toEqual(['1', '3']);
+        expect(
+            filtrarReservables(reservables, '', 'pokemon').map((p) => p.id),
+        ).toEqual(['1', '3']);
     });
 
     it('busca por nombre, set o sección', () => {
-        expect(filtrarReservables(reservables, 'bundle', null).map((p) => p.id)).toEqual(['3']);
-        expect(filtrarReservables(reservables, 'st 24', null).map((p) => p.id)).toEqual(['2']);
-        expect(filtrarReservables(reservables, 'digimon', null).map((p) => p.id)).toEqual(['2']);
+        expect(
+            filtrarReservables(reservables, 'bundle', null).map((p) => p.id),
+        ).toEqual(['3']);
+        expect(
+            filtrarReservables(reservables, 'st 24', null).map((p) => p.id),
+        ).toEqual(['2']);
+        expect(
+            filtrarReservables(reservables, 'digimon', null).map((p) => p.id),
+        ).toEqual(['2']);
     });
 
     it('no distingue mayúsculas ni espacios sobrantes', () => {
-        expect(filtrarReservables(reservables, '  CHISPAS ', null).map((p) => p.id)).toEqual(['1']);
+        expect(
+            filtrarReservables(reservables, '  CHISPAS ', null).map(
+                (p) => p.id,
+            ),
+        ).toEqual(['1']);
     });
 
     it('combina sección y búsqueda', () => {
-        expect(filtrarReservables(reservables, 'pokemon', 'digimon')).toHaveLength(0);
+        expect(
+            filtrarReservables(reservables, 'pokemon', 'digimon'),
+        ).toHaveLength(0);
     });
 
     it('no falla con productos sin set', () => {

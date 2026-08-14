@@ -31,7 +31,9 @@ const SectionTabs = ({
                     className={`flex items-center gap-1.5 px-3 py-1.5 font-headline text-xs uppercase tracking-wider border transition-all ${
                         menuIdx === idx ? activeClass : idleClass
                     }`}>
-                    <span className="material-symbols-outlined text-sm">{item.icon}</span>
+                    <span className="material-symbols-outlined text-sm">
+                        {item.icon}
+                    </span>
                     {item.label}
                 </button>
             ))}

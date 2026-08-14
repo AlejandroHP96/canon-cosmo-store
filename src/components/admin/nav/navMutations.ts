@@ -6,10 +6,13 @@ import type { NavItem, SubNavItem } from '../../../services/navService';
 export const deriveSubPath = (parentLabel: string, subLabel: string) =>
     `/${toSlug(parentLabel)}/${toSlug(subLabel)}`;
 
-const mapItem = (items: NavItem[], idx: number, fn: (item: NavItem) => NavItem): NavItem[] =>
-    items.map((item, i) => (i === idx ? fn(item) : item));
+const mapItem = (
+    items: NavItem[],
+    idx: number,
+    fn: (item: NavItem) => NavItem,
+): NavItem[] => items.map((item, i) => (i === idx ? fn(item) : item));
 
-const move = <T,>(list: T[], from: number, to: number): T[] => {
+const move = <T>(list: T[], from: number, to: number): T[] => {
     const next = [...list];
     const [moved] = next.splice(from, 1);
     next.splice(to, 0, moved);
@@ -18,7 +21,10 @@ const move = <T,>(list: T[], from: number, to: number): T[] => {
 
 // ── Primer nivel ──────────────────────────────────────────────────────────────
 
-export const addItem = (items: NavItem[], item: NavItem): NavItem[] => [...items, item];
+export const addItem = (items: NavItem[], item: NavItem): NavItem[] => [
+    ...items,
+    item,
+];
 
 export const removeItem = (items: NavItem[], idx: number): NavItem[] =>
     items.filter((_, i) => i !== idx);
@@ -36,15 +42,29 @@ export const updateItem = (
         return next;
     });
 
-export const moveItem = (items: NavItem[], from: number, to: number): NavItem[] =>
-    move(items, from, to);
+export const moveItem = (
+    items: NavItem[],
+    from: number,
+    to: number,
+): NavItem[] => move(items, from, to);
 
 // ── Subitems ──────────────────────────────────────────────────────────────────
 
-export const addSub = (items: NavItem[], itemIdx: number, sub: SubNavItem): NavItem[] =>
-    mapItem(items, itemIdx, (item) => ({ ...item, submenu: [...(item.submenu ?? []), sub] }));
+export const addSub = (
+    items: NavItem[],
+    itemIdx: number,
+    sub: SubNavItem,
+): NavItem[] =>
+    mapItem(items, itemIdx, (item) => ({
+        ...item,
+        submenu: [...(item.submenu ?? []), sub],
+    }));
 
-export const removeSub = (items: NavItem[], itemIdx: number, subIdx: number): NavItem[] =>
+export const removeSub = (
+    items: NavItem[],
+    itemIdx: number,
+    subIdx: number,
+): NavItem[] =>
     mapItem(items, itemIdx, (item) => ({
         ...item,
         submenu: item.submenu?.filter((_, j) => j !== subIdx),
@@ -76,7 +96,9 @@ export const setSubColor = (
 ): NavItem[] =>
     mapItem(items, itemIdx, (item) => ({
         ...item,
-        submenu: item.submenu?.map((sub, j) => (j === subIdx ? { ...sub, color } : sub)),
+        submenu: item.submenu?.map((sub, j) =>
+            j === subIdx ? { ...sub, color } : sub,
+        ),
     }));
 
 export const moveSub = (
@@ -85,4 +107,7 @@ export const moveSub = (
     from: number,
     to: number,
 ): NavItem[] =>
-    mapItem(items, itemIdx, (item) => ({ ...item, submenu: move(item.submenu ?? [], from, to) }));
+    mapItem(items, itemIdx, (item) => ({
+        ...item,
+        submenu: move(item.submenu ?? [], from, to),
+    }));

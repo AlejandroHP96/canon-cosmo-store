@@ -34,7 +34,10 @@ export async function getReservas(): Promise<SolicitudReserva[]> {
     const snapshot = await getDocs(q);
     return snapshot.docs.map((d) => {
         const data = d.data();
-        const fecha = data.fecha instanceof Timestamp ? data.fecha.toDate().toISOString() : data.fecha;
+        const fecha =
+            data.fecha instanceof Timestamp
+                ? data.fecha.toDate().toISOString()
+                : data.fecha;
         return { ...data, id: d.id, fecha } as SolicitudReserva;
     });
 }

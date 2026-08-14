@@ -37,24 +37,30 @@ const SubNavEditRow = ({
             <span
                 title={PATH_LOCK_HINT}
                 className="flex-1 flex items-center gap-1.5 border border-outline-variant/40 bg-surface-container px-3 py-2 font-mono text-sm text-on-surface-variant truncate">
-                <span className="material-symbols-outlined text-sm shrink-0">lock</span>
+                <span className="material-symbols-outlined text-sm shrink-0">
+                    lock
+                </span>
                 {form.path}
             </span>
             <button
                 onClick={onSave}
                 disabled={saving}
                 className="text-primary hover:text-on-surface transition-colors disabled:opacity-40"
-                title="Guardar" aria-label="Guardar">
+                title="Guardar"
+                aria-label="Guardar">
                 <span className="material-symbols-outlined text-sm">check</span>
             </button>
             <button
                 onClick={onCancel}
                 className="text-on-surface-variant hover:text-on-surface transition-colors"
-                title="Cancelar" aria-label="Cancelar">
+                title="Cancelar"
+                aria-label="Cancelar">
                 <span className="material-symbols-outlined text-sm">close</span>
             </button>
         </div>
-        <p className="text-[10px] font-body text-on-surface-variant pl-0.5 -mt-1">{PATH_LOCK_HINT}</p>
+        <p className="text-[10px] font-body text-on-surface-variant pl-0.5 -mt-1">
+            {PATH_LOCK_HINT}
+        </p>
         <input
             type="url"
             value={form.image}
@@ -68,7 +74,8 @@ const SubNavEditRow = ({
             </span>
             <button
                 onClick={onOpenColorPicker}
-                title="Elegir color" aria-label="Elegir color"
+                title="Elegir color"
+                aria-label="Elegir color"
                 className="w-5 h-5 rounded-full border border-outline-variant/60"
                 style={{ backgroundColor: form.color || DEFAULT_NAV_COLOR }}
             />

@@ -15,13 +15,13 @@ const TeamModal = ({ member, onClose }: Props) => (
         backdropClass="bg-black/80 p-4"
         panelClass="w-full max-w-lg select-none relative"
         panelStyle={cardStyle}>
-            <button
-                onClick={onClose}
-                className="absolute top-3 right-3 text-[#bec2ff]/60 hover:text-white transition-colors z-10"
-                style={{ fontFamily: 'monospace', fontSize: 18 }}>
-                ✕
-            </button>
-            <CardInner member={member} large />
+        <button
+            onClick={onClose}
+            className="absolute top-3 right-3 text-[#bec2ff]/60 hover:text-white transition-colors z-10"
+            style={{ fontFamily: 'monospace', fontSize: 18 }}>
+            ✕
+        </button>
+        <CardInner member={member} large />
     </Modal>
 );
 

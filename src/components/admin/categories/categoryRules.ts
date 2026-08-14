@@ -13,17 +13,20 @@ export function validarNombre(
 ): string | null {
     const limpio = nombre.trim();
     if (!limpio) return 'El nombre no puede estar vacío.';
-    if (limpio !== actual && categorias.includes(limpio)) return `"${limpio}" ya existe en la lista.`;
+    if (limpio !== actual && categorias.includes(limpio))
+        return `"${limpio}" ya existe en la lista.`;
     return null;
 }
 
-export const anadirCategoria = (categorias: string[], nombre: string): string[] => [
-    ...categorias,
-    nombre.trim(),
-];
+export const anadirCategoria = (
+    categorias: string[],
+    nombre: string,
+): string[] => [...categorias, nombre.trim()];
 
-export const quitarCategoria = (categorias: string[], nombre: string): string[] =>
-    categorias.filter((c) => c !== nombre);
+export const quitarCategoria = (
+    categorias: string[],
+    nombre: string,
+): string[] => categorias.filter((c) => c !== nombre);
 
 export const renombrarCategoria = (
     categorias: string[],

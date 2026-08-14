@@ -19,7 +19,9 @@ const JuegoRow = ({ juego, saving, onEdit, onDelete }: Props) => (
             />
         ) : (
             <div className="w-14 h-14 bg-surface-container flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-primary/30 text-2xl">emoji_events</span>
+                <span className="material-symbols-outlined text-primary/30 text-2xl">
+                    emoji_events
+                </span>
             </div>
         )}
         <div className="flex-1 min-w-0">
@@ -27,10 +29,14 @@ const JuegoRow = ({ juego, saving, onEdit, onDelete }: Props) => (
                 {juego.nombre}
             </p>
             {juego.descripcion && (
-                <p className="font-body text-xs text-on-surface-variant truncate">{juego.descripcion}</p>
+                <p className="font-body text-xs text-on-surface-variant truncate">
+                    {juego.descripcion}
+                </p>
             )}
             {juego.url && (
-                <p className="font-mono text-[10px] text-primary/50 truncate mt-0.5">{juego.url}</p>
+                <p className="font-mono text-[10px] text-primary/50 truncate mt-0.5">
+                    {juego.url}
+                </p>
             )}
         </div>
         <div className="flex items-center gap-1 shrink-0">
@@ -38,15 +44,19 @@ const JuegoRow = ({ juego, saving, onEdit, onDelete }: Props) => (
                 onClick={onEdit}
                 disabled={saving}
                 className="text-on-surface-variant hover:text-primary transition-colors disabled:opacity-40"
-                title="Editar" aria-label="Editar">
+                title="Editar"
+                aria-label="Editar">
                 <span className="material-symbols-outlined text-sm">edit</span>
             </button>
             <button
                 onClick={onDelete}
                 disabled={saving}
                 className="text-on-surface-variant hover:text-error transition-colors disabled:opacity-40"
-                title="Eliminar" aria-label="Eliminar">
-                <span className="material-symbols-outlined text-sm">delete</span>
+                title="Eliminar"
+                aria-label="Eliminar">
+                <span className="material-symbols-outlined text-sm">
+                    delete
+                </span>
             </button>
         </div>
     </div>

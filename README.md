@@ -4,19 +4,20 @@ Tienda online para la venta de productos de Trading Card Games (TCG), Funko Pop 
 
 ## Stack
 
-| Tecnología | Versión |
-|---|---|
-| React | 19 |
-| TypeScript | 5.9 |
-| Vite | 8 |
-| Tailwind CSS | 4 |
-| Firebase Firestore / Auth | 12 |
-| React Router | 7 |
-| i18next | es / en |
+| Tecnología                | Versión |
+| ------------------------- | ------- |
+| React                     | 19      |
+| TypeScript                | 5.9     |
+| Vite                      | 8       |
+| Tailwind CSS              | 4       |
+| Firebase Firestore / Auth | 12      |
+| React Router              | 7       |
+| i18next                   | es / en |
 
 ## Funcionalidades
 
 ### Tienda pública
+
 - Navegación lateral dinámica cargada desde Firestore
 - Páginas de sección generadas automáticamente para cualquier entrada del nav (`/tcgs/pokemon`, `/funko-pop`, `/accesorios-tcgs/fundas`, etc.)
 - Filtrado de productos por categoría y búsqueda
@@ -28,6 +29,7 @@ Tienda online para la venta de productos de Trading Card Games (TCG), Funko Pop 
 - Easter egg del código Konami
 
 ### Panel de administración (`/cosmos-admin`)
+
 Acceso protegido con autenticación Firebase (`browserSessionPersistence`: la sesión
 se cierra al cerrar la pestaña). El panel vive en `/cosmos-admin/panel`.
 
@@ -42,13 +44,13 @@ que exigen las reglas de Firestore. Ver [Reglas de seguridad](#reglas-de-segurid
 
 ## Estructura Firestore
 
-| Colección | Descripción |
-|---|---|
-| `products` | Productos. Campos: `tcg`, `name`, `set`, `price`, `salePrice`, `category`, `description`, `inStock`, `badge`, `badgeColor`, `badgeText`, `image`, `featured`, `visible`, `reservable` |
-| `nav_config/sidebar` | Configuración del sidebar: `{ items: NavItem[] }` |
-| `tcg_categories/{sectionId}` | Categorías por sección: `{ categories: string[] }` |
-| `torneosJuegos` | Torneos por juego |
-| `reservas` | Solicitudes de reserva entrantes |
+| Colección                    | Descripción                                                                                                                                                                           |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `products`                   | Productos. Campos: `tcg`, `name`, `set`, `price`, `salePrice`, `category`, `description`, `inStock`, `badge`, `badgeColor`, `badgeText`, `image`, `featured`, `visible`, `reservable` |
+| `nav_config/sidebar`         | Configuración del sidebar: `{ items: NavItem[] }`                                                                                                                                     |
+| `tcg_categories/{sectionId}` | Categorías por sección: `{ categories: string[] }`                                                                                                                                    |
+| `torneosJuegos`              | Torneos por juego                                                                                                                                                                     |
+| `reservas`                   | Solicitudes de reserva entrantes                                                                                                                                                      |
 
 ### Firestore Lite
 
@@ -68,6 +70,7 @@ guardaban strings ya formateados (`"4,99 €"`) y `productsService.toProduct()` 
 normalizándolos al leer, por si aparece alguno sin migrar.
 
 El campo `tcg` es el ID de sección en Firestore. Se deriva del path de la URL:
+
 - `/tcgs/pokemon` → `pokemon`
 - `/tcgs/final-fantasy` → `finalfantasy` (legacy mapping)
 - `/funko-pop` → `funko-pop`
@@ -78,10 +81,10 @@ El campo `tcg` es el ID de sección en Firestore. Se deriva del path de la URL:
 Hay dos proyectos Firebase. **El código no nombra ninguno**: la base de datos la
 eligen las variables de entorno, que Vite incrusta en el bundle al construir.
 
-| Proyecto | Uso | De dónde salen las variables |
-|---|---|---|
-| `canon-cosmo-store-dev` | desarrollo local | `.env.local` |
-| `canon-cosmo-store` | producción | scope *Production* de Vercel |
+| Proyecto                | Uso              | De dónde salen las variables |
+| ----------------------- | ---------------- | ---------------------------- |
+| `canon-cosmo-store-dev` | desarrollo local | `.env.local`                 |
+| `canon-cosmo-store`     | producción       | scope _Production_ de Vercel |
 
 Los datos no viajan entre proyectos solos: `npm run sync:dev-db` copia prod → dev,
 y no existe el camino inverso. Lo que crees en el admin de dev hay que recrearlo
@@ -119,11 +122,11 @@ haga que Google indexe ese dominio en vez del bueno.
 
 Necesitan service account keys en `.keys/` — ver [`.keys/README.md`](.keys/README.md).
 
-| Comando | Qué hace |
-|---|---|
-| `npm run sync:dev-db` | Copia las colecciones de prod a dev (excluye `reservas`) |
+| Comando                             | Qué hace                                                                                                                        |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run sync:dev-db`               | Copia las colecciones de prod a dev (excluye `reservas`)                                                                        |
 | `npm run migrate:price <dev\|prod>` | Migra `price`/`salePrice` de string a number. Dry-run por defecto; añade `-- --apply` para escribir. Hace backup en `.backups/` |
-| `npm run admin:claim <dev\|prod>` | Lista cuentas y su claim `admin`, e informa de si el alta autoservicio está abierta. Sin `--grant`/`--revoke` no escribe nada |
+| `npm run admin:claim <dev\|prod>`   | Lista cuentas y su claim `admin`, e informa de si el alta autoservicio está abierta. Sin `--grant`/`--revoke` no escribe nada   |
 
 ## Integración continua
 
@@ -138,17 +141,17 @@ Vitest, en entorno `node`. Solo cubren **funciones puras**: nada de DOM, Firebas
 navegador, así que la suite entera tarda menos de medio segundo. Los ficheros
 `*.test.ts` viven junto al código que prueban.
 
-| Módulo | Qué protege |
-|---|---|
-| `lib/price.ts` | El parseo y formateo de importes, incluido el viaje input → number → input del admin |
-| `lib/tcgUtils.ts` | La derivación del ID de sección desde la URL, con el mapeo legacy |
-| `admin/nav/navMutations.ts` | Que editar el nav conserve los `path` y no mute el estado |
-| `admin/productForm/productPayload.ts` | Qué campos se guardan, cuáles se omiten y cuáles se borran con `deleteField()` |
-| `admin/productList/productQuery.ts` | El filtrado del listado: sección, búsqueda, reservables y categoría |
-| `admin/reservas/reservasQuery.ts` | El orden y el filtrado de la bandeja de reservas |
-| `admin/categories/categoryRules.ts` | Validación de nombres duplicados y vacíos |
-| `components/reservas/reservaQuery.ts` | El filtrado de la página pública de reservas |
-| `components/reservas/reservaForm.ts` | Qué se admite en el campo de cantidad y cómo se recorta al tope |
+| Módulo                                | Qué protege                                                                          |
+| ------------------------------------- | ------------------------------------------------------------------------------------ |
+| `lib/price.ts`                        | El parseo y formateo de importes, incluido el viaje input → number → input del admin |
+| `lib/tcgUtils.ts`                     | La derivación del ID de sección desde la URL, con el mapeo legacy                    |
+| `admin/nav/navMutations.ts`           | Que editar el nav conserve los `path` y no mute el estado                            |
+| `admin/productForm/productPayload.ts` | Qué campos se guardan, cuáles se omiten y cuáles se borran con `deleteField()`       |
+| `admin/productList/productQuery.ts`   | El filtrado del listado: sección, búsqueda, reservables y categoría                  |
+| `admin/reservas/reservasQuery.ts`     | El orden y el filtrado de la bandeja de reservas                                     |
+| `admin/categories/categoryRules.ts`   | Validación de nombres duplicados y vacíos                                            |
+| `components/reservas/reservaQuery.ts` | El filtrado de la página pública de reservas                                         |
+| `components/reservas/reservaForm.ts`  | Qué se admite en el campo de cantidad y cómo se recorta al tope                      |
 
 El criterio para añadir un test aquí: que un fallo sea **silencioso** (corrompe datos
 o desvincula productos sin error visible). La lógica de render y las reglas de
@@ -187,8 +190,8 @@ npm run admin:claim prod -- --lock-signup       # cierra el alta libre de cuenta
 El script también informa de por dónde se puede entrar al proyecto: si el alta
 autoservicio está abierta y si el acceso anónimo está activo. El alta se cierra
 con `--lock-signup`, que mueve `client.permissions.disabledUserSignup` — el
-mismo campo que la casilla *Enable create (sign-up)* de la consola. El acceso
-anónimo sí hay que desactivarlo a mano en *Authentication -> Sign-in method*.
+mismo campo que la casilla _Enable create (sign-up)_ de la consola. El acceso
+anónimo sí hay que desactivarlo a mano en _Authentication -> Sign-in method_.
 
 El claim viaja dentro del ID token, así que **no surte efecto hasta que la sesión
 se renueva**: hay que cerrar sesión en el panel y volver a entrar.
@@ -279,7 +282,7 @@ estimación del alto real: son el alto real. Antes cada pieza llevaba su propio
 número a ojo (`mt-16`, `100px`, `104px`, `64px`) y ya no cuadraban entre sí — el
 sidebar de escritorio se metía por debajo del footer.
 
-El shell usa `dvh`, no `vh`. En móvil `100vh` es el viewport *grande*: incluye la
+El shell usa `dvh`, no `vh`. En móvil `100vh` es el viewport _grande_: incluye la
 franja que tapa la barra de direcciones retráctil. Con `vh` el shell medía más
 que lo visible, el documento scrolleaba por su cuenta y se sentían **dos
 scrolls** superpuestos, el del navegador y el de `<main>`. `dvh` sigue al

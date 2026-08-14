@@ -36,7 +36,13 @@ function sectionIdsFromNav(items: NavItem[]): Set<string> {
     return ids;
 }
 
-const TcgSection = ({ sectionId, pathname }: { sectionId: string; pathname: string }) => {
+const TcgSection = ({
+    sectionId,
+    pathname,
+}: {
+    sectionId: string;
+    pathname: string;
+}) => {
     const { t } = useTranslation();
     const categories = useTcgCategories(sectionId);
     const tcgOptions = useTcgOptions();
@@ -46,7 +52,9 @@ const TcgSection = ({ sectionId, pathname }: { sectionId: string; pathname: stri
     const [error, setError] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState('Todo');
     const [search, setSearch] = useState('');
-    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(
+        null,
+    );
 
     const lastSegment = pathname.split('/').filter(Boolean).at(-1) ?? '';
     const sectionLabel =
@@ -90,7 +98,11 @@ const TcgSection = ({ sectionId, pathname }: { sectionId: string; pathname: stri
 
     return (
         <>
-            <SEO title={sectionLabel} description={seoDescription} path={pathname} />
+            <SEO
+                title={sectionLabel}
+                description={seoDescription}
+                path={pathname}
+            />
             <TcgHeader
                 sectionLabel={sectionLabel}
                 total={products.length}
@@ -103,10 +115,17 @@ const TcgSection = ({ sectionId, pathname }: { sectionId: string; pathname: stri
                 selected={selectedCategory}
                 onSelect={setSelectedCategory}
             />
-            {featuredProducts.length === 1
-                ? <FeaturedProductCard product={featuredProducts[0]} onSelect={setSelectedProduct} />
-                : <FeaturedSection products={featuredProducts} onSelect={setSelectedProduct} />
-            }
+            {featuredProducts.length === 1 ? (
+                <FeaturedProductCard
+                    product={featuredProducts[0]}
+                    onSelect={setSelectedProduct}
+                />
+            ) : (
+                <FeaturedSection
+                    products={featuredProducts}
+                    onSelect={setSelectedProduct}
+                />
+            )}
             <ProductGrid
                 products={gridProducts}
                 totalCount={products.length}
@@ -116,7 +135,10 @@ const TcgSection = ({ sectionId, pathname }: { sectionId: string; pathname: stri
                 onSelect={setSelectedProduct}
             />
             {selectedProduct && (
-                <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
+                <ProductModal
+                    product={selectedProduct}
+                    onClose={() => setSelectedProduct(null)}
+                />
             )}
         </>
     );
@@ -141,7 +163,9 @@ const TcgPage = () => {
 
     if (!sectionIdsFromNav(navItems).has(sectionId)) return <NotFound />;
 
-    return <TcgSection key={sectionId} sectionId={sectionId} pathname={pathname} />;
+    return (
+        <TcgSection key={sectionId} sectionId={sectionId} pathname={pathname} />
+    );
 };
 
 export default TcgPage;

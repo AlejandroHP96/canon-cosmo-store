@@ -23,7 +23,9 @@ export const EMPTY_PRODUCT_FORM: ProductForm = {
 
 const defined = (form: ProductForm, tcg: string) =>
     Object.fromEntries(
-        Object.entries({ ...form, tcg }).filter(([, v]) => v !== undefined && v !== ''),
+        Object.entries({ ...form, tcg }).filter(
+            ([, v]) => v !== undefined && v !== '',
+        ),
     );
 
 /** Payload de creación: se omiten los campos vacíos para no ensuciar el documento. */
@@ -44,9 +46,14 @@ export const buildUpdatePayload = (
     description: form.description || deleteField(),
     badge: form.badge || deleteField(),
     badgeColor: form.badgeColor || deleteField(),
-    badgeText: form.badge === 'PRÓXIMAMENTE' && form.badgeText ? form.badgeText : deleteField(),
+    badgeText:
+        form.badge === 'PRÓXIMAMENTE' && form.badgeText
+            ? form.badgeText
+            : deleteField(),
     price: form.price ?? deleteField(),
     salePrice:
-        form.badge === 'OFERTA' && form.salePrice !== undefined ? form.salePrice : deleteField(),
+        form.badge === 'OFERTA' && form.salePrice !== undefined
+            ? form.salePrice
+            : deleteField(),
     image: form.image || deleteField(),
 });

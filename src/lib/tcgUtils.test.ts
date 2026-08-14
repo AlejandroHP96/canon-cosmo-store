@@ -55,7 +55,9 @@ describe('pathToSectionId', () => {
     });
 
     it('sustituye las barras internas por __, que Firestore sí admite en un ID', () => {
-        expect(pathToSectionId('/accesorios-tcgs/fundas')).toBe('accesorios-tcgs__fundas');
+        expect(pathToSectionId('/accesorios-tcgs/fundas')).toBe(
+            'accesorios-tcgs__fundas',
+        );
     });
 
     it('no aplica el mapeo legacy fuera de /tcgs', () => {

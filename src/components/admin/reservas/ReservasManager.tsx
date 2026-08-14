@@ -41,14 +41,20 @@ const ReservasManager = () => {
     }, []);
 
     const secciones = useMemo(() => seccionesDeReservas(reservas), [reservas]);
-    const productos = useMemo(() => productosDeReservas(reservas, seccion), [reservas, seccion]);
+    const productos = useMemo(
+        () => productosDeReservas(reservas, seccion),
+        [reservas, seccion],
+    );
     const filtradas = useMemo(
         () => filtrarReservas(reservas, search, seccion, producto),
         [reservas, search, seccion, producto],
     );
 
     /** Envuelve un borrado con su estado de guardado, su error y el refresco. */
-    const run = async (operacion: () => Promise<void>, mensajeError: string) => {
+    const run = async (
+        operacion: () => Promise<void>,
+        mensajeError: string,
+    ) => {
         setSaving(true);
         setError(null);
         try {
@@ -113,7 +119,11 @@ const ReservasManager = () => {
                                 expanded={expandedId === reserva.id}
                                 saving={saving}
                                 onToggleNotas={() =>
-                                    setExpandedId(expandedId === reserva.id ? null : reserva.id)
+                                    setExpandedId(
+                                        expandedId === reserva.id
+                                            ? null
+                                            : reserva.id,
+                                    )
                                 }
                                 onDelete={() =>
                                     run(

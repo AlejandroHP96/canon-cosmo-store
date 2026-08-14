@@ -30,7 +30,9 @@ const ToggleGroup = ({ label, value, options, onChange }: Props) => (
                             ? opt.activeClass
                             : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
                     }`}>
-                    <span className="material-symbols-outlined text-sm">{opt.icon}</span>
+                    <span className="material-symbols-outlined text-sm">
+                        {opt.icon}
+                    </span>
                     {opt.label}
                 </button>
             ))}

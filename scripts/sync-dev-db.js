@@ -17,13 +17,21 @@ function loadKey(filename) {
         return JSON.parse(readFileSync(filePath, 'utf-8'));
     } catch {
         console.error(`Falta ${filePath}`);
-        console.error('Descárgalo desde Firebase console -> Project settings -> Service accounts -> Generate new private key');
+        console.error(
+            'Descárgalo desde Firebase console -> Project settings -> Service accounts -> Generate new private key',
+        );
         process.exit(1);
     }
 }
 
-const prodApp = initializeApp({ credential: cert(loadKey('sa-prod.json')) }, 'prod');
-const devApp = initializeApp({ credential: cert(loadKey('sa-dev.json')) }, 'dev');
+const prodApp = initializeApp(
+    { credential: cert(loadKey('sa-prod.json')) },
+    'prod',
+);
+const devApp = initializeApp(
+    { credential: cert(loadKey('sa-dev.json')) },
+    'dev',
+);
 
 const prodDb = getFirestore(prodApp);
 const devDb = getFirestore(devApp);
@@ -65,13 +73,17 @@ const EXCLUDED_COLLECTIONS = ['reservas'];
 
 async function main() {
     const cols = await prodDb.listCollections();
-    const collections = cols.map((c) => c.id).filter((id) => !EXCLUDED_COLLECTIONS.includes(id));
+    const collections = cols
+        .map((c) => c.id)
+        .filter((id) => !EXCLUDED_COLLECTIONS.includes(id));
     console.log('Sincronizando prod -> dev:', collections);
     let total = 0;
     for (const name of collections) {
         total += await copyCollection(name);
     }
-    console.log(`\nListo. ${total} documentos sincronizados en canon-cosmo-store-dev.`);
+    console.log(
+        `\nListo. ${total} documentos sincronizados en canon-cosmo-store-dev.`,
+    );
     process.exit(0);
 }
 

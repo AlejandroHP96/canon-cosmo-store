@@ -54,4 +54,3 @@ export const TCG_CARDS = [
         tagColor: 'bg-[#343dff] border-[#bec2ff]',
     },
 ];
-

@@ -19,10 +19,32 @@ const product = (patch: Partial<Product>): Product => ({
 });
 
 const catalogo: Product[] = [
-    product({ id: '1', tcg: 'pokemon', name: 'Sobre Pokemon', category: 'Sobres' }),
-    product({ id: '2', tcg: 'pokemon', name: 'ETB Pokemon', category: 'Cajas' }),
-    product({ id: '3', tcg: 'digimon', name: 'Mazo Digimon', category: 'Mazos', reservable: true }),
-    product({ id: '4', tcg: 'funko-pop', name: 'Funko Goku', category: '', set: 'Anime' }),
+    product({
+        id: '1',
+        tcg: 'pokemon',
+        name: 'Sobre Pokemon',
+        category: 'Sobres',
+    }),
+    product({
+        id: '2',
+        tcg: 'pokemon',
+        name: 'ETB Pokemon',
+        category: 'Cajas',
+    }),
+    product({
+        id: '3',
+        tcg: 'digimon',
+        name: 'Mazo Digimon',
+        category: 'Mazos',
+        reservable: true,
+    }),
+    product({
+        id: '4',
+        tcg: 'funko-pop',
+        name: 'Funko Goku',
+        category: '',
+        set: 'Anime',
+    }),
 ];
 
 describe('menuSectionIds', () => {
@@ -39,13 +61,19 @@ describe('menuSectionIds', () => {
     });
 
     it('usa el path si la entrada no tiene submenú', () => {
-        expect(menuSectionIds({ icon: 'x', label: 'Funko Pop', path: '/funko-pop' })).toEqual([
-            'funko-pop',
-        ]);
+        expect(
+            menuSectionIds({
+                icon: 'x',
+                label: 'Funko Pop',
+                path: '/funko-pop',
+            }),
+        ).toEqual(['funko-pop']);
     });
 
     it('cae al slug del label si no hay path ni submenú', () => {
-        expect(menuSectionIds({ icon: 'x', label: 'Accesorios TCGs' })).toEqual(['accesorios-tcgs']);
+        expect(menuSectionIds({ icon: 'x', label: 'Accesorios TCGs' })).toEqual(
+            ['accesorios-tcgs'],
+        );
     });
 
     it('devuelve vacío si no hay menú', () => {
@@ -59,16 +87,26 @@ describe('matchesSection', () => {
     });
 
     it("con 'all' acepta cualquier sección del menú", () => {
-        const section: SectionFilter = { menuSectionIds: ['pokemon', 'digimon'], sectionId: 'all' };
+        const section: SectionFilter = {
+            menuSectionIds: ['pokemon', 'digimon'],
+            sectionId: 'all',
+        };
         expect(matchesSection(product({ tcg: 'pokemon' }), section)).toBe(true);
         expect(matchesSection(product({ tcg: 'digimon' }), section)).toBe(true);
-        expect(matchesSection(product({ tcg: 'funko-pop' }), section)).toBe(false);
+        expect(matchesSection(product({ tcg: 'funko-pop' }), section)).toBe(
+            false,
+        );
     });
 
     it('con una sección concreta ignora el resto del menú', () => {
-        const section: SectionFilter = { menuSectionIds: ['pokemon', 'digimon'], sectionId: 'digimon' };
+        const section: SectionFilter = {
+            menuSectionIds: ['pokemon', 'digimon'],
+            sectionId: 'digimon',
+        };
         expect(matchesSection(product({ tcg: 'digimon' }), section)).toBe(true);
-        expect(matchesSection(product({ tcg: 'pokemon' }), section)).toBe(false);
+        expect(matchesSection(product({ tcg: 'pokemon' }), section)).toBe(
+            false,
+        );
     });
 });
 
@@ -86,31 +124,56 @@ describe('filterProducts', () => {
     });
 
     it('busca por nombre sin distinguir mayúsculas', () => {
-        expect(filterProducts(catalogo, query({ search: 'GOKU' })).map((p) => p.id)).toEqual(['4']);
+        expect(
+            filterProducts(catalogo, query({ search: 'GOKU' })).map(
+                (p) => p.id,
+            ),
+        ).toEqual(['4']);
     });
 
     it('busca también por set y por categoría', () => {
-        expect(filterProducts(catalogo, query({ search: 'anime' })).map((p) => p.id)).toEqual(['4']);
-        expect(filterProducts(catalogo, query({ search: 'mazos' })).map((p) => p.id)).toEqual(['3']);
+        expect(
+            filterProducts(catalogo, query({ search: 'anime' })).map(
+                (p) => p.id,
+            ),
+        ).toEqual(['4']);
+        expect(
+            filterProducts(catalogo, query({ search: 'mazos' })).map(
+                (p) => p.id,
+            ),
+        ).toEqual(['3']);
     });
 
     it('ignora los espacios sobrantes de la búsqueda', () => {
-        expect(filterProducts(catalogo, query({ search: '  goku  ' }))).toHaveLength(1);
+        expect(
+            filterProducts(catalogo, query({ search: '  goku  ' })),
+        ).toHaveLength(1);
     });
 
     it('filtra por reservables', () => {
-        expect(filterProducts(catalogo, query({ reservableOnly: true })).map((p) => p.id)).toEqual(['3']);
+        expect(
+            filterProducts(catalogo, query({ reservableOnly: true })).map(
+                (p) => p.id,
+            ),
+        ).toEqual(['3']);
     });
 
     it('filtra por categoría exacta', () => {
-        expect(filterProducts(catalogo, query({ category: 'Cajas' })).map((p) => p.id)).toEqual(['2']);
+        expect(
+            filterProducts(catalogo, query({ category: 'Cajas' })).map(
+                (p) => p.id,
+            ),
+        ).toEqual(['2']);
     });
 
     it('combina los filtros', () => {
         const out = filterProducts(
             catalogo,
             query({
-                section: { menuSectionIds: ['pokemon', 'digimon'], sectionId: 'all' },
+                section: {
+                    menuSectionIds: ['pokemon', 'digimon'],
+                    sectionId: 'all',
+                },
                 search: 'o',
                 category: 'Sobres',
             }),
@@ -121,7 +184,11 @@ describe('filterProducts', () => {
 
 describe('availableCategories', () => {
     it('devuelve las categorías únicas y ordenadas', () => {
-        expect(availableCategories(catalogo, null)).toEqual(['Cajas', 'Mazos', 'Sobres']);
+        expect(availableCategories(catalogo, null)).toEqual([
+            'Cajas',
+            'Mazos',
+            'Sobres',
+        ]);
     });
 
     it('descarta las vacías', () => {
@@ -129,7 +196,13 @@ describe('availableCategories', () => {
     });
 
     it('se limita a la sección elegida', () => {
-        const section: SectionFilter = { menuSectionIds: ['pokemon'], sectionId: 'all' };
-        expect(availableCategories(catalogo, section)).toEqual(['Cajas', 'Sobres']);
+        const section: SectionFilter = {
+            menuSectionIds: ['pokemon'],
+            sectionId: 'all',
+        };
+        expect(availableCategories(catalogo, section)).toEqual([
+            'Cajas',
+            'Sobres',
+        ]);
     });
 });

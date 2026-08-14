@@ -53,8 +53,10 @@ const NewNavItemForm = ({ form, saving, onChange, onAdd }: Props) => (
                 Material Symbols
             </a>
             . Usa{' '}
-            <span className="material-symbols-outlined text-[11px] align-middle">expand_more</span> para
-            añadir subitems a cualquier entrada.
+            <span className="material-symbols-outlined text-[11px] align-middle">
+                expand_more
+            </span>{' '}
+            para añadir subitems a cualquier entrada.
         </p>
     </div>
 );

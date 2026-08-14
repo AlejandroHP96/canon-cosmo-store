@@ -37,7 +37,9 @@ const FilterChips = ({
 
     return (
         <div className={`flex flex-wrap gap-1.5 ${className}`}>
-            <button onClick={() => onSelect(null)} className={chipClass(selected === null)}>
+            <button
+                onClick={() => onSelect(null)}
+                className={chipClass(selected === null)}>
                 {allLabel}
             </button>
             {options.map((option) => (

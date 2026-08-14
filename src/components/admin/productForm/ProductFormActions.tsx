@@ -7,7 +7,13 @@ type Props = {
 };
 
 /** Botonera del formulario de producto. */
-const ProductFormActions = ({ isEdit, saving, showContinue, onCancel, onContinue }: Props) => (
+const ProductFormActions = ({
+    isEdit,
+    saving,
+    showContinue,
+    onCancel,
+    onContinue,
+}: Props) => (
     <div className="flex gap-3 mt-2">
         <button
             type="button"
@@ -28,7 +34,11 @@ const ProductFormActions = ({ isEdit, saving, showContinue, onCancel, onContinue
             type="submit"
             disabled={saving}
             className="flex-1 border border-primary bg-surface-container text-primary font-headline text-xs uppercase tracking-widest py-2.5 hover:bg-primary hover:text-surface transition-colors disabled:opacity-50">
-            {saving ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Crear producto'}
+            {saving
+                ? 'Guardando...'
+                : isEdit
+                  ? 'Guardar cambios'
+                  : 'Crear producto'}
         </button>
     </div>
 );

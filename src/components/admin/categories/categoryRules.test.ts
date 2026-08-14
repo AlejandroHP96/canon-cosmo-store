@@ -14,16 +14,24 @@ describe('validarNombre', () => {
     });
 
     it('rechaza el vacío', () => {
-        expect(validarNombre(categorias, '')).toBe('El nombre no puede estar vacío.');
-        expect(validarNombre(categorias, '   ')).toBe('El nombre no puede estar vacío.');
+        expect(validarNombre(categorias, '')).toBe(
+            'El nombre no puede estar vacío.',
+        );
+        expect(validarNombre(categorias, '   ')).toBe(
+            'El nombre no puede estar vacío.',
+        );
     });
 
     it('rechaza duplicados', () => {
-        expect(validarNombre(categorias, 'Cajas')).toBe('"Cajas" ya existe en la lista.');
+        expect(validarNombre(categorias, 'Cajas')).toBe(
+            '"Cajas" ya existe en la lista.',
+        );
     });
 
     it('detecta el duplicado aunque venga con espacios', () => {
-        expect(validarNombre(categorias, '  Cajas  ')).toBe('"Cajas" ya existe en la lista.');
+        expect(validarNombre(categorias, '  Cajas  ')).toBe(
+            '"Cajas" ya existe en la lista.',
+        );
     });
 
     it('al renombrar, no choca consigo mismo', () => {
@@ -31,25 +39,31 @@ describe('validarNombre', () => {
     });
 
     it('al renombrar, sigue chocando con las demás', () => {
-        expect(validarNombre(categorias, 'Sobres', 'Cajas')).toBe('"Sobres" ya existe en la lista.');
+        expect(validarNombre(categorias, 'Sobres', 'Cajas')).toBe(
+            '"Sobres" ya existe en la lista.',
+        );
     });
 });
 
 describe('mutaciones', () => {
     it('anadirCategoria añade al final y recorta espacios', () => {
-        expect(anadirCategoria(categorias, '  Fundas ')).toEqual([...categorias, 'Fundas']);
+        expect(anadirCategoria(categorias, '  Fundas ')).toEqual([
+            ...categorias,
+            'Fundas',
+        ]);
     });
 
     it('quitarCategoria elimina solo esa', () => {
-        expect(quitarCategoria(categorias, 'Cajas')).toEqual(['Sobres', 'Mazos']);
+        expect(quitarCategoria(categorias, 'Cajas')).toEqual([
+            'Sobres',
+            'Mazos',
+        ]);
     });
 
     it('renombrarCategoria conserva la posición', () => {
-        expect(renombrarCategoria(categorias, 'Cajas', 'Cajas grandes')).toEqual([
-            'Sobres',
-            'Cajas grandes',
-            'Mazos',
-        ]);
+        expect(
+            renombrarCategoria(categorias, 'Cajas', 'Cajas grandes'),
+        ).toEqual(['Sobres', 'Cajas grandes', 'Mazos']);
     });
 
     it('ninguna muta la lista original', () => {

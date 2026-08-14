@@ -16,7 +16,13 @@ type Props = {
     onDelete: () => void;
 };
 
-const ReservaRow = ({ reserva, expanded, saving, onToggleNotas, onDelete }: Props) => (
+const ReservaRow = ({
+    reserva,
+    expanded,
+    saving,
+    onToggleNotas,
+    onDelete,
+}: Props) => (
     <div className="tactical-frame p-2.5">
         <div className="flex items-center gap-3">
             <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
@@ -38,7 +44,10 @@ const ReservaRow = ({ reserva, expanded, saving, onToggleNotas, onDelete }: Prop
                 {reserva.telefono || '—'}
             </span>
             <span className="text-[10px] font-body text-on-surface-variant shrink-0 hidden lg:block w-24">
-                {new Date(reserva.fecha).toLocaleDateString('es-ES', FECHA_FORMATO)}
+                {new Date(reserva.fecha).toLocaleDateString(
+                    'es-ES',
+                    FECHA_FORMATO,
+                )}
             </span>
             {reserva.notas && (
                 <button
@@ -46,16 +55,22 @@ const ReservaRow = ({ reserva, expanded, saving, onToggleNotas, onDelete }: Prop
                     className={`shrink-0 hover:text-primary transition-colors ${
                         expanded ? 'text-primary' : 'text-on-surface-variant'
                     }`}
-                    title="Ver notas" aria-label="Ver notas">
-                    <span className="material-symbols-outlined text-sm">sticky_note_2</span>
+                    title="Ver notas"
+                    aria-label="Ver notas">
+                    <span className="material-symbols-outlined text-sm">
+                        sticky_note_2
+                    </span>
                 </button>
             )}
             <button
                 onClick={onDelete}
                 disabled={saving}
                 className="shrink-0 text-error hover:bg-error-container/30 p-1 transition-colors disabled:opacity-40"
-                title="Eliminar" aria-label="Eliminar">
-                <span className="material-symbols-outlined text-sm">delete</span>
+                title="Eliminar"
+                aria-label="Eliminar">
+                <span className="material-symbols-outlined text-sm">
+                    delete
+                </span>
             </button>
         </div>
         {expanded && reserva.notas && (

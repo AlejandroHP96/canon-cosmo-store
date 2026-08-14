@@ -29,7 +29,11 @@ const Header = ({ onMenuToggle }: HeaderProps) => {
                 <Link
                     to="/"
                     className="hidden sm:flex items-center gap-2 text-xl md:text-2xl font-bold text-[#e0e0ff] font-headline uppercase tracking-widest hover:text-primary transition-colors">
-                    <img src={logo} alt="Cañón Cosmo Store" className="h-8 w-8 object-contain" />
+                    <img
+                        src={logo}
+                        alt="Cañón Cosmo Store"
+                        className="h-8 w-8 object-contain"
+                    />
                     <span className="hidden sm:inline">CAÑÓN COSMO STORE</span>
                 </Link>
                 <Link to="/" className={`sm:hidden ${NAV_LINK}`}>
