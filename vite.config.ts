@@ -65,6 +65,37 @@ export default defineConfig(({ mode }) => {
         server: {
             port: 3000,
         },
+        build: {
+            rollupOptions: {
+                output: {
+                    // Sin esto todo el vendor cae en un único index.js de 635 kB que
+                    // se invalida entero en cada despliegue. Separarlo deja que el
+                    // navegador reaproveche de la caché lo que no cambia: React y
+                    // Firestore se mueven una o dos veces al año, el código de la
+                    // tienda cambia cada semana.
+                    //
+                    // firebase/auth se queda deliberadamente fuera de estos grupos:
+                    // solo lo importa el chunk diferido del admin y agruparlo aquí
+                    // lo arrastraría a la carga inicial de la tienda pública.
+                    advancedChunks: {
+                        groups: [
+                            {
+                                name: 'firestore',
+                                test: /node_modules\/@firebase\/(firestore|webchannel-wrapper)\//,
+                            },
+                            {
+                                name: 'react-vendor',
+                                test: /node_modules\/(react|react-dom|react-router|react-router-dom|scheduler)\//,
+                            },
+                            {
+                                name: 'i18n',
+                                test: /node_modules\/(i18next|react-i18next)\//,
+                            },
+                        ],
+                    },
+                },
+            },
+        },
         optimizeDeps: {
             // firebase/auth solo aparece dentro del chunk diferido del admin, así
             // que Vite no lo descubre al arrancar y lo pre-empaqueta a mitad de
