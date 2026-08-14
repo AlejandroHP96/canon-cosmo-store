@@ -6,8 +6,9 @@
 //   npm run admin:claim dev                          # lista usuarios y claims
 //   npm run admin:claim prod -- --grant a@b.com      # concede admin
 //   npm run admin:claim prod -- --revoke a@b.com     # lo quita
+//   npm run admin:claim prod -- --lock-signup        # cierra el alta libre
 //
-// Sin --grant ni --revoke no escribe nada: solo informa.
+// Sin flags no escribe nada: solo informa.
 
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
@@ -26,7 +27,13 @@ function parseArgs(argv) {
         const i = argv.indexOf(`--${name}`);
         return i === -1 ? null : argv[i + 1];
     };
-    return { env, grant: flag('grant'), revoke: flag('revoke') };
+    return {
+        env,
+        grant: flag('grant'),
+        revoke: flag('revoke'),
+        lockSignup: argv.includes('--lock-signup'),
+        unlockSignup: argv.includes('--unlock-signup'),
+    };
 }
 
 function loadKey(env) {
@@ -42,45 +49,89 @@ function loadKey(env) {
     }
 }
 
-/** Lee la config de Identity Platform para avisar si el alta es libre. */
+const CONFIG_URL = (projectId) =>
+    `https://identitytoolkit.googleapis.com/admin/v2/projects/${projectId}/config`;
+
+async function getConfig(credential, projectId) {
+    const { access_token: token } = await credential.getAccessToken();
+    const res = await fetch(CONFIG_URL(projectId), {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status} al leer la config`);
+    return res.json();
+}
+
+/**
+ * Cierra o abre el alta autoservicio de cuentas.
+ *
+ * El campo es `client.permissions.disabledUserSignup`, que es lo que mueve la
+ * casilla "Enable create (sign-up)" de Authentication -> Settings -> User
+ * actions. Ojo: `signIn.email` NO tiene ningún `disableSignUp`, aunque lo
+ * parezca; leer ahí devuelve undefined siempre y da un falso "abierto".
+ */
+async function setSignUpLock(credential, projectId, disabled) {
+    const { access_token: token } = await credential.getAccessToken();
+    const res = await fetch(
+        `${CONFIG_URL(projectId)}?updateMask=client.permissions.disabledUserSignup`,
+        {
+            method: 'PATCH',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                client: { permissions: { disabledUserSignup: disabled } },
+            }),
+        },
+    );
+    if (!res.ok) {
+        const body = await res.text();
+        console.error(
+            `\nNo se ha podido cambiar el alta (HTTP ${res.status}): ${body}`,
+        );
+        process.exit(1);
+    }
+    console.log(
+        `\nAlta autoservicio de cuentas: ${disabled ? 'BLOQUEADA' : 'ABIERTA'}.`,
+    );
+}
+
+/** Avisa de por dónde se puede entrar al proyecto. */
 async function reportSignUpPolicy(credential, projectId) {
+    let cfg;
     try {
-        const { access_token: token } = await credential.getAccessToken();
-        const res = await fetch(
-            `https://identitytoolkit.googleapis.com/admin/v2/projects/${projectId}/config`,
-            { headers: { Authorization: `Bearer ${token}` } },
-        );
-        if (!res.ok) {
-            console.log(
-                `\nAlta de usuarios: no se ha podido consultar (HTTP ${res.status}).`,
-            );
-            return;
-        }
-        const cfg = await res.json();
-        const email = cfg.signIn?.email ?? {};
-        const anon = cfg.signIn?.anonymous?.enabled === true;
-
-        console.log('\nPolítica de alta:');
-        console.log(
-            `  email/password habilitado : ${email.enabled === true ? 'sí' : 'no'}`,
-        );
-        console.log(
-            `  alta autoservicio         : ${email.disableSignUp === true ? 'BLOQUEADA' : 'ABIERTA'}`,
-        );
-        console.log(
-            `  acceso anónimo            : ${anon ? 'SÍ (revísalo)' : 'no'}`,
-        );
-
-        if (email.enabled === true && email.disableSignUp !== true) {
-            console.log(
-                '\n  AVISO: cualquiera con la apiKey del bundle puede crearse una cuenta.\n' +
-                    '  Con las reglas basadas en claim eso ya no da acceso a los datos, pero\n' +
-                    '  conviene cerrarlo igualmente en Authentication -> Settings -> User actions.',
-            );
-        }
+        cfg = await getConfig(credential, projectId);
     } catch (err) {
         console.log(
-            `\nAlta de usuarios: no se ha podido consultar (${err.message}).`,
+            `\nPolítica de alta: no se ha podido consultar (${err.message}).`,
+        );
+        return;
+    }
+
+    const emailEnabled = cfg.signIn?.email?.enabled === true;
+    const anon = cfg.signIn?.anonymous?.enabled === true;
+    const signUpBlocked = cfg.client?.permissions?.disabledUserSignup === true;
+
+    console.log('\nPolítica de alta:');
+    console.log(`  email/password habilitado : ${emailEnabled ? 'sí' : 'no'}`);
+    console.log(
+        `  alta autoservicio         : ${signUpBlocked ? 'BLOQUEADA' : 'ABIERTA'}`,
+    );
+    console.log(
+        `  acceso anónimo            : ${anon ? 'SÍ (revísalo)' : 'no'}`,
+    );
+
+    if (anon) {
+        console.log(
+            '\n  AVISO: el acceso anónimo está activo y el código no lo usa.\n' +
+                '  Desactívalo en Authentication -> Sign-in method.',
+        );
+    }
+    if (emailEnabled && !signUpBlocked) {
+        console.log(
+            '\n  AVISO: cualquiera con la apiKey del bundle puede crearse una cuenta.\n' +
+                '  Con las reglas basadas en claim eso ya no da acceso a los datos, pero\n' +
+                '  conviene cerrarlo:  npm run admin:claim <env> -- --lock-signup',
         );
     }
 }
@@ -126,16 +177,23 @@ async function setClaim(auth, email, value) {
 }
 
 async function main() {
-    const { env, grant, revoke } = parseArgs(process.argv.slice(2));
+    const { env, grant, revoke, lockSignup, unlockSignup } = parseArgs(
+        process.argv.slice(2),
+    );
 
     if (!KEY_FILES[env]) {
         console.error(
-            'Uso: npm run admin:claim <dev|prod> [-- --grant <email> | --revoke <email>]',
+            'Uso: npm run admin:claim <dev|prod> [-- --grant <email> | --revoke <email>]\n' +
+                '                                    [-- --lock-signup | --unlock-signup]',
         );
         process.exit(1);
     }
     if (grant && revoke) {
         console.error('--grant y --revoke son excluyentes.');
+        process.exit(1);
+    }
+    if (lockSignup && unlockSignup) {
+        console.error('--lock-signup y --unlock-signup son excluyentes.');
         process.exit(1);
     }
 
@@ -148,6 +206,10 @@ async function main() {
 
     if (grant) await setClaim(auth, grant, true);
     else if (revoke) await setClaim(auth, revoke, false);
+
+    if (lockSignup) await setSignUpLock(credential, key.project_id, true);
+    else if (unlockSignup)
+        await setSignUpLock(credential, key.project_id, false);
 
     await listUsers(auth);
     await reportSignUpPolicy(credential, key.project_id);

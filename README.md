@@ -169,7 +169,14 @@ El claim solo se pone desde el Admin SDK, nunca desde el navegador:
 npm run admin:claim prod                        # lista cuentas y quién es admin
 npm run admin:claim prod -- --grant a@b.com     # concede
 npm run admin:claim prod -- --revoke a@b.com    # retira
+npm run admin:claim prod -- --lock-signup       # cierra el alta libre de cuentas
 ```
+
+El script también informa de por dónde se puede entrar al proyecto: si el alta
+autoservicio está abierta y si el acceso anónimo está activo. El alta se cierra
+con `--lock-signup`, que mueve `client.permissions.disabledUserSignup` — el
+mismo campo que la casilla *Enable create (sign-up)* de la consola. El acceso
+anónimo sí hay que desactivarlo a mano en *Authentication -> Sign-in method*.
 
 El claim viaja dentro del ID token, así que **no surte efecto hasta que la sesión
 se renueva**: hay que cerrar sesión en el panel y volver a entrar.
