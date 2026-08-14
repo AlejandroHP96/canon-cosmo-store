@@ -225,6 +225,35 @@ firebase deploy --only firestore:rules -P dev
 firebase deploy --only firestore:rules -P prod
 ```
 
+## Lecturas de Firestore y escala
+
+El listado del admin lee **todo el catálogo de una vez** (`getAllProducts()`) y
+pagina en memoria de 25 en 25. Es deliberado, no un descuido pendiente de
+arreglar: la búsqueda recorre el catálogo entero, las categorías del filtro se
+derivan de lo cargado y la selección múltiple abarca varias páginas. Con
+paginación real de Firestore (`startAfter`) las tres cosas dejan de funcionar
+como ahora, y con unas decenas de productos no se ahorra ni una lectura.
+
+Cuándo toca cambiarlo: cuando `products` pase de **unos pocos miles** de
+documentos, o cuando abrir el panel se note lento. Entonces hace falta, a la vez:
+
+- paginación por cursor en el servidor, con `orderBy` estable,
+- búsqueda fuera de Firestore, que no sabe buscar por subcadena — un índice
+  externo, o al menos un campo normalizado y `>=`/`<=`,
+- índices compuestos para las combinaciones de filtro que se usen,
+- decidir qué hace el borrado en lote cuando la selección excede lo cargado.
+
+La tienda pública ya lee acotado: `getProductsByTcg()` filtra por sección con
+`where`, así que un visitante nunca se trae el catálogo entero.
+
+Lo que **no** hay es límite de lecturas por parte de nadie: `products`,
+`nav_config`, `tcg_categories` y `torneosJuegos` son de lectura pública, así que
+cualquiera puede recorrerlos las veces que quiera y eso se factura. Si algún día
+molesta, la herramienta es [App Check](https://firebase.google.com/docs/app-check)
+con reCAPTCHA, que ata las lecturas a tu dominio. Requiere darlo de alta en la
+consola y **desplegarlo primero en modo monitorización**: si se fuerza de golpe
+y algo está mal configurado, la tienda deja de cargar datos para todo el mundo.
+
 ## Despliegue
 
 Vercel, con deploy automático desde `main`. `vercel.json` incluye el rewrite que
