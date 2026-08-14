@@ -112,6 +112,40 @@ describe('filtrarReservas', () => {
         ).toEqual(['2']);
     });
 
+    // El nombre real lleva tilde y quien busca en el panel no la teclea
+    it('encuentra al cliente aunque la búsqueda vaya sin tildes', () => {
+        const conTilde = [
+            reserva({ id: '9', cliente: 'Fabián Ríos' }),
+            ...solicitudes,
+        ];
+        expect(
+            filtrarReservas(conTilde, 'fabian', null, null).map((r) => r.id),
+        ).toEqual(['9']);
+        expect(
+            filtrarReservas(conTilde, 'Rios', null, null).map((r) => r.id),
+        ).toEqual(['9']);
+    });
+
+    // Y al revés: el nombre escrito sin tilde debe salir al buscarlo con ella
+    it('encuentra al cliente escrito sin tilde buscándolo con ella', () => {
+        const sinTilde = [reserva({ id: '9', cliente: 'Fabian Rios' })];
+        expect(
+            filtrarReservas(sinTilde, 'Fabián', null, null).map((r) => r.id),
+        ).toEqual(['9']);
+    });
+
+    it('ignora las tildes también en producto y email', () => {
+        const otras = [
+            reserva({
+                id: '9',
+                productoNombre: 'Edición Especial',
+                email: 'ROCÍO@example.com',
+            }),
+        ];
+        expect(filtrarReservas(otras, 'edicion', null, null)).toHaveLength(1);
+        expect(filtrarReservas(otras, 'rocio@', null, null)).toHaveLength(1);
+    });
+
     it('no falla si la reserva no tiene email', () => {
         expect(() =>
             filtrarReservas(solicitudes, 'algo', null, null),

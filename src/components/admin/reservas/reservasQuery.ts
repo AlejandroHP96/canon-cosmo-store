@@ -1,4 +1,5 @@
 import type { SolicitudReserva } from '../../../services/reservasService';
+import { normalizarBusqueda } from '../../../lib/text';
 
 /** Más antiguas primero: las que llevan más esperando se atienden antes. */
 export function ordenarPorFecha(
@@ -30,15 +31,17 @@ export function filtrarReservas(
     seccion: string | null,
     producto: string | null,
 ): SolicitudReserva[] {
-    const q = search.trim().toLowerCase();
+    // Sin tildes a los dos lados de la comparación: buscar "Fabian" tiene que
+    // encontrar a "Fabián", que es como suele estar escrito el nombre real.
+    const q = normalizarBusqueda(search.trim());
     return reservas.filter((r) => {
         if (seccion && r.seccion !== seccion) return false;
         if (producto && r.productoNombre !== producto) return false;
         if (!q) return true;
         return (
-            r.cliente.toLowerCase().includes(q) ||
-            r.productoNombre.toLowerCase().includes(q) ||
-            (r.email ?? '').toLowerCase().includes(q)
+            normalizarBusqueda(r.cliente).includes(q) ||
+            normalizarBusqueda(r.productoNombre).includes(q) ||
+            normalizarBusqueda(r.email ?? '').includes(q)
         );
     });
 }
