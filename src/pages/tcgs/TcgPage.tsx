@@ -90,7 +90,9 @@ const TcgSection = ({
 
     if (error) {
         return (
-            <div className="tactical-frame p-8 text-center text-on-surface-variant font-body text-sm">
+            <div
+                role="alert"
+                className="tactical-frame p-8 text-center text-on-surface-variant font-body text-sm">
                 {t('errors.loadSection')}
             </div>
         );

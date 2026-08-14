@@ -9,7 +9,11 @@ const ErrorBanner = ({ message, onDismiss, className = 'mb-6' }: Props) => {
     if (!message) return null;
 
     return (
+        // role="alert" para que un lector de pantalla lo anuncie al aparecer:
+        // se inserta después de que la página ya esté pintada, así que sin esto
+        // pasa desapercibido para quien no lo ve.
         <div
+            role="alert"
             className={`flex items-center gap-2 border border-error bg-error-container/20 px-3 py-2.5 ${className}`}>
             <span className="material-symbols-outlined text-error text-base shrink-0">
                 error

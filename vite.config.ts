@@ -108,9 +108,21 @@ export default defineConfig(({ mode }) => {
             ],
         },
         test: {
-            // Solo funciones puras por ahora: sin DOM, sin Firebase, sin navegador
-            environment: 'node',
-            include: ['src/**/*.test.ts'],
+            // jsdom para todo: los tests de funciones puras no lo necesitan,
+            // pero separar entornos por glob complica la config para ahorrar
+            // décimas en una suite que tarda menos de un segundo.
+            environment: 'jsdom',
+            include: ['src/**/*.test.{ts,tsx}'],
+            setupFiles: ['src/test/setup.ts'],
+            // Firebase nunca se toca en los tests: los servicios se doblan con
+            // vi.mock. Si algún test llega a la red es que falta un mock.
+            //
+            // clearMocks importa más de lo que parece: restoreMocks no vacía el
+            // historial de los vi.fn() creados en una factory de vi.mock, así
+            // que las llamadas se acumulaban entre tests y un `not.toHaveBeenCalled`
+            // fallaba por lo que había hecho el test anterior.
+            clearMocks: true,
+            restoreMocks: true,
         },
     };
 });

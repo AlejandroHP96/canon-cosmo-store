@@ -54,10 +54,13 @@ const AdminLoginPage = () => {
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                     <div>
-                        <label className="block font-headline text-xs uppercase tracking-widest text-on-surface-variant mb-1">
+                        <label
+                            htmlFor="admin-email"
+                            className="block font-headline text-xs uppercase tracking-widest text-on-surface-variant mb-1">
                             Email
                         </label>
                         <input
+                            id="admin-email"
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -68,10 +71,13 @@ const AdminLoginPage = () => {
                     </div>
 
                     <div>
-                        <label className="block font-headline text-xs uppercase tracking-widest text-on-surface-variant mb-1">
+                        <label
+                            htmlFor="admin-password"
+                            className="block font-headline text-xs uppercase tracking-widest text-on-surface-variant mb-1">
                             Contraseña
                         </label>
                         <input
+                            id="admin-password"
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}

@@ -137,9 +137,9 @@ que la comprobación de tipos también entra.
 
 ## Tests
 
-Vitest, en entorno `node`. Solo cubren **funciones puras**: nada de DOM, Firebase ni
-navegador, así que la suite entera tarda menos de medio segundo. Los ficheros
-`*.test.ts` viven junto al código que prueban.
+Vitest en entorno `jsdom`. Los ficheros `*.test.ts` y `*.test.tsx` viven junto al
+código que prueban. Firebase no se toca nunca: los servicios se doblan con
+`vi.mock`, así que si un test llega a la red es que falta un doble.
 
 | Módulo                                | Qué protege                                                                          |
 | ------------------------------------- | ------------------------------------------------------------------------------------ |
@@ -153,9 +153,25 @@ navegador, así que la suite entera tarda menos de medio segundo. Los ficheros
 | `components/reservas/reservaQuery.ts` | El filtrado de la página pública de reservas                                         |
 | `components/reservas/reservaForm.ts`  | Qué se admite en el campo de cantidad y cómo se recorta al tope                      |
 
-El criterio para añadir un test aquí: que un fallo sea **silencioso** (corrompe datos
-o desvincula productos sin error visible). La lógica de render y las reglas de
-seguridad no están cubiertas todavía.
+### Componentes
+
+Los `*.test.tsx` prueban flujos completos con `@testing-library/react`, sin montar
+el router ni Firebase de verdad.
+
+| Fichero                          | Qué protege                                                                                                 |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `pages/Reservas.tsx`             | El alta de reserva de punta a punta: normalización de la cantidad, recorte del nombre, error visible        |
+| `pages/admin/AdminLoginPage.tsx` | El mapeo de códigos de Firebase a mensajes, el rechazo de cuentas sin claim y la guarda de `ProtectedRoute` |
+| `pages/tcgs/TcgPage.tsx`         | Que una ruta fuera del nav dé 404 en vez de una sección vacía indexable                                     |
+
+El caso del formulario de reserva es el que más justifica el entorno: valida el
+nombre con una regla que **debe coincidir con `firestore.rules`**
+(`cliente.matches('^\\S+(\\s+\\S+)+$')`). Si alguien toca una de las dos y no la
+otra, el cliente rellena el formulario para que Firestore lo rechace al final.
+
+El criterio para añadir un test: que un fallo sea **silencioso** (corrompe datos,
+desvincula productos o deja pasar a quien no debe, sin error visible). Las reglas
+de Firestore en sí no están cubiertas: eso pide el emulador.
 
 ## Reglas de seguridad
 
