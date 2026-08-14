@@ -31,3 +31,8 @@ tsconfig*.tsbuildinfo
 .keys/*
 !.keys/README.md
 .backups/
+
+# Herramientas locales de Claude Code: configuración de la máquina y skills
+# instaladas, no código del proyecto. Incluye settings.local.json con rutas
+# propias y __pycache__ de los scripts de las skills.
+.claude/
