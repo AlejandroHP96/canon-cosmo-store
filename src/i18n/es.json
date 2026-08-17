@@ -87,8 +87,13 @@
         },
         "success": {
             "title": "Solicitud enviada",
-            "text": "Te contactaremos pronto para confirmar tu reserva.",
-            "close": "Cerrar"
+            "text": "Guarda este localizador: te lo pediremos al recoger la reserva.",
+            "codeLabel": "Tu localizador",
+            "codeHint": "Solo se entrega la reserva a quien presente este código.",
+            "copy": "Copiar localizador",
+            "warningTitle": "Apunta el código antes de cerrar",
+            "warningText": "Este código solo se muestra ahora. Si cierras esta ventana sin copiarlo no podrás recuperarlo, y sin él no podemos entregarte la reserva.",
+            "close": "Ya lo he guardado"
         }
     },
     "search": {

@@ -37,11 +37,12 @@ const ReservaRow = ({
                     ×{reserva.cantidad}
                 </span>
             </div>
-            <span className="text-[10px] font-body text-on-surface-variant truncate hidden sm:block w-36 shrink-0">
-                {reserva.email || '—'}
-            </span>
-            <span className="text-[10px] font-body text-on-surface-variant truncate hidden md:block w-24 shrink-0">
-                {reserva.telefono || '—'}
+            {/* El localizador es lo que se compara con el código que enseña
+            el cliente, así que va en monoespaciado y siempre visible. */}
+            <span
+                className="font-mono text-[11px] tracking-wider text-primary shrink-0 select-all"
+                title="Localizador">
+                {reserva.localizador || '—'}
             </span>
             <span className="text-[10px] font-body text-on-surface-variant shrink-0 hidden lg:block w-24">
                 {new Date(reserva.fecha).toLocaleDateString(

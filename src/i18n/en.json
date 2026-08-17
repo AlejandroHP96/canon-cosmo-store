@@ -87,8 +87,13 @@
         },
         "success": {
             "title": "Request sent",
-            "text": "We'll contact you soon to confirm your reservation.",
-            "close": "Close"
+            "text": "Keep this booking code: we'll ask for it when you pick up your reservation.",
+            "codeLabel": "Your booking code",
+            "codeHint": "The reservation is only handed over to whoever shows this code.",
+            "copy": "Copy booking code",
+            "warningTitle": "Write the code down before closing",
+            "warningText": "This code is shown only now. If you close this window without copying it you won't be able to recover it, and we can't hand over your reservation without it.",
+            "close": "I've saved it"
         }
     },
     "search": {

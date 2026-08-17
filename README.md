@@ -50,7 +50,7 @@ que exigen las reglas de Firestore. Ver [Reglas de seguridad](#reglas-de-segurid
 | `nav_config/sidebar`         | Configuración del sidebar: `{ items: NavItem[] }`                                                                                                                                     |
 | `tcg_categories/{sectionId}` | Categorías por sección: `{ categories: string[] }`                                                                                                                                    |
 | `torneosJuegos`              | Torneos por juego                                                                                                                                                                     |
-| `reservas`                   | Solicitudes de reserva entrantes                                                                                                                                                      |
+| `reservas`                   | Solicitudes de reserva entrantes. Campos: `productoId`, `productoNombre`, `seccion`, `cliente`, `localizador`, `cantidad`, `notas`, `fecha`, `estado`                                 |
 
 ### Firestore Lite
 
@@ -152,6 +152,7 @@ código que prueban. Firebase no se toca nunca: los servicios se doblan con
 | `admin/categories/categoryRules.ts`   | Validación de nombres duplicados y vacíos                                            |
 | `components/reservas/reservaQuery.ts` | El filtrado de la página pública de reservas                                         |
 | `components/reservas/reservaForm.ts`  | Qué se admite en el campo de cantidad y cómo se recorta al tope                      |
+| `lib/localizador.ts`                  | El formato del localizador de reserva y su comparación sin guiones ni mayúsculas     |
 
 ### Componentes
 
@@ -177,8 +178,9 @@ de Firestore en sí no están cubiertas: eso pide el emulador.
 
 `firestore.rules` es la fuente de verdad. Catálogo, navegación y torneos son de
 lectura pública y escritura solo para el admin. En `reservas` un anónimo únicamente
-puede **crear**, y el documento debe traer exactamente los 8 campos esperados,
+puede **crear**, y el documento debe traer exactamente los 9 campos esperados,
 con límites de tamaño, `estado` forzado a `'pendiente'` y `fecha == request.time`.
+El `localizador` se valida contra el mismo formato que emite `lib/localizador.ts`.
 Leer o modificar reservas es solo del admin.
 
 ### Quién es admin

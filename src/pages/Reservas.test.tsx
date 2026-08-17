@@ -43,7 +43,10 @@ async function abrirFormulario(user: ReturnType<typeof userEvent.setup>) {
 describe('<Reservas />', () => {
     beforeEach(() => {
         mockGetProductos.mockResolvedValue([PRODUCTO]);
-        mockAddReserva.mockResolvedValue('r1');
+        mockAddReserva.mockResolvedValue({
+            id: 'r1',
+            localizador: 'A7K3-9QXM',
+        });
     });
 
     it('envía la reserva con la cantidad ya normalizada a número', async () => {
@@ -78,7 +81,7 @@ describe('<Reservas />', () => {
         });
     });
 
-    it('confirma al usuario cuando la reserva se ha guardado', async () => {
+    it('enseña el localizador cuando la reserva se ha guardado', async () => {
         const user = userEvent.setup();
         renderPagina();
         await abrirFormulario(user);
@@ -94,6 +97,61 @@ describe('<Reservas />', () => {
         expect(
             await screen.findByText('Solicitud enviada'),
         ).toBeInTheDocument();
+        // El código es lo que el cliente tiene que apuntar: si no se pinta,
+        // la reserva queda guardada y nadie puede reclamarla
+        expect(screen.getByTestId('localizador')).toHaveTextContent(
+            'A7K3-9QXM',
+        );
+    });
+
+    // Cerrar el modal pierde el código para siempre: no se guarda en el
+    // cliente ni hay pantalla para recuperarlo, así que el aviso no puede
+    // quedarse por el camino en un rediseño de la confirmación
+    it('avisa de que el código se pierde si no se copia', async () => {
+        const user = userEvent.setup();
+        renderPagina();
+        await abrirFormulario(user);
+
+        await user.type(
+            screen.getByPlaceholderText('Nombre y apellidos'),
+            'Ada Lovelace',
+        );
+        await user.click(
+            screen.getByRole('button', { name: /solicitar reserva/i }),
+        );
+
+        const aviso = await screen.findByRole('alert');
+        expect(aviso).toHaveTextContent(/apunta el código antes de cerrar/i);
+        expect(aviso).toHaveTextContent(/no podrás recuperarlo/i);
+    });
+
+    // El código solo se enseña aquí: si un Escape o un clic fuera cierran la
+    // confirmación, el cliente se queda con una reserva que no puede reclamar
+    it('no cierra la confirmación con Escape ni pulsando fuera', async () => {
+        const user = userEvent.setup();
+        renderPagina();
+        await abrirFormulario(user);
+
+        await user.type(
+            screen.getByPlaceholderText('Nombre y apellidos'),
+            'Ada Lovelace',
+        );
+        await user.click(
+            screen.getByRole('button', { name: /solicitar reserva/i }),
+        );
+        await screen.findByTestId('localizador');
+
+        await user.keyboard('{Escape}');
+        expect(screen.getByTestId('localizador')).toBeInTheDocument();
+
+        // El fondo oscuro es el padre del panel del diálogo
+        await user.click(screen.getByRole('dialog').parentElement!);
+        expect(screen.getByTestId('localizador')).toBeInTheDocument();
+
+        await user.click(
+            screen.getByRole('button', { name: /ya lo he guardado/i }),
+        );
+        expect(screen.queryByTestId('localizador')).not.toBeInTheDocument();
     });
 
     // El nombre de una sola palabra lo rechazan también las reglas de Firestore

@@ -24,6 +24,14 @@ type Props = {
     backdropClass?: string;
     /** Impide cerrar pulsando fuera. */
     disableBackdropClose?: boolean;
+    /**
+     * Impide cerrar con Escape. Un diálogo normal debe cerrarse así, y quitarlo
+     * empeora la accesibilidad, de modo que solo se justifica cuando cerrar
+     * pierde algo que no se puede recuperar: la pantalla que enseña el
+     * localizador de la reserva es el único sitio donde ese código existe.
+     * Úsalo únicamente con un botón de cierre visible y evidente.
+     */
+    disableEscapeClose?: boolean;
 };
 
 /**
@@ -39,12 +47,16 @@ const Modal = ({
     panelStyle,
     backdropClass = 'bg-black/70 p-4',
     disableBackdropClose = false,
+    disableEscapeClose = false,
 }: Props) => {
     const panelRef = useRef<HTMLDivElement>(null);
-    // En una ref para no reinstalar el listener si el padre recrea la función
+    // En refs para no reinstalar el listener si el padre recrea la función o
+    // cambia el flag a mitad de vida del modal (pasa al terminar de guardar)
     const cerrar = useRef(onClose);
+    const escapeBloqueado = useRef(disableEscapeClose);
     useEffect(() => {
         cerrar.current = onClose;
+        escapeBloqueado.current = disableEscapeClose;
     });
 
     useEffect(() => {
@@ -56,7 +68,7 @@ const Modal = ({
 
         const onKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
-                cerrar.current();
+                if (!escapeBloqueado.current) cerrar.current();
                 return;
             }
             if (e.key !== 'Tab' || !panel) return;

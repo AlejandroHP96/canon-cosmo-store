@@ -36,7 +36,7 @@ const ReservasFilters = ({
                     type="text"
                     value={search}
                     onChange={(e) => onSearchChange(e.target.value)}
-                    placeholder="Buscar por cliente, producto o email..."
+                    placeholder="Buscar por localizador, cliente o producto..."
                     className={`${inputClass} pl-9 pr-8`}
                 />
                 {search && (

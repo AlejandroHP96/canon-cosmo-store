@@ -12,11 +12,11 @@ service cloud.firestore {
     // Público: cualquiera puede crear solicitudes de reserva, con forma y límites estrictos
     match /reservas/{docId} {
       allow create: if request.resource.data.keys().hasOnly([
-          'productoId', 'productoNombre', 'seccion', 'cliente',
+          'productoId', 'productoNombre', 'seccion', 'cliente', 'localizador',
           'cantidad', 'notas', 'fecha', 'estado'
         ])
         && request.resource.data.keys().hasAll([
-          'productoId', 'productoNombre', 'seccion', 'cliente',
+          'productoId', 'productoNombre', 'seccion', 'cliente', 'localizador',
           'cantidad', 'notas', 'fecha', 'estado'
         ])
         && request.resource.data.productoId is string && request.resource.data.productoId.size() > 0 && request.resource.data.productoId.size() <= 200
@@ -24,6 +24,10 @@ service cloud.firestore {
         && request.resource.data.seccion is string && request.resource.data.seccion.size() <= 200
         && request.resource.data.cliente is string && request.resource.data.cliente.size() > 0 && request.resource.data.cliente.size() <= 200
         && request.resource.data.cliente.matches('^\\S+(\\s+\\S+)+$')
+        // Localizador con el formato exacto que emite lib/localizador: dos
+        // bloques de cuatro sin los caracteres que se confunden (0/O, 1/I/L).
+        && request.resource.data.localizador is string
+        && request.resource.data.localizador.matches('^[23456789A-HJKMNP-Z]{4}-[23456789A-HJKMNP-Z]{4}$')
         && request.resource.data.cantidad is int && request.resource.data.cantidad > 0 && request.resource.data.cantidad <= 100
         && request.resource.data.notas is string && request.resource.data.notas.size() <= 1000
         && request.resource.data.fecha == request.time

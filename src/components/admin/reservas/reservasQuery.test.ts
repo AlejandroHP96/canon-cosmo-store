@@ -13,6 +13,7 @@ const reserva = (patch: Partial<SolicitudReserva>): SolicitudReserva => ({
     productoNombre: 'Sobre Pokemon',
     seccion: 'pokemon',
     cliente: 'Ana Pérez',
+    localizador: 'A7K3-9QXM',
     cantidad: 1,
     notas: '',
     fecha: '2026-01-01T10:00:00.000Z',
@@ -32,7 +33,7 @@ const solicitudes: SolicitudReserva[] = [
         cliente: 'Luis Gómez',
         seccion: 'digimon',
         productoNombre: 'Mazo Digimon',
-        email: 'luis@example.com',
+        localizador: 'B2C4-D6E8',
     }),
     reserva({
         id: '3',
@@ -100,15 +101,12 @@ describe('filtrarReservas', () => {
         ).toEqual(['3']);
     });
 
-    it('busca por cliente, producto o email', () => {
+    it('busca por cliente o por producto', () => {
         expect(
             filtrarReservas(solicitudes, 'marta', null, null).map((r) => r.id),
         ).toEqual(['3']);
         expect(
             filtrarReservas(solicitudes, 'mazo', null, null).map((r) => r.id),
-        ).toEqual(['2']);
-        expect(
-            filtrarReservas(solicitudes, 'luis@', null, null).map((r) => r.id),
         ).toEqual(['2']);
     });
 
@@ -134,21 +132,44 @@ describe('filtrarReservas', () => {
         ).toEqual(['9']);
     });
 
-    it('ignora las tildes también en producto y email', () => {
+    it('ignora las tildes también en el producto', () => {
         const otras = [
-            reserva({
-                id: '9',
-                productoNombre: 'Edición Especial',
-                email: 'ROCÍO@example.com',
-            }),
+            reserva({ id: '9', productoNombre: 'Edición Especial' }),
         ];
         expect(filtrarReservas(otras, 'edicion', null, null)).toHaveLength(1);
-        expect(filtrarReservas(otras, 'rocio@', null, null)).toHaveLength(1);
     });
 
-    it('no falla si la reserva no tiene email', () => {
-        expect(() =>
-            filtrarReservas(solicitudes, 'algo', null, null),
-        ).not.toThrow();
+    // Lo que teclea quien atiende el mostrador es el código que ve en el
+    // móvil del cliente, con guion o sin él y como le salga en mayúsculas
+    it('encuentra la reserva por su localizador', () => {
+        expect(
+            filtrarReservas(solicitudes, 'A7K3-9QXM', null, null).map(
+                (r) => r.id,
+            ),
+        ).toEqual(['1', '3']);
+        expect(
+            filtrarReservas(solicitudes, 'b2c4d6e8', null, null).map(
+                (r) => r.id,
+            ),
+        ).toEqual(['2']);
+        expect(
+            filtrarReservas(solicitudes, ' b2c4-D6E8 ', null, null).map(
+                (r) => r.id,
+            ),
+        ).toEqual(['2']);
+    });
+
+    // Un guion suelto normaliza a cadena vacía, y `includes('')` es cierto
+    // para todo: sin la guarda, teclear "-" listaría todas las reservas
+    it('no devuelve todo si la búsqueda es solo un guion', () => {
+        expect(filtrarReservas(solicitudes, '-', null, null)).toHaveLength(0);
+    });
+
+    it('no falla con reservas antiguas sin localizador', () => {
+        const viejas = [reserva({ id: '9', localizador: '' })];
+        expect(filtrarReservas(viejas, 'A7K3', null, null)).toHaveLength(0);
+        expect(
+            filtrarReservas(viejas, 'ana', null, null).map((r) => r.id),
+        ).toEqual(['9']);
     });
 });

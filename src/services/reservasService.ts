@@ -12,6 +12,7 @@ import {
     Timestamp,
 } from 'firebase/firestore/lite';
 import { db } from '../lib/firebase';
+import { generarLocalizador } from '../lib/localizador';
 
 export type SolicitudReserva = {
     id: string;
@@ -19,8 +20,8 @@ export type SolicitudReserva = {
     productoNombre: string;
     seccion: string;
     cliente: string;
-    email?: string;
-    telefono?: string;
+    /** Código que el cliente enseña al recoger. Ver `lib/localizador`. */
+    localizador: string;
     cantidad: number;
     notas: string;
     fecha: string;
@@ -38,19 +39,34 @@ export async function getReservas(): Promise<SolicitudReserva[]> {
             data.fecha instanceof Timestamp
                 ? data.fecha.toDate().toISOString()
                 : data.fecha;
-        return { ...data, id: d.id, fecha } as SolicitudReserva;
+        // Las reservas creadas antes del localizador no traen el campo: se
+        // rellena vacío para que la pantalla y la búsqueda no tengan que
+        // andar comprobando si existe.
+        return {
+            ...data,
+            id: d.id,
+            fecha,
+            localizador: data.localizador ?? '',
+        } as SolicitudReserva;
     });
 }
 
+/**
+ * Crea la solicitud y devuelve su localizador. El código se genera aquí y no
+ * en la pantalla: así no hay forma de guardar una reserva sin él ni de que
+ * dos sitios inventen formatos distintos.
+ */
 export async function addReserva(
-    data: Omit<SolicitudReserva, 'id' | 'fecha' | 'estado'>,
-): Promise<string> {
+    data: Omit<SolicitudReserva, 'id' | 'fecha' | 'estado' | 'localizador'>,
+): Promise<{ id: string; localizador: string }> {
+    const localizador = generarLocalizador();
     const ref = await addDoc(collection(db, COLLECTION), {
         ...data,
+        localizador,
         fecha: serverTimestamp(),
         estado: 'pendiente',
     });
-    return ref.id;
+    return { id: ref.id, localizador };
 }
 
 export async function updateReservaEstado(

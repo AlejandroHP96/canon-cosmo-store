@@ -27,7 +27,9 @@ const Reservas = () => {
     const [productos, setProductos] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [success, setSuccess] = useState(false);
+    // El localizador de la reserva recién creada hace también de "hay éxito
+    // que mostrar": no hay pantalla de confirmación sin código que enseñar.
+    const [localizador, setLocalizador] = useState<string | null>(null);
     const [errorKey, setErrorKey] = useState<string | null>(null);
     const [errorTexto, setErrorTexto] = useState<string | null>(null);
     const [form, setForm] = useState<ReservaForm>(EMPTY_RESERVA_FORM);
@@ -69,7 +71,7 @@ const Reservas = () => {
         setErrorTexto(null);
         setErrorKey(null);
         try {
-            await addReserva({
+            const reserva = await addReserva({
                 productoId: selectedProduct.id,
                 productoNombre: selectedProduct.name,
                 seccion: selectedProduct.tcg,
@@ -77,7 +79,7 @@ const Reservas = () => {
                 cantidad: normalizeCantidad(form.cantidad),
                 notas: form.notas.trim(),
             });
-            setSuccess(true);
+            setLocalizador(reserva.localizador);
             cerrarModal();
         } catch (err) {
             setErrorTexto(
@@ -147,19 +149,26 @@ const Reservas = () => {
                 )}
             </div>
 
-            {(selectedProduct || success) && (
+            {(selectedProduct || localizador) && (
                 <Modal
                     onClose={() =>
-                        success ? setSuccess(false) : cerrarModal()
+                        localizador ? setLocalizador(null) : cerrarModal()
                     }
                     title={
-                        success
+                        localizador
                             ? t('reservas.success.title')
                             : `${t('reservas.form.heading')}: ${selectedProduct?.name ?? ''}`
                     }
-                    disableBackdropClose={saving}>
-                    {success ? (
-                        <ReservaSuccess onClose={() => setSuccess(false)} />
+                    // Con el localizador en pantalla solo se sale por el botón:
+                    // un clic fuera o un Escape sin querer se llevarían por
+                    // delante el único sitio donde ese código se muestra
+                    disableBackdropClose={saving || localizador !== null}
+                    disableEscapeClose={localizador !== null}>
+                    {localizador ? (
+                        <ReservaSuccess
+                            localizador={localizador}
+                            onClose={() => setLocalizador(null)}
+                        />
                     ) : (
                         selectedProduct && (
                             <ReservaFormModal
